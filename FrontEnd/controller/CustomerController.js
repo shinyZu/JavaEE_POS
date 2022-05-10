@@ -29,10 +29,22 @@ function addCustomer() {
     customerAddress = txtAddress.val();
     customerContact = txtContact.val();
 
-    let customerObject = new Customer(customerId, customerName, customerAddress, customerContact);
-    customerDB.push(customerObject);
+    // let customerObject = new Customer(customerId, customerName, customerAddress, customerContact);
+    // customerDB.push(customerObject);
 
-    $("#totalCustomers").text("0" + customerDB.length);
+    // $("#totalCustomers").text("0" + customerDB.length);
+
+    $.ajax({
+        url: "http://localhost:8080/pos/customer",
+        method: "POST",
+        // data: formData,
+        success: function (resp) {
+            console.log(resp);
+        },
+        error: function (ob, textStatus, error) {
+
+        }
+    });
 
     loadAllCustomers(customerDB);
     toastr.success("Customer Saved Successfully...");
@@ -290,18 +302,7 @@ $(".btnSaveCustomer").click(function (e) {
     $("#tblCustomer-body>tr").off("dblclick");
     delete_CustomerRowOnDblClick();
 
-    // $.ajax({
-    //     // url: "customer",
-    //     url: "http://localhost:8080/customer",
-    //     method: "POST",
-    //     // data: formData,
-    //     success: function (resp) {
-    //         console.log(resp);
-    //     },
-    //     error: function (ob, textStatus, error) {
 
-    //     }
-    // });
 
 });
 
