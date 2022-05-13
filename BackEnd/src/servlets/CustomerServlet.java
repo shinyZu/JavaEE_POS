@@ -31,23 +31,13 @@ public class CustomerServlet extends HttpServlet {
 
             String option = req.getParameter("option");
             ResultSet rst;
+            PreparedStatement pstm;
 
             switch (option) {
                 case "SEARCH":
-                    PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
+                    pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
                     pstm.setObject(1, req.getParameter("customerID"));
                     rst = pstm.executeQuery();
-
-//                    System.out.println("ssss:  "+rst.getString(1));
-
-//                    if (rst.next() == false){
-//                        responseInfo = Json.createObjectBuilder();
-//                        responseInfo.add("status", 200);
-//                        responseInfo.add("message", "No Customer");
-//                        responseInfo.add("data", "null");
-//                        resp.getWriter().print(responseInfo.build());
-//                        return;
-//                    }
 
                     while (rst.next()) {
                         customer.add("id", rst.getString(1));
@@ -61,6 +51,18 @@ public class CustomerServlet extends HttpServlet {
                     responseInfo.add("data", customer.build());
                     resp.getWriter().print(responseInfo.build());
 
+                    break;
+
+                case "GET_COUNT":
+                    rst = connection.prepareStatement("SELECT COUNT(customerId) FROM Customer").executeQuery();
+
+                    if (rst.next()) {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Customers Counted");
+                        responseInfo.add("data", rst.getString(1));
+                    }
+                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_ID_NAME":

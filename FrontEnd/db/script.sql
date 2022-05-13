@@ -52,4 +52,5 @@ CREATE TABLE IF NOT EXISTS OrderDetails(
 SHOW TABLES ;
 DESCRIBE OrderDetails;
 
-FROM Student s WHERE s.studentId LIKE '%"+text+"%' OR s.studentName LIKE '%" + text + "%' OR s.address LIKE '%" + text + "%'
+FROM Student s WHERE s.studentId LIKE '%"+text+"%' OR s.studentName LIKE '%" + text + "%' OR s.address LIKE '%" + text + "%';
+SELECT COUNT(customerId) FROM Customer;

@@ -15,45 +15,16 @@ $("#nav-home").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").removeClass("active");
 
+    $("#totalCustomers").text("0" + getCustomerCount());
+
 });
 
 $("#nav-customer").click(function () {
     console.log("inside Customer Tab..");
 
-    $("title").text("Customers");
+    $("title").text("Customerssss");
+    console.log(getCustomerCount());
     loadAllCustomers();
-
-    /*$.ajax({
-        url: "customer?option=GETALL",
-        method: "GET",
-        success: function (resp) {
-            console.log(resp);
-            alert(resp.message);
-
-            for (let c of resp.data) {
-                let customer = new Customer(c.id, c.name, c.address, c.contact);
-
-                newRow = `<tr>
-                    <td>${customer.getCustomerID()}</td>
-                    <td>${customer.getCustomerName()}</td>
-                    <td>${customer.getCustomerAddress()}</td>
-                    <td>${customer.getCustomerContact()}</td>
-                </tr>`;
-
-                $("#tblCustomer-body").append(newRow);
-            }
-
-            loadCmbCustomerId();
-            loadCmbCustomerName();
-            clearCustomerFields();
-        },
-
-        error: function (ob, textStatus, error) {
-            alert(textStatus);
-            console.log(ob);
-        }
-
-    })*/
 
     $("#home-main").css('display', 'none');
     $("#customer-main").css('display', 'block');
@@ -202,69 +173,3 @@ function display_Alert(alertTitle, alertText, alertIcon) {
     }
 
 }
-
-
-/*
-function loadCmbCustomerId() {
-    console.log("Inside loadCMB ID");
-    clearCmbCustomerId();
-    // clearCustomerFields();
-
-    let optionValue = -1;
-
-    $.ajax({
-        url: "customer?option=GET_ID_NAME",
-        method: "GET",
-        success: function (resp) {
-            for (let c of resp.data) {
-                var customer = new Customer(c.id);
-                optionValue++;
-                newOption = `<option value="${optionValue}">${customer.getCustomerID()}</option>`;
-                $(cmbCustomerId).append(newOption);
-            }
-        },
-        error: function (ob, textStatus, error) {
-            console.log(ob);
-        }
-    });
-}
-
-function loadCmbCustomerName() {
-    console.log("Inside loadCMB Names");
-    clearCmbCustomerName();
-    // clearCustomerFields();
-
-    let optionValue = -1;
-    $.ajax({
-        url: "customer?option=GET_ID_NAME",
-        method: "GET",
-        success: function (resp) {
-            for (let c of resp.data) {
-                var customer = new Customer(c.name);
-                optionValue++;
-                newOption = `<option value="${optionValue}">${customer.getCustomerName()}</option>`;
-                $(cmbCustomerId).append(newOption);
-            }
-        },
-        error: function (ob, textStatus, error) {
-            console.log(ob);
-        }
-    });
-}
-
-function clearCustomerFields() {
-    loadCmbCustomerId();
-    loadCmbCustomerName();
-    txtord_address.val("");
-    txtord_contact.val("");
-}
-
-function clearCmbCustomerId() {
-    $(cmbCustomerId).empty();
-    $(cmbCustomerId).append(defaultOption);
-}
-
-function clearCmbCustomerName() {
-    $(cmbCustomerName).empty();
-    $(cmbCustomerName).append(defaultOption);
-}*/

@@ -13,6 +13,8 @@ let txtSearchId = $("#txtSearchCustomer");
 let nextID;
 let lastId;
 
+let count;
+
 disableButton(".btnSaveCustomer");
 disableButton("#btnEditCustomer");
 disableButton("#btnDeleteCustomer");
@@ -25,6 +27,8 @@ console.log("Inside Customer Controller...");
 $("#customerForm p.errorText").hide();
 
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
+
+
 
 function addCustomer() {
     customerId = txtCustomerId.val();
@@ -41,6 +45,7 @@ function addCustomer() {
             // alert(resp.message);
             toastr.success(resp.message);
             loadAllCustomers();
+            $("#totalCustomers").text("0" + getCustomerCount());
             reset_CustomerForm();
 
         },
@@ -49,7 +54,7 @@ function addCustomer() {
             console.log(ob);
         }
 
-    })
+    });
 
     // let customerObject = new Customer(customerId, customerName, customerAddress, customerContact);
     // customerDB.push(customerObject);
@@ -59,6 +64,21 @@ function addCustomer() {
     // loadAllCustomers(customerDB);
     // toastr.success("Customer Saved Successfully...");
 
+}
+
+function getCustomerCount() {
+    $.ajax({
+        url:"customer?option=GET_COUNT",
+        method:"GET",
+        success:function (resp) {
+            count = resp.data;
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
+    return count;
 }
 
 function updateCustomer() {
@@ -168,7 +188,6 @@ function deleteCustomer(row) {
 
 }
 
-// function loadAllCustomers(customerDB) {
 function loadAllCustomers() {
     console.log("inside loadAllCustomers");
     $("#tblCustomer-body").empty();
@@ -182,8 +201,6 @@ function loadAllCustomers() {
 
             for (let c of resp.data) {
                 let customer = new Customer(c.id, c.name, c.address, c.contact);
-                // console.log(customer.id); //undefined
-                // console.log("function : " + customer.getCustomerID()); // C00-001....
 
                 newRow = `<tr>
                     <td>${customer.getCustomerID()}</td>
@@ -194,9 +211,6 @@ function loadAllCustomers() {
 
                 $("#tblCustomer-body").append(newRow);
             }
-
-            // loadCmbCustomerId();
-            // loadCmbCustomerName();
             clearCustomerFields();
         },
 
@@ -204,23 +218,7 @@ function loadAllCustomers() {
             alert(textStatus);
             console.log(ob);
         }
-
-    })
-
-    // for (var obj of customerDB) {
-    // newRow = `<tr>
-    //             <td>${obj.getCustomerID()}</td>
-    //             <td>${obj.getCustomerName()}</td>
-    //             <td>${obj.getCustomerAddress()}</td>
-    //             <td>${obj.getCustomerContact()}</td>
-    //         </tr>`;
-
-    //     $("#tblCustomer-body").append(newRow);
-    // }
-
-    // loadCmbCustomerId();
-    // loadCmbCustomerName();
-    // clearCustomerFields();
+    });
 }
 
 function searchCustomer(searchValue) {
@@ -231,27 +229,10 @@ function searchCustomer(searchValue) {
         url: "customer?option=SEARCH&customerID=" + searchValue,
         method: "GET",
         success: function (resp) {
-            reply = resp;
+            response = resp;
             let obj = resp.data;
-            // console.log(obj == "null");
             obj = new Customer(obj.id, obj.name, obj.address ,obj.contact);
-            // console.log(obj.getCustomerID() === "");
-            // console.log(custobj);
-            // console.log(typeof obj);
-            // console.log(obj == {});
-            // console.log(obj == null);
-            // console.log(obj == "");
-            // console.log(Object.keys(obj).length === 0);
-            // console.log(resp.data.length);
-            // console.log(resp.data.length == 0);
-            // console.log(jQuery.isEmptyObject(obj))
-
-            // console.log(resp);
-            // console.log(resp.message);
-            // console.log(resp.data);
-            // console.log(JSON.stringify(obj));
             console.log(JSON.stringify(resp.data));
-            // console.log(JSON.parse(obj));
 
             if (JSON.stringify(resp.data) !== "{}") { // if resp.data = '{"id":"C00-005","name":"Ramal","address":"Jaffna","contact":"716455455"}'
                 txtCustomerId.val(obj.getCustomerID());
@@ -281,39 +262,7 @@ function searchCustomer(searchValue) {
         error: function (ob, textStatus, error) {
             console.log(ob);
         }
-    });;
-
-    // let obj;
-    // for (let i = 0; i < customerDB.length; i++) {
-    //     if (customerDB[i].getCustomerID() == searchValue) {
-    //         obj = customerDB[i];
-    //     }
-    // }
-
-    // if (obj) {
-    //     txtCustomerId.val(obj.getCustomerID());
-    //     txtCustomerName.val(obj.getCustomerName());
-    //     txtAddress.val(obj.getCustomerAddress());
-    //     txtContact.val(obj.getCustomerContact());
-
-    //     validate_CustomerForm();
-    //     return true;
-
-    // } else {
-    //     swal({
-    //         title: "Customer " + searchValue + " doesn't exist...",
-    //         text: "\n",
-    //         icon: 'warning',
-    //         buttons: false,
-    //         timer: 2000,
-    //         closeModal: true,
-    //     });
-
-    //     reset_CustomerForm();
-    //     return false;
-    // }
-
-
+    });
 }
 
 /* ------------------Save Customer------------*/
@@ -330,7 +279,7 @@ function searchCustomer(searchValue) {
     });
 }*/
 
-let r;
+
 
 /*function checkDB_BeforeSaveCustomer() {
 
