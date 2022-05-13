@@ -4,6 +4,7 @@ function Customer (id, name, address, contact) {
     var __address = address;
     var __contact = contact;
 
+
     this.getCustomerID = function () {
         return __id;
     }

@@ -31,7 +31,7 @@ let balance;
 let discount;
 let amountPaid;
 
-console.log("Inside OrderController...");
+console.log("Inside Order Controller...");
 
 $(cmbCustomerId).append(defaultOption);
 $(cmbCustomerName).append(defaultOption);
@@ -126,9 +126,11 @@ function loadCmbCustomerId() {
         method: "GET",
         success: function (resp) {
             for (let c of resp.data) {
-                var customer = new Customer(c.id);
-                optionValue++;
-                newOption = `<option value="${optionValue}">${customer.getCustomerID()}</option>`;
+                console.log(resp.data);
+                let customer = new Customer(c.id);
+                // optionValue++;
+                // newOption = `<option value="${optionValue}">${customer.getCustomerID()}</option>`;
+                newOption = `<option>${customer.getCustomerID()}</option>`;
                 $(cmbCustomerId).append(newOption);
             }
         },
@@ -155,10 +157,12 @@ function loadCmbCustomerName() {
         method: "GET",
         success: function (resp) {
             for (let c of resp.data) {
-                var customer = new Customer(c.name);
-                optionValue++;
-                newOption = `<option value="${optionValue}">${customer.getCustomerName()}</option>`;
-                $(cmbCustomerId).append(newOption);
+                console.log(resp.data);
+                // let customer = new Customer(c.name);
+                // optionValue++;
+                // newOption = `<option value="${optionValue}">${customer.getCustomerName()}</option>`;
+                newOption = `<option>${c.name}</option>`;
+                $(cmbCustomerName).append(newOption);
             }
         },
         error: function (ob, textStatus, error) {

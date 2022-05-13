@@ -17,7 +17,7 @@ disableButton(".btnSaveCustomer");
 disableButton("#btnEditCustomer");
 disableButton("#btnDeleteCustomer");
 
-console.log("Inside Customer  Controller...");
+console.log("Inside Customer Controller...");
 
 
 /* ---------------Initially Hide the Error Indicators----------*/

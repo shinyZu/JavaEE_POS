@@ -17,7 +17,7 @@ disableButton(".btnSaveItem");
 disableButton("#btnEditItem");
 disableButton("#btnDeleteItem");
 
-console.log("Inside ItemController...");
+console.log("Inside Item Controller...");
 
 /* ---------------Initially Hide the Error Indicators----------*/
 
