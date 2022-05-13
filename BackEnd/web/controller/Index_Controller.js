@@ -1,4 +1,36 @@
-console.log("loaded Index Controller...")
+console.log("loaded Index Controller...");
+
+let rowSelected;
+let updatedRow;
+
+let input;
+let newRow;
+
+let searchValue;
+let response;
+
+let color;
+
+let alertText;
+let alertTitle;
+let alertIcon;
+
+
+function getCustomerCount() {
+    $.ajax({
+        url:"customer?option=GET_COUNT",
+        method:"GET",
+        success:function (resp) {
+            $("#totalCustomers").text("0" + resp.data);
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
+}
+
+getCustomerCount();
 
 $("#nav-home").click(function () {
     console.log("inside Home Tab..");
@@ -15,15 +47,14 @@ $("#nav-home").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").removeClass("active");
 
-    $("#totalCustomers").text("0" + getCustomerCount());
-
+    // $("#totalCustomers").text("0" + getCustomerCount());
+    getCustomerCount();
 });
 
 $("#nav-customer").click(function () {
     console.log("inside Customer Tab..");
 
-    $("title").text("Customerssss");
-    console.log(getCustomerCount());
+    $("title").text("Customers");
     loadAllCustomers();
 
     $("#home-main").css('display', 'none');
@@ -99,20 +130,6 @@ $("#nav-orders").click(function () {
 // }
 
 
-let rowSelected;
-let updatedRow;
-
-let input;
-let newRow;
-
-let searchValue;
-let response;
-
-let color;
-
-let alertText;
-let alertTitle;
-let alertIcon;
 
 function isBorderGreen(inputField) {
     color = $(inputField).css('border-color');

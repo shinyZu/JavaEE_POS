@@ -13,7 +13,7 @@ let txtSearchId = $("#txtSearchCustomer");
 let nextID;
 let lastId;
 
-let count;
+
 
 disableButton(".btnSaveCustomer");
 disableButton("#btnEditCustomer");
@@ -41,55 +41,32 @@ function addCustomer() {
         method: "POST",
         data: $("#customerForm").serialize(),
         success: function (resp) {
-            console.log(resp);
-            // alert(resp.message);
-            toastr.success(resp.message);
-            loadAllCustomers();
-            $("#totalCustomers").text("0" + getCustomerCount());
-            reset_CustomerForm();
+            if (resp.status == 200) {
+                console.log(resp);
+                toastr.success(resp.message);
+                loadAllCustomers();
+                getCustomerCount();
+                reset_CustomerForm();
 
+            } else {
+                toastr.error(resp.data);
+            }
         },
         error: function (ob, textStatus, error) {
-            alert(textStatus);
-            console.log(ob);
-        }
-
-    });
-
-    // let customerObject = new Customer(customerId, customerName, customerAddress, customerContact);
-    // customerDB.push(customerObject);
-
-    // $("#totalCustomers").text("0" + customerDB.length);
-
-    // loadAllCustomers(customerDB);
-    // toastr.success("Customer Saved Successfully...");
-
-}
-
-function getCustomerCount() {
-    $.ajax({
-        url:"customer?option=GET_COUNT",
-        method:"GET",
-        success:function (resp) {
-            count = resp.data;
-        },
-        error: function (ob, textStatus, error) {
-            alert(textStatus);
             console.log(ob);
         }
     });
-    return count;
 }
 
 function updateCustomer() {
-    let obj;
+    // let obj;
 
-    customerId = txtCustomerId.val();
-    customerName = txtCustomerName.val();
-    customerAddress = txtAddress.val();
-    customerContact = txtContact.val();
+    // customerId = txtCustomerId.val();
+    // customerName = txtCustomerName.val();
+    // customerAddress = txtAddress.val();
+    // customerContact = txtContact.val();
 
-    for (let i in customerDB) {
+   /* for (let i in customerDB) {
         if (customerDB[i].getCustomerID() == customerId) {
 
             obj = customerDB[i];
@@ -105,7 +82,41 @@ function updateCustomer() {
     loadCmbCustomerName();
     clearCustomerFields();
     load_TblCustomerOrder();
-    select_OrderDetailRow();
+    select_OrderDetailRow();*/
+
+    var custObj = {
+        id: txtCustomerId.val(),
+        name: txtCustomerName.val(),
+        address: txtAddress.val(),
+        contact: txtContact.val()
+    }
+
+    $.ajax({
+        url: "customer",
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(custObj),
+        success: function (resp) {
+            if (resp.status == 200) {
+                console.log(resp.message);
+                toastr.success(resp.message);
+                loadAllCustomers();
+                loadCmbCustomerId();
+                loadCmbCustomerName();
+                clearCustomerFields();
+                load_TblCustomerOrder();
+                select_OrderDetailRow();
+
+            } else if (resp.status == 400) {
+                toastr.error(resp.message);
+            } else {
+                toastr.error(resp.message);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 function deleteCustomer(row) {
@@ -212,6 +223,7 @@ function loadAllCustomers() {
                 $("#tblCustomer-body").append(newRow);
             }
             clearCustomerFields();
+            select_CustomerRow();
         },
 
         error: function (ob, textStatus, error) {
@@ -386,7 +398,7 @@ $("#btnEditCustomer").click(function (e) {
     }).then(result => {
         if (result.isConfirmed) {
             updateCustomer();
-            loadAllCustomers(customerDB);
+            // loadAllCustomers(customerDB);
             reset_CustomerForm();
 
             select_CustomerRow();
@@ -698,7 +710,7 @@ $("#txtContact").keyup(function (e) {
 $("#btnClearCustomerFields").click(function () {
     reset_CustomerForm();
     txtSearchId.val("");
-    loadAllCustomers(customerDB);
+    // loadAllCustomers(customerDB);
     select_CustomerRow();
 });
 

@@ -1,15 +1,11 @@
 package servlets;
 
-import javax.annotation.Resource;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 
@@ -151,9 +147,70 @@ public class CustomerServlet extends HttpServlet {
             }
 
         } catch (SQLException throwables) {
+            responseInfo.add("status", 400);
+            responseInfo.add("message", "Something Went Wrong...");
+            responseInfo.add("data", throwables.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
             throwables.printStackTrace();
+
         } catch (ClassNotFoundException e) {
+            responseInfo.add("status", 400);
+            responseInfo.add("message", "Something Went Wrong...");
+            responseInfo.add("data", e.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        JsonReader reader = Json.createReader(req.getReader());
+        JsonObject jsonObject = reader.readObject();
+        String customerID = jsonObject.getString("id");
+        String customerName = jsonObject.getString("name");
+        String customerAddress = jsonObject.getString("address");
+        String customerContact = jsonObject.getString("contact");
+
+        resp.setContentType("application/json");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
+                    "shiny1234");
+
+            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? where customerId=?");
+            pstm.setObject(1, customerName);
+            pstm.setObject(2, customerAddress);
+            pstm.setObject(3, customerContact);
+            pstm.setObject(4, customerID);
+
+
+            if (pstm.executeUpdate() > 0) {
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("status", 200);
+                objectBuilder.add("message", "Customer Update Successfully...");
+                objectBuilder.add("data", "");
+                resp.getWriter().print(objectBuilder.build());
+
+            } else {
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("status", 400);
+                objectBuilder.add("message", "Error Occurred While Updating...");
+                objectBuilder.add("data", "");
+                resp.getWriter().print(objectBuilder.build());
+            }
+
+        } catch (ClassNotFoundException e) {
+            responseInfo.add("status", 500);
+            responseInfo.add("message", "Error Occurred While Updating...");
+            responseInfo.add("data", e.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
+
+        } catch (SQLException throwables) {
+            responseInfo.add("status", 500);
+            responseInfo.add("message", "Error Occurred While Updating...");
+            responseInfo.add("data", throwables.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
         }
     }
 }
