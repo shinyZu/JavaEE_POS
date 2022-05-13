@@ -41,6 +41,7 @@ function addCustomer() {
             // alert(resp.message);
             toastr.success(resp.message);
             loadAllCustomers();
+            reset_CustomerForm();
 
         },
         error: function (ob, textStatus, error) {
@@ -194,8 +195,8 @@ function loadAllCustomers() {
                 $("#tblCustomer-body").append(newRow);
             }
 
-            loadCmbCustomerId();
-            loadCmbCustomerName();
+            // loadCmbCustomerId();
+            // loadCmbCustomerName();
             clearCustomerFields();
         },
 
@@ -232,17 +233,36 @@ function searchCustomer(searchValue) {
         success: function (resp) {
             reply = resp;
             let obj = resp.data;
+            // console.log(obj == "null");
+            obj = new Customer(obj.id, obj.name, obj.address ,obj.contact);
+            // console.log(obj.getCustomerID() === "");
+            // console.log(custobj);
+            // console.log(typeof obj);
+            // console.log(obj == {});
+            // console.log(obj == null);
+            // console.log(obj == "");
+            // console.log(Object.keys(obj).length === 0);
+            // console.log(resp.data.length);
+            // console.log(resp.data.length == 0);
+            // console.log(jQuery.isEmptyObject(obj))
 
-            if (obj) {
+            // console.log(resp);
+            // console.log(resp.message);
+            // console.log(resp.data);
+            // console.log(JSON.stringify(obj));
+            console.log(JSON.stringify(resp.data));
+            // console.log(JSON.parse(obj));
+
+            if (JSON.stringify(resp.data) !== "{}") { // if resp.data = '{"id":"C00-005","name":"Ramal","address":"Jaffna","contact":"716455455"}'
                 txtCustomerId.val(obj.getCustomerID());
                 txtCustomerName.val(obj.getCustomerName());
                 txtAddress.val(obj.getCustomerAddress());
-                txtContact.val(obj.getCustomerContact());
+                txtContact.val("0"+obj.getCustomerContact());
 
                 validate_CustomerForm();
                 return true;
 
-            } else {
+            } else { // if resp.data = '{}'
                 swal({
                     title: "Customer " + searchValue + " doesn't exist...",
                     text: "\n",
@@ -395,25 +415,6 @@ $(".btnSaveCustomer").click(function (e) {
     select_CustomerRow();
 
 });
-
-/*$("#btnSaveCustomer").click(function (e) {
-    console.log("inside addCustomer method....");
-
-    $.ajax({
-        url: "customer",
-        method: "POST",
-        data: $("#customerForm").serialize(),
-        success: function (resp) {
-            console.log(resp);
-            alert(resp);
-        },
-        error: function (ob, textStatus, error) {
-            alert(textStatus);
-            console.log(ob);
-        }
-
-    })
-})*/
 
 /* ------------------Update Customer------------*/
 

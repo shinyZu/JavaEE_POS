@@ -38,17 +38,29 @@ public class CustomerServlet extends HttpServlet {
                     pstm.setObject(1, req.getParameter("customerID"));
                     rst = pstm.executeQuery();
 
+//                    System.out.println("ssss:  "+rst.getString(1));
+
+//                    if (rst.next() == false){
+//                        responseInfo = Json.createObjectBuilder();
+//                        responseInfo.add("status", 200);
+//                        responseInfo.add("message", "No Customer");
+//                        responseInfo.add("data", "null");
+//                        resp.getWriter().print(responseInfo.build());
+//                        return;
+//                    }
+
                     while (rst.next()) {
                         customer.add("id", rst.getString(1));
                         customer.add("name", rst.getString(2));
                         customer.add("address", rst.getString(3));
-                        customer.add("salary", rst.getString(4));
+                        customer.add("contact", rst.getString(4));
                     }
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
                     responseInfo.add("message", "Search Done");
                     responseInfo.add("data", customer.build());
                     resp.getWriter().print(responseInfo.build());
+
                     break;
 
                 case "GET_ID_NAME":

@@ -20,7 +20,7 @@ $("#nav-home").click(function () {
 $("#nav-customer").click(function () {
     console.log("inside Customer Tab..");
 
-    $("title").text("Customersssssssss");
+    $("title").text("Customers");
     loadAllCustomers();
 
     /*$.ajax({

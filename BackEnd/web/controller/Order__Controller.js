@@ -126,7 +126,7 @@ function loadCmbCustomerId() {
         method: "GET",
         success: function (resp) {
             for (let c of resp.data) {
-                console.log(resp.data);
+                // console.log(resp.data);
                 let customer = new Customer(c.id);
                 // optionValue++;
                 // newOption = `<option value="${optionValue}">${customer.getCustomerID()}</option>`;
@@ -157,7 +157,7 @@ function loadCmbCustomerName() {
         method: "GET",
         success: function (resp) {
             for (let c of resp.data) {
-                console.log(resp.data);
+                // console.log(resp.data);
                 // let customer = new Customer(c.name);
                 // optionValue++;
                 // newOption = `<option value="${optionValue}">${customer.getCustomerName()}</option>`;
