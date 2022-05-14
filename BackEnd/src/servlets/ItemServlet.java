@@ -22,26 +22,63 @@ public class ItemServlet extends HttpServlet {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
-            ResultSet rst = connection.prepareStatement("SELECT * FROM Item").executeQuery();
+
             resp.setContentType("application/json");
+
+            String option = req.getParameter("option");
+            ResultSet rst;
+            PreparedStatement pstm;
 
             JsonObjectBuilder item = Json.createObjectBuilder();
             JsonArrayBuilder allItems = Json.createArrayBuilder();
 
-            while (rst.next()) {
-                item.add("itemCode",rst.getString(1));
-                item.add("description",rst.getString(2));
-                item.add("unitPrice",rst.getDouble(3));
-                item.add("qtyOnHand",rst.getInt(4));
+            switch (option) {
+                case "SEARCH":
+                    break;
 
-                allItems.add(item.build());
+                case "GET_COUNT":
+                    break;
+
+                case "LAST_CODE":
+                    break;
+
+                case "GET_CODE_DESCRIP":
+                    rst = connection.prepareStatement("SELECT itemCode, description FROM Item").executeQuery();
+                    while (rst.next()) {
+
+                        item.add("itemCode", rst.getString(1));
+                        item.add("description", rst.getString(2));
+
+                        allItems.add(item.build());
+                    }
+                    responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("data", allItems.build());
+                    responseInfo.add("message", "Received Codes & Descriptions");
+                    responseInfo.add("status", 200);
+                    resp.getWriter().print(responseInfo.build());
+
+                    break;
+
+                case "GETALL":
+                    rst = connection.prepareStatement("SELECT * FROM Item").executeQuery();
+                    while (rst.next()) {
+                        item.add("itemCode",rst.getString(1));
+                        item.add("description",rst.getString(2));
+                        item.add("unitPrice",rst.getDouble(3));
+                        item.add("qtyOnHand",rst.getInt(4));
+
+                        allItems.add(item.build());
+                    }
+                    responseInfo = Json.createObjectBuilder();
+                    resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+                    responseInfo.add("status",200);
+                    responseInfo.add("message","Received All Items");
+                    responseInfo.add("data",allItems.build());
+                    resp.getWriter().print(responseInfo.build());
+                    break;
             }
-            responseInfo = Json.createObjectBuilder();
-            resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-            responseInfo.add("status",200);
-            responseInfo.add("message","Received All Items");
-            responseInfo.add("data",allItems.build());
-            resp.getWriter().print(responseInfo.build());
+
+
 
             connection.close();
 

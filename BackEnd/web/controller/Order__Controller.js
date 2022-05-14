@@ -172,28 +172,59 @@ function loadCmbCustomerName() {
 }
 
 function loadCmbItemCode() {
+    console.log("Inside loadCMB ItemCode");
     clearCmbItemCode();
     // clearItemFields();
 
-    let optionValue = -1;
+    /*let optionValue = -1;
     for (let item of itemDB) {
         optionValue++;
         newOption = `<option value="${optionValue}">${item.getItemCode()}</option>`;
         // $(txtUnitPrice2).val(item.price);
         $(cmbItemCode).append(newOption);
-    }
+    }*/
+
+    $.ajax({
+        url: "item?option=GET_CODE_DESCRIP",
+        method: "GET",
+        success: function (resp) {
+            for (let item of resp.data) {
+                newOption = `<option>${item.itemCode}</option>`;
+                $(cmbItemCode).append(newOption);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 function loadCmbDescription() {
+    console.log("Inside loadCMB Description");
     clearCmbDescription();
     // clearItemFields();
 
-    let optionValue = -1;
+    /*let optionValue = -1;
     for (let item of itemDB) {
         optionValue++;
         newOption = `<option value="${optionValue}">${item.getDescription()}</option>`;
         $(cmbDescription).append(newOption);
-    }
+    }*/
+
+    $.ajax({
+        url: "item?option=GET_CODE_DESCRIP",
+        method: "GET",
+        success: function (resp) {
+            for (let item of resp.data) {
+                newOption = `<option>${item.description}</option>`;
+                $(cmbDescription).append(newOption);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
+
 }
 
 /* ---------------------Load Customer Details-------------*/
@@ -259,8 +290,8 @@ $("#cmbDescription").click(function () {
 /* ---------------------Clear Fields & Invoice Table-------------*/
 
 function clearItemFields() {
-    loadCmbItemCode();
-    loadCmbDescription();
+    // loadCmbItemCode();
+    // loadCmbDescription();
     txtUnitPrice2.val("");
     txtQtyOnHand.val("");
     txtOrderQty.val("").css('border', '1px solid rgb(206, 212, 218)');
@@ -270,8 +301,8 @@ function clearItemFields() {
 }
 
 function clearCustomerFields() {
-    loadCmbCustomerId();
-    loadCmbCustomerName();
+    // loadCmbCustomerId();
+    // loadCmbCustomerName();
     txtord_address.val("");
     txtord_contact.val("");
 }

@@ -84,7 +84,7 @@ public class CustomerServlet extends HttpServlet {
                     }
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("data", allCustomers.build());
-                    responseInfo.add("message", "All IDs Done");
+                    responseInfo.add("message", "Received all IDs & Names");
                     responseInfo.add("status", 200);
 
                     resp.getWriter().print(responseInfo.build());

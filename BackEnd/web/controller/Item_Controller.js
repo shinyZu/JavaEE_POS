@@ -186,7 +186,7 @@ function loadAllItems(){
 
     $("#tblItem-body").empty();
     $.ajax({
-        url: "item",
+        url: "item?option=GETALL",
         method: "GET",
         success: function (resp) {
             console.log(resp);
@@ -254,13 +254,13 @@ function searchItem(searchValue) {
     3. delete the selected Item from the table
 */
 
-function isItemAlreadyExist(){
+/*function isItemAlreadyExist(){
     response = itemDB.find(function (obj) {  
         return obj.getItemCode() == txtItemCode.val();
     });
-}
+}*/
 
-function checkDB_BeforeSaveItem () {
+/*function checkDB_BeforeSaveItem () {
 
     nextCode = txtItemCode.val().split("-")[1];
 
@@ -323,7 +323,7 @@ function checkDB_BeforeSaveItem () {
             } 
         });
     }
-}
+}*/
 
 $(".btnSaveItem").click(function () { 
     // isItemAlreadyExist();
@@ -634,8 +634,8 @@ $("#txtQty").keyup(function (e) {
     validate_Qty(input, this);
 
     if (e.code === "Enter" && isBorderGreen(this)){
-        isItemAlreadyExist();
-        checkDB_BeforeSaveItem();
+        // isItemAlreadyExist();
+        // checkDB_BeforeSaveItem();
         select_ItemRow();
         
     }
