@@ -194,7 +194,7 @@ public class CustomerServlet extends HttpServlet {
             if (pstm.executeUpdate() > 0) {
                 JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
                 objectBuilder.add("status", 200);
-                objectBuilder.add("message", "Customer Update Successfully...");
+                objectBuilder.add("message", "Customer Updated Successfully...");
                 objectBuilder.add("data", "");
                 resp.getWriter().print(objectBuilder.build());
 

@@ -79,7 +79,6 @@ $("#nav-home").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").removeClass("active");
 
-    // $("#totalCustomers").text("0" + getCustomerCount());
     getCustomerCount();
 });
 
@@ -122,9 +121,6 @@ $("#nav-store").click(function () {
     $("#nav-orders a").removeClass("active");
 
     $("#txtItemCode").focus();
-
-
-
 });
 
 $("#nav-orders").click(function () {
@@ -164,8 +160,6 @@ $("#nav-orders").click(function () {
 //   "showMethod": "fadeIn",
 //   "hideMethod": "fadeOut"
 // }
-
-
 
 function isBorderGreen(inputField) {
     color = $(inputField).css('border-color');

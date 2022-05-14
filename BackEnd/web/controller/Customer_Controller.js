@@ -13,14 +13,11 @@ let txtSearchId = $("#txtSearchCustomer");
 let nextID;
 let lastId;
 
-
-
 disableButton(".btnSaveCustomer");
 disableButton("#btnEditCustomer");
 disableButton("#btnDeleteCustomer");
 
 console.log("Inside Customer Controller...");
-
 
 /* ---------------Initially Hide the Error Indicators----------*/
 
@@ -29,12 +26,12 @@ $("#customerForm p.errorText").hide();
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
 
 function addCustomer() {
-    customerId = txtCustomerId.val();
-    customerName = txtCustomerName.val();
-    customerAddress = txtAddress.val();
-    customerContact = txtContact.val();
-
-    console.log(customerId,customerName,customerAddress,customerContact);
+    // customerId = txtCustomerId.val();
+    // customerName = txtCustomerName.val();
+    // customerAddress = txtAddress.val();
+    // customerContact = txtContact.val();
+    //
+    // console.log(customerId,customerName,customerAddress,customerContact);
     txtCustomerId.removeAttr("disabled");
 
     $.ajax({
@@ -260,7 +257,7 @@ function loadAllCustomers() {
 
 function searchCustomer(searchValue) {
     console.log("inside search Customer");
-    console.log("searchValue : " + searchValue);
+    // console.log("searchValue : " + searchValue);
 
     $.ajax({
         url: "customer?option=SEARCH&customerID=" + searchValue,
@@ -269,7 +266,7 @@ function searchCustomer(searchValue) {
             response = resp;
             let obj = resp.data;
             obj = new Customer(obj.id, obj.name, obj.address ,obj.contact);
-            console.log(JSON.stringify(resp.data));
+            // console.log(JSON.stringify(resp.data));
 
             if (JSON.stringify(resp.data) !== "{}") { // if resp.data = '{"id":"C00-005","name":"Ramal","address":"Jaffna","contact":"716455455"}'
                 txtCustomerId.val(obj.getCustomerID());
@@ -293,7 +290,6 @@ function searchCustomer(searchValue) {
                 reset_CustomerForm();
                 return false;
             }
-
         },
 
         error: function (ob, textStatus, error) {
@@ -389,10 +385,6 @@ function searchCustomer(searchValue) {
 $(".btnSaveCustomer").click(function (e) {
     // isCustomerAlreadyExist();
     // checkDB_BeforeSaveCustomer();
-    // select_CustomerRow();
-
-    // $("#tblCustomer-body>tr").off("dblclick");
-    // delete_CustomerRowOnDblClick();
 
     Swal.fire({
         text: "Are you sure you want to Save this Customer..?",
@@ -410,17 +402,14 @@ $(".btnSaveCustomer").click(function (e) {
         // stopKeydownPropagation: false,
         returnFocus: false,
 
-
     }).then(result => {
         if (result.isConfirmed) {
             console.log("Save Button clicked....")
             addCustomer();
             reset_CustomerForm();
 
-            // select_CustomerRow();
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
-
         }
         // return;
     });
@@ -460,19 +449,6 @@ $("#btnEditCustomer").click(function (e) {
 /* ------------------Search Customer------------*/
 
 $("#txtSearchCustomer").keyup(function (e) {
-    // e.preventDefault();
-    // if(e.key == "Enter") {
-    //     $("#txtSearchCustomer").off("click");
-    //     searchValue = txtSearchId.val();
-    //     // searchCustomer(txtSearchId.val());
-
-    //     if (!searchCustomer(searchValue)) {
-    //         alert("Customer "+ searchValue + " doesn't exist on ENTER...");
-    //         reset_CustomerForm();
-    //         $(txtSearchId).focus();
-    //     }
-    // }
-
     searchValue = $(this).val();
 
     $("#btnSearchCustomer").off("click");
@@ -677,8 +653,8 @@ function reset_CustomerForm() {
 
     $("#customerForm p.errorText").hide();
 
-    txtCustomerId.focus();
     txtCustomerId.attr("disabled", "disabled");
+    txtCustomerName.focus();
 
     disableButton(".btnSaveCustomer");
     disableButton("#btnEditCustomer");
