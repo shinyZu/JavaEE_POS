@@ -242,7 +242,7 @@ function loadAllItems(){
 
                 $("#tblItem-body").append(newRow);
             }
-            clearItemFields();
+            // clearItemFields();
             select_ItemRow();
         },
 

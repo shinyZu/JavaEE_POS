@@ -244,7 +244,7 @@ function loadAllCustomers() {
 
                 $("#tblCustomer-body").append(newRow);
             }
-            clearCustomerFields();
+            // clearCustomerFields();
             select_CustomerRow();
         },
 

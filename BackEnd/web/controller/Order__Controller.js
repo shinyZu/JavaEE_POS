@@ -290,6 +290,7 @@ $("#cmbDescription").click(function () {
 /* ---------------------Clear Fields & Invoice Table-------------*/
 
 function clearItemFields() {
+    console.log("inside clear item fields...")
     // loadCmbItemCode();
     // loadCmbDescription();
     txtUnitPrice2.val("");
@@ -301,6 +302,7 @@ function clearItemFields() {
 }
 
 function clearCustomerFields() {
+    console.log("inside clear customer fields...")
     // loadCmbCustomerId();
     // loadCmbCustomerName();
     txtord_address.val("");
