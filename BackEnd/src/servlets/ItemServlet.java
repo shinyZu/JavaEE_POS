@@ -54,6 +54,15 @@ public class ItemServlet extends HttpServlet {
                     break;
 
                 case "GET_COUNT":
+                    rst = connection.prepareStatement("SELECT COUNT(itemCode) FROM Item").executeQuery();
+
+                    if (rst.next()) {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Items Counted");
+                        responseInfo.add("data", rst.getString(1));
+                    }
+                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "LAST_CODE":

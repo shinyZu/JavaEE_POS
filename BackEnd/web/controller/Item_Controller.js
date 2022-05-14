@@ -48,7 +48,7 @@ function addItem(){
                 console.log(resp);
                 toastr.success(resp.message);
                 loadAllItems();
-                // getItemCount();
+                getItemCount();
                 // generateNextItemCode();
                 reset_ItemForm();
 

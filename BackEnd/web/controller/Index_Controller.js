@@ -16,6 +16,7 @@ let alertTitle;
 let alertIcon;
 
 getCustomerCount();
+getItemCount();
 
 function getCustomerCount() {
     $.ajax({
@@ -25,7 +26,19 @@ function getCustomerCount() {
             $("#totalCustomers").text("0" + resp.data);
         },
         error: function (ob, textStatus, error) {
-            alert(textStatus);
+            console.log(ob);
+        }
+    });
+}
+
+function getItemCount() {
+    $.ajax({
+        url:"item?option=GET_COUNT",
+        method:"GET",
+        success:function (resp) {
+            $("#totalItems").text("0" + resp.data);
+        },
+        error: function (ob, textStatus, error) {
             console.log(ob);
         }
     });
@@ -80,6 +93,7 @@ $("#nav-home").click(function () {
     $("#nav-orders a").removeClass("active");
 
     getCustomerCount();
+    getItemCount();
 });
 
 $("#nav-customer").click(function () {
