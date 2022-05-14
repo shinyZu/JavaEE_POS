@@ -183,8 +183,8 @@ function loadAllItems(){
     clearItemFields();*/
 
     console.log("inside loadAllItems");
-
     $("#tblItem-body").empty();
+    
     $.ajax({
         url: "item?option=GETALL",
         method: "GET",
@@ -214,7 +214,7 @@ function loadAllItems(){
 }
 
 function searchItem(searchValue) { 
-    let obj;
+    /*let obj;
     for (let i = 0; i < itemDB.length; i++) {
         if (itemDB[i].getItemCode() == searchValue) {
             obj = itemDB[i];
@@ -243,7 +243,46 @@ function searchItem(searchValue) {
         $(txtSearchItem).focus();
 
         return false;
-    }
+    }*/
+
+    $.ajax({
+        url: "item?option=SEARCH&itemCode=" + searchValue,
+        method: "GET",
+        success: function (resp) {
+            response = resp;
+            let obj = resp.data;
+            obj = new Item(obj.itemCode, obj.description, obj.unitPrice ,obj.qtyOnHand);
+            console.log(JSON.stringify(resp.data));
+            console.log(resp.data)
+
+            if (JSON.stringify(resp.data) !== "{}") { // {"itemCode":"I00-002","description":"Red Rice","unitPrice":150,"qtyOnHand":20}
+                txtItemCode.val(obj.getItemCode());
+                txtDescription.val(obj.getDescription());
+                txtUnitPrice.val(obj.getUnitPrice());
+                txtQty.val(obj.getQtyOnHand());
+
+                validate_ItemForm();
+                // return true;
+
+            } else { // if resp.data = '{}'
+                swal({
+                    title: "Item "+ searchValue + " doesn't exist...",
+                    text:"\n",
+                    icon: 'warning',
+                    buttons: false,
+                    timer: 2000,
+                    closeModal: true,
+                })
+                reset_ItemForm();
+                // $(txtSearchItem).focus();
+                return false;
+            }
+        },
+
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 /* ------------------Save Item------------*/

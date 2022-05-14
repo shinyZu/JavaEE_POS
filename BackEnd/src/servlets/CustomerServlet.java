@@ -43,7 +43,7 @@ public class CustomerServlet extends HttpServlet {
                     }
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
-                    responseInfo.add("message", "Search Done");
+                    responseInfo.add("message", "Customer Search Done");
                     responseInfo.add("data", customer.build());
                     resp.getWriter().print(responseInfo.build());
 
