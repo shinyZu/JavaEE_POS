@@ -121,6 +121,8 @@ $("#nav-store").click(function () {
     $("#nav-orders a").removeClass("active");
 
     $("#txtItemCode").focus();
+
+    loadAllItems();
 });
 
 $("#nav-orders").click(function () {
@@ -140,6 +142,9 @@ $("#nav-orders").click(function () {
     // setComboBoxes();
     loadCmbCustomerId();
     loadCmbCustomerName();
+
+    loadCmbItemCode();
+    loadCmbDescription();
 
 });
 

@@ -26,10 +26,10 @@ $("#itemForm p.errorText").hide();
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
 
 function addItem(){
-    itemCode = txtItemCode.val();
+    /*itemCode = txtItemCode.val();
     description = txtDescription.val();
     unitPrice = parseFloat(txtUnitPrice.val()).toFixed(2);
-    qty = txtQty.val();  
+    qty = txtQty.val();
 
     let itemObject = new Item(itemCode,description,unitPrice,qty);
     itemDB.push(itemObject);
@@ -37,8 +37,29 @@ function addItem(){
     $("#totalItems").text("0"+itemDB.length);
 
     loadAllItems(itemDB);
-    toastr.success("Item Saved Successfully...");
+    toastr.success("Item Saved Successfully...");*/
 
+    $.ajax({
+        url : "item",
+        method : "POST",
+        data: $("#itemForm").serialize(),
+        success : function (resp) {
+            if (resp.status == 200) {
+                console.log(resp);
+                toastr.success(resp.message);
+                loadAllItems();
+                // getItemCount();
+                // generateNextItemCode();
+                reset_ItemForm();
+
+            } else {
+                toastr.error(resp.data);
+            }
+        },
+        error: function (ob,textStatus,error) {
+            console.log(ob);
+        }
+    });
 }
 
 function updateItem(){
@@ -142,8 +163,8 @@ function deleteItem(row){
     clearItemFields();
 }
 
-function loadAllItems(itemDB){
-    $("#tblItem-body").empty();
+function loadAllItems(){
+    /*$("#tblItem-body").empty();
 
     for (let i in itemDB) {
 
@@ -159,7 +180,37 @@ function loadAllItems(itemDB){
 
     loadCmbItemCode();
     loadCmbDescription();
-    clearItemFields();
+    clearItemFields();*/
+
+    console.log("inside loadAllItems");
+
+    $("#tblItem-body").empty();
+    $.ajax({
+        url: "item",
+        method: "GET",
+        success: function (resp) {
+            console.log(resp);
+
+            for (let i of resp.data) {
+                let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+
+                newRow = `<tr>
+                    <td>${item.getItemCode()}</td>
+                    <td>${item.getDescription()}</td>
+                    <td>${item.getUnitPrice()}</td>
+                    <td>${item.getQtyOnHand()}</td>
+                </tr>`;
+
+                $("#tblItem-body").append(newRow);
+            }
+            clearItemFields();
+            select_ItemRow();
+        },
+
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 function searchItem(searchValue) { 
@@ -275,12 +326,32 @@ function checkDB_BeforeSaveItem () {
 }
 
 $(".btnSaveItem").click(function () { 
-    isItemAlreadyExist();
-    checkDB_BeforeSaveItem();
-    select_ItemRow();
+    // isItemAlreadyExist();
+    // checkDB_BeforeSaveItem();
+    // select_ItemRow();
 
-    $("#tblItem-body>tr").off("dblclick");
-    delete_ItemRowOnDblClick();
+    Swal.fire({
+        text: "Are you sure you want to Save this Item..?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        confirmButtonColor: '#1abc9c',
+        customClass: {
+            cancelButton: 'order-1 right-gap',
+            confirmButton: 'order-2',
+        },
+        allowOutsideClick: false,
+        returnFocus: false,
+
+    }).then(result => {
+        if (result.isConfirmed) {
+            addItem();
+            reset_ItemForm();
+
+            $("#tblItem-body>tr").off("dblclick");
+            delete_ItemRowOnDblClick();
+        }
+    });
 });
 
 /* ------------------Update Item------------*/
@@ -578,7 +649,7 @@ $("#txtQty").keyup(function (e) {
 $("#btnClearItemFields").click(function () { 
     reset_ItemForm();
     $(txtSearchItem).val("");
-    loadAllItems(itemDB);
+    loadAllItems();
     select_ItemRow();
 });
 
