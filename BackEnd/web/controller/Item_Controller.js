@@ -127,17 +127,17 @@ function updateItem(){
 function deleteItem(row){
     itemCode = $(row).children(':nth-child(1)').text();
 
-    for (let i in orderDetailDB) {
+//TODO
+    /*for (let i in orderDetailDB) {
         if (orderDetailDB[i].getItemCode() == itemCode) {
             alertTitle = "You cannot delete this Item"
             alertText = "This Item has already been ordered\nYou may loose data...";
             display_Alert(alertTitle, alertText, "warning");
             return;
         }
-    }  
-    
-    swal({
+    } */
 
+    swal({
         title: 'Are you sure you want to delete this Item..?',
         text: "You won't be able to revert this!",
         icon: 'warning',
@@ -149,7 +149,46 @@ function deleteItem(row){
 
         if (result) {
 
-            swal({
+            $.ajax({
+                url: "item?itemCode=" + itemCode,
+                method: "DELETE",
+                success: function (resp) {
+                    console.log(resp);
+                    if (resp.status == 200) {
+                        // alert(resp.message);
+                        swal({
+                            title: 'Deleted!',
+                            text: "Customer  " + itemCode + "  Deleted.",
+                            icon: 'success',
+                            buttons: ["OK"],
+                            timer: 2000,
+                            closeModal: true,
+                        });
+
+                        loadAllItems();
+                        getItemCount();
+                        reset_ItemForm();
+
+                        // generateNextItemCode();
+                        // generateNextOrderID();
+
+                        // select_OrderDetailRow();
+                        // clearInvoiceFields();
+                        // clearInvoiceTable();
+
+                    } else if (resp.status == 400) {
+                        toastr.error(resp.message);
+                    } else {
+                        toastr.error(resp.message);
+                    }
+
+                },
+                error: function (ob, status, t) {
+                    console.log(ob);
+                }
+            });
+
+           /* swal({
 
                 title: 'Deleted!',
                 text: "Item  "+itemCode+ "  Deleted.",
@@ -166,7 +205,7 @@ function deleteItem(row){
             }  
             $(row).remove();
             reset_ItemForm();
-            $("#totalItems").text("0"+itemDB.length);
+            $("#totalItems").text("0"+itemDB.length);*/
 
             // for (let i in orderDetailDB) {
             //     if (orderDetailDB[i].getItemCode() == itemCode) {

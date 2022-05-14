@@ -250,7 +250,7 @@ public class CustomerServlet extends HttpServlet {
         } catch (ClassNotFoundException | SQLException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
-            responseInfo.add("message", "Error Occurred While Updating...");
+            responseInfo.add("message", "Error Occurred While Deleting...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
             e.printStackTrace();

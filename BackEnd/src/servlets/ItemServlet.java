@@ -210,4 +210,42 @@ public class ItemServlet extends HttpServlet {
 
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Item's DELETE invoked...");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            resp.setContentType("application/json");
+
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE itemCode = ?");
+            pstm.setObject(1,req.getParameter("itemCode"));
+
+            if (pstm.executeUpdate() > 0) {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("data", "");
+                responseInfo.add("message", "Item Deleted Successfully...");
+                responseInfo.add("status", 200);
+                resp.getWriter().print(responseInfo.build());
+
+            } else {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("data", "");
+                responseInfo.add("message", "Invalid Item Code...");
+                responseInfo.add("status", 200);
+                resp.getWriter().print(responseInfo.build());
+            }
+            connection.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            responseInfo = Json.createObjectBuilder();
+            responseInfo.add("status", 500);
+            responseInfo.add("message", "Error Occurred While Deleting...");
+            responseInfo.add("data", e.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
+            e.printStackTrace();
+        }
+    }
 }
