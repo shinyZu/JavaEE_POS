@@ -54,3 +54,4 @@ DESCRIBE OrderDetails;
 
 FROM Student s WHERE s.studentId LIKE '%"+text+"%' OR s.studentName LIKE '%" + text + "%' OR s.address LIKE '%" + text + "%';
 SELECT COUNT(customerId) FROM Customer;
+SELECT s.studentId FROM Student s ORDER BY s.studentId DESC LIMIT 1;

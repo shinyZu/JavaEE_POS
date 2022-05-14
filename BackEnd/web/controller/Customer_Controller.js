@@ -28,8 +28,6 @@ $("#customerForm p.errorText").hide();
 
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
 
-
-
 function addCustomer() {
     customerId = txtCustomerId.val();
     customerName = txtCustomerName.val();
@@ -59,32 +57,7 @@ function addCustomer() {
 }
 
 function updateCustomer() {
-    // let obj;
-
-    // customerId = txtCustomerId.val();
-    // customerName = txtCustomerName.val();
-    // customerAddress = txtAddress.val();
-    // customerContact = txtContact.val();
-
-   /* for (let i in customerDB) {
-        if (customerDB[i].getCustomerID() == customerId) {
-
-            obj = customerDB[i];
-
-            obj.setCustomerID(customerId);
-            obj.setCustomerName(customerName);
-            obj.setCustomerAddress(customerAddress);
-            obj.setCustomerContact(customerContact);
-        }
-    }
-
-    loadCmbCustomerId();
-    loadCmbCustomerName();
-    clearCustomerFields();
-    load_TblCustomerOrder();
-    select_OrderDetailRow();*/
-
-    var custObj = {
+    let custObj = {
         id: txtCustomerId.val(),
         name: txtCustomerName.val(),
         address: txtAddress.val(),
@@ -134,7 +107,50 @@ function deleteCustomer(row) {
     }).then(result => {
 
         if (result) {
-            swal({
+
+            $.ajax({
+                url: "customer?customerID=" + customerId,
+                method: "DELETE",
+                success: function (resp) {
+                    // console.log(resp);
+                    if (resp.status == 200) {
+                        // alert(resp.message);
+                        swal({
+                            title: 'Deleted!',
+                            text: "Customer  " + customerId + "  Deleted.",
+                            icon: 'success',
+                            buttons: ["OK"],
+                            timer: 2000,
+                            closeModal: true,
+                        });
+
+                        loadAllCustomers();
+                        getCustomerCount();
+
+                        $("#tblOrders-body").empty();
+                        load_TblCustomerOrder();
+                        $("#totalOrders").text("0" + ordersDB.length);
+
+                        generateNextOrderID();
+                        reset_CustomerForm();
+
+                        select_OrderDetailRow();
+                        clearInvoiceFields();
+                        clearInvoiceTable();
+
+                    } else if (resp.status == 400) {
+                        toastr.error(resp.message);
+                    } else {
+                        toastr.error(resp.message);
+                    }
+
+                },
+                error: function (ob, status, t) {
+                    console.log(ob);
+                }
+            });
+
+            /*swal({
                 title: 'Deleted!',
                 text: "Customer  " + customerId + "  Deleted.",
                 icon: 'success',
@@ -159,7 +175,7 @@ function deleteCustomer(row) {
                     i--;
                 }
 
-            }
+            }*/
 
             // for (let i in ordersDB) {
             //     if (customerId == ordersDB[i].getCustomerID()) {
@@ -169,7 +185,7 @@ function deleteCustomer(row) {
             //     }
             // }  
 
-            $("#tblOrders-body").empty();
+            /*$("#tblOrders-body").empty();
             load_TblCustomerOrder();
             $("#totalOrders").text("0" + ordersDB.length);
 
@@ -178,7 +194,7 @@ function deleteCustomer(row) {
 
             select_OrderDetailRow();
             clearInvoiceFields();
-            clearInvoiceTable();
+            clearInvoiceTable();*/
         }
     })
 
@@ -291,8 +307,6 @@ function searchCustomer(searchValue) {
     });
 }*/
 
-
-
 /*function checkDB_BeforeSaveCustomer() {
 
     nextID = txtCustomerId.val().split("-")[1];
@@ -375,6 +389,8 @@ $(".btnSaveCustomer").click(function (e) {
     addCustomer();
     select_CustomerRow();
 
+    $("#tblCustomer-body>tr").off("dblclick");
+    delete_CustomerRowOnDblClick();
 });
 
 /* ------------------Update Customer------------*/

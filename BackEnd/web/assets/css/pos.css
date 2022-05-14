@@ -254,6 +254,11 @@ select:disabled {
   font-weight: 700;
 }
 
+#txtCustomerId{
+  color: #099277;
+  font-weight: 700;
+}
+
 #txtTotal[placeholder],
 label[for="txtTotal"] {
   color: #3498db;

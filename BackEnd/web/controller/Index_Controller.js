@@ -15,6 +15,7 @@ let alertText;
 let alertTitle;
 let alertIcon;
 
+getCustomerCount();
 
 function getCustomerCount() {
     $.ajax({
@@ -30,7 +31,39 @@ function getCustomerCount() {
     });
 }
 
-getCustomerCount();
+/*function generateNextCustomerID() {
+    $.ajax({
+        url:"customer?option=LAST_ID",
+        method:"GET",
+        success:function (resp) {
+            let lastCustId = resp.data;
+            console.log(lastCustId);
+
+            let nextCustId = ++lastCustId.split("-")[1];
+            console.log(nextCustId);
+
+            if (nextCustId < 9) {
+                nextCustId = "C00-00" + nextCustId;
+                txtCustomerId.val(nextCustId);
+                return nextCustId;
+
+            } else if (nextCustId > 9) {
+                nextCustId = "C00-0" + nextCustId;
+                txtCustomerId.val(nextCustId);
+                return nextCustId;
+
+            } else if (nextCustId < 100) {
+                nextCustId = "C00-" + nextCustId;
+                txtCustomerId.val(nextCustId);
+                return nextCustId;
+            }
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
+}*/
 
 $("#nav-home").click(function () {
     console.log("inside Home Tab..");
@@ -55,7 +88,6 @@ $("#nav-customer").click(function () {
     console.log("inside Customer Tab..");
 
     $("title").text("Customers");
-    loadAllCustomers();
 
     $("#home-main").css('display', 'none');
     $("#customer-main").css('display', 'block');
@@ -67,7 +99,12 @@ $("#nav-customer").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").removeClass("active");
 
+    // txtCustomerId.attr("disabled", "disabled");
+    // $("#txtCustomerName").focus();
     $("#txtCustomerId").focus();
+
+    loadAllCustomers();
+    // generateNextCustomerID();
 
 });
 

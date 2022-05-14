@@ -61,6 +61,18 @@ public class CustomerServlet extends HttpServlet {
                     resp.getWriter().print(responseInfo.build());
                     break;
 
+                case "LAST_ID":
+                    rst = connection.prepareStatement("SELECT customerId FROM Customer ORDER BY customerId DESC LIMIT 1").executeQuery();
+
+                    if (rst.next()) {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Retrieved Last CustomerId...");
+                        responseInfo.add("data", rst.getString(1));
+                    }
+                    resp.getWriter().print(responseInfo.build());
+                    break;
+
                 case "GET_ID_NAME":
                     rst = connection.prepareStatement("SELECT customerId, customerName FROM Customer").executeQuery();
                     while (rst.next()) {
@@ -200,17 +212,49 @@ public class CustomerServlet extends HttpServlet {
                 resp.getWriter().print(objectBuilder.build());
             }
 
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
 
-        } catch (SQLException throwables) {
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("DELETE method invoked......");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            resp.setContentType("application/json");
+
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId = ?");
+            pstm.setObject(1,req.getParameter("customerID"));
+
+            if (pstm.executeUpdate() > 0) {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("data", "");
+                responseInfo.add("message", "Customer Deleted Successfully...");
+                responseInfo.add("status", 200);
+                resp.getWriter().print(responseInfo.build());
+
+            } else {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("data", "");
+                responseInfo.add("message", "Invalid Customer ID...");
+                responseInfo.add("status", 200);
+                resp.getWriter().print(responseInfo.build());
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
-            responseInfo.add("data", throwables.getLocalizedMessage());
+            responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
+            e.printStackTrace();
+
         }
     }
 }
