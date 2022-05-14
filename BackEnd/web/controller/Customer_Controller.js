@@ -34,6 +34,9 @@ function addCustomer() {
     customerAddress = txtAddress.val();
     customerContact = txtContact.val();
 
+    console.log(customerId,customerName,customerAddress,customerContact);
+    txtCustomerId.removeAttr("disabled");
+
     $.ajax({
         url: "customer",
         method: "POST",
@@ -44,6 +47,7 @@ function addCustomer() {
                 toastr.success(resp.message);
                 loadAllCustomers();
                 getCustomerCount();
+                generateNextCustomerID();
                 reset_CustomerForm();
 
             } else {
@@ -73,9 +77,13 @@ function updateCustomer() {
             if (resp.status == 200) {
                 console.log(resp.message);
                 toastr.success(resp.message);
+
                 loadAllCustomers();
+                generateNextCustomerID();
+
                 loadCmbCustomerId();
                 loadCmbCustomerName();
+
                 clearCustomerFields();
                 load_TblCustomerOrder();
                 select_OrderDetailRow();
@@ -131,6 +139,7 @@ function deleteCustomer(row) {
                         load_TblCustomerOrder();
                         $("#totalOrders").text("0" + ordersDB.length);
 
+                        generateNextCustomerID();
                         generateNextOrderID();
                         reset_CustomerForm();
 
@@ -233,7 +242,7 @@ function loadAllCustomers() {
                     <td>${customer.getCustomerID()}</td>
                     <td>${customer.getCustomerName()}</td>
                     <td>${customer.getCustomerAddress()}</td>
-                    <td>${customer.getCustomerContact()}</td>
+                    <td>0${customer.getCustomerContact()}</td>
                 </tr>`;
 
                 $("#tblCustomer-body").append(newRow);
@@ -385,12 +394,36 @@ $(".btnSaveCustomer").click(function (e) {
     // $("#tblCustomer-body>tr").off("dblclick");
     // delete_CustomerRowOnDblClick();
 
-    console.log("Save Button clicked....")
-    addCustomer();
-    select_CustomerRow();
+    Swal.fire({
+        text: "Are you sure you want to Save this Customer..?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        confirmButtonColor: '#1abc9c',
+        customClass: {
+            cancelButton: 'order-1 right-gap',
+            confirmButton: 'order-2',
+        },
+        allowOutsideClick: false,
+        // allowEnterKey: false,
+        // keydownListenerCapture: false,
+        // stopKeydownPropagation: false,
+        returnFocus: false,
 
-    $("#tblCustomer-body>tr").off("dblclick");
-    delete_CustomerRowOnDblClick();
+
+    }).then(result => {
+        if (result.isConfirmed) {
+            console.log("Save Button clicked....")
+            addCustomer();
+            reset_CustomerForm();
+
+            // select_CustomerRow();
+            $("#tblCustomer-body>tr").off("dblclick");
+            delete_CustomerRowOnDblClick();
+
+        }
+        // return;
+    });
 });
 
 /* ------------------Update Customer------------*/
@@ -417,7 +450,7 @@ $("#btnEditCustomer").click(function (e) {
             // loadAllCustomers(customerDB);
             reset_CustomerForm();
 
-            select_CustomerRow();
+            // select_CustomerRow();
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
         }
@@ -645,6 +678,8 @@ function reset_CustomerForm() {
     $("#customerForm p.errorText").hide();
 
     txtCustomerId.focus();
+    txtCustomerId.attr("disabled", "disabled");
+
     disableButton(".btnSaveCustomer");
     disableButton("#btnEditCustomer");
     disableButton("#btnDeleteCustomer");
@@ -725,8 +760,10 @@ $("#txtContact").keyup(function (e) {
 
 $("#btnClearCustomerFields").click(function () {
     reset_CustomerForm();
+    generateNextCustomerID();
+    loadAllCustomers();
+
     txtSearchId.val("");
-    // loadAllCustomers(customerDB);
     select_CustomerRow();
 });
 

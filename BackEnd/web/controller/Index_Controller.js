@@ -31,7 +31,7 @@ function getCustomerCount() {
     });
 }
 
-/*function generateNextCustomerID() {
+function generateNextCustomerID() {
     $.ajax({
         url:"customer?option=LAST_ID",
         method:"GET",
@@ -59,11 +59,10 @@ function getCustomerCount() {
             }
         },
         error: function (ob, textStatus, error) {
-            alert(textStatus);
             console.log(ob);
         }
     });
-}*/
+}
 
 $("#nav-home").click(function () {
     console.log("inside Home Tab..");
@@ -99,12 +98,12 @@ $("#nav-customer").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").removeClass("active");
 
-    // txtCustomerId.attr("disabled", "disabled");
-    // $("#txtCustomerName").focus();
-    $("#txtCustomerId").focus();
+    txtCustomerId.attr("disabled", "disabled");
+    $("#txtCustomerName").focus();
+    // $("#txtCustomerId").focus();
 
     loadAllCustomers();
-    // generateNextCustomerID();
+    generateNextCustomerID();
 
 });
 

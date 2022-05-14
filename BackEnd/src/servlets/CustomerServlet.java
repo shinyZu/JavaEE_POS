@@ -115,11 +115,10 @@ public class CustomerServlet extends HttpServlet {
                     break;
 
             }
+            connection.close();
 
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -157,20 +156,15 @@ public class CustomerServlet extends HttpServlet {
 
                 resp.getWriter().print(responseInfo.build());
             }
+            connection.close();
 
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException throwables) {
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", throwables.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
             throwables.printStackTrace();
 
-        } catch (ClassNotFoundException e) {
-            responseInfo.add("status", 400);
-            responseInfo.add("message", "Something Went Wrong...");
-            responseInfo.add("data", e.getLocalizedMessage());
-            resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();
         }
     }
 
@@ -212,6 +206,8 @@ public class CustomerServlet extends HttpServlet {
                 resp.getWriter().print(objectBuilder.build());
             }
 
+            connection.close();
+
         } catch (ClassNotFoundException | SQLException e) {
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
@@ -247,6 +243,7 @@ public class CustomerServlet extends HttpServlet {
                 responseInfo.add("status", 200);
                 resp.getWriter().print(responseInfo.build());
             }
+            connection.close();
 
         } catch (ClassNotFoundException | SQLException e) {
             responseInfo.add("status", 500);
