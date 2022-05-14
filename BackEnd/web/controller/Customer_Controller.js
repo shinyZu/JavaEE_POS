@@ -78,8 +78,8 @@ function updateCustomer() {
                 loadAllCustomers();
                 generateNextCustomerID();
 
-                loadCmbCustomerId();
-                loadCmbCustomerName();
+                // loadCmbCustomerId();
+                // loadCmbCustomerName();
 
                 clearCustomerFields();
                 load_TblCustomerOrder();

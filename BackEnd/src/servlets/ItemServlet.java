@@ -1,8 +1,6 @@
 package servlets;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -161,6 +159,55 @@ public class ItemServlet extends HttpServlet {
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Item's PUT invoked...");
+
+        JsonReader reader = Json.createReader(req.getReader());
+        JsonObject jsonObject = reader.readObject();
+        String itemCode = jsonObject.getString("itemCode");
+        String description = jsonObject.getString("description");
+        String unitPrice = jsonObject.getString("unitPrice");
+        String qtyOnHand = jsonObject.getString("qty");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
+                    "shiny1234");
+
+            resp.setContentType("application/json");
+
+            PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE itemCode=?");
+            pstm.setObject(1, description);
+            pstm.setObject(2, String.format("%.2f", new Double(unitPrice)));
+            pstm.setObject(3, qtyOnHand);
+            pstm.setObject(4, itemCode);
+
+            if (pstm.executeUpdate() > 0) {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 200);
+                responseInfo.add("message", "Item Updated Successfully...");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
+
+            } else {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 400);
+                responseInfo.add("message", "Error Occurred While Updating...");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            responseInfo = Json.createObjectBuilder();
+            responseInfo.add("status", 500);
+            responseInfo.add("message", "Error Occurred While Updating...");
+            responseInfo.add("data", e.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
+
         }
     }
 }

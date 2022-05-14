@@ -63,7 +63,7 @@ function addItem(){
 }
 
 function updateItem(){
-    let obj;
+    /*let obj;
 
     itemCode = txtItemCode.val();
     description = txtDescription.val();
@@ -82,7 +82,46 @@ function updateItem(){
     }
     loadCmbItemCode();
     loadCmbDescription();
-    clearItemFields();
+    clearItemFields();*/
+
+    let itemObj = {
+        itemCode: txtItemCode.val(),
+        description: txtDescription.val(),
+        unitPrice: txtUnitPrice.val(),
+        qty: txtQty.val()
+    }
+
+    $.ajax({
+        url: "item",
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(itemObj),
+        success: function (resp) {
+            if (resp.status == 200) {
+                response = resp;
+                console.log(resp.message);
+                toastr.success(resp.message);
+
+                loadAllItems();
+                // generateNextItemCode();
+
+                // loadCmbCustomerId();
+                // loadCmbCustomerName();
+
+                clearItemFields();
+                // load_TblCustomerOrder();
+                // select_OrderDetailRow();
+
+            } else if (resp.status == 400) {
+                toastr.error(resp.message);
+            } else {
+                toastr.error(resp.message);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 function deleteItem(row){
@@ -414,10 +453,10 @@ $("#btnEditItem").click(function (e) {
     }).then(result => {
         if (result.isConfirmed) {
             updateItem();
-            loadAllItems(itemDB);
+            // loadAllItems(itemDB);
             reset_ItemForm();
 
-            select_ItemRow();
+            // select_ItemRow();
             $("#tblItem-body>tr").off("dblclick");
             delete_ItemRowOnDblClick();
         }

@@ -159,6 +159,7 @@ public class CustomerServlet extends HttpServlet {
             connection.close();
 
         } catch (SQLException | ClassNotFoundException throwables) {
+            responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", throwables.getLocalizedMessage());
@@ -177,14 +178,14 @@ public class CustomerServlet extends HttpServlet {
         String customerAddress = jsonObject.getString("address");
         String customerContact = jsonObject.getString("contact");
 
-        resp.setContentType("application/json");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
                     "shiny1234");
 
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? where customerId=?");
+            resp.setContentType("application/json");
+
+            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? WHERE customerId=?");
             pstm.setObject(1, customerName);
             pstm.setObject(2, customerAddress);
             pstm.setObject(3, customerContact);
@@ -192,23 +193,24 @@ public class CustomerServlet extends HttpServlet {
 
 
             if (pstm.executeUpdate() > 0) {
-                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-                objectBuilder.add("status", 200);
-                objectBuilder.add("message", "Customer Updated Successfully...");
-                objectBuilder.add("data", "");
-                resp.getWriter().print(objectBuilder.build());
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 200);
+                responseInfo.add("message", "Customer Updated Successfully...");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
 
             } else {
-                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-                objectBuilder.add("status", 400);
-                objectBuilder.add("message", "Error Occurred While Updating...");
-                objectBuilder.add("data", "");
-                resp.getWriter().print(objectBuilder.build());
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 400);
+                responseInfo.add("message", "Error Occurred While Updating...");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
             }
 
             connection.close();
 
         } catch (ClassNotFoundException | SQLException e) {
+            responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
             responseInfo.add("data", e.getLocalizedMessage());
@@ -246,6 +248,7 @@ public class CustomerServlet extends HttpServlet {
             connection.close();
 
         } catch (ClassNotFoundException | SQLException e) {
+            responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
             responseInfo.add("data", e.getLocalizedMessage());
