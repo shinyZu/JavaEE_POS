@@ -210,7 +210,7 @@ function loadCustomerDetails(customer) {
     cmbCustomerId.val(customer.getCustomerID());
     cmbCustomerName.val(customer.getCustomerName());
     txtord_address.val(customer.getCustomerAddress());
-    txtord_contact.val(0+customer.getCustomerContact());
+    txtord_contact.val(0 + customer.getCustomerContact());
 }
 
 $("#cmbCustomerId").click(function () {
@@ -231,9 +231,6 @@ $("#cmbCustomerId").click(function () {
             }
         });
     }
-    // else {
-    //     loadCmbCustomerId();
-    // }
 });
 
 $("#cmbCustomerName").click(function () {
@@ -254,15 +251,12 @@ $("#cmbCustomerName").click(function () {
             }
         });
     }
-    // else {
-    //     loadCmbCustomerName();
-    // }
 });
 
 /* ---------------------Load Item Details-------------*/
 
-function loadItemDetails(itemObj) {
-    cmbItemCode.val(itemDB.indexOf(itemObj));
+function loadItemDetails(item) {
+    /*cmbItemCode.val(itemDB.indexOf(itemObj));
     cmbDescription.val(itemDB.indexOf(itemObj));
 
     qtyOnHand = parseInt(itemObj.getQtyOnHand());
@@ -277,22 +271,66 @@ function loadItemDetails(itemObj) {
         txtQtyOnHand.val(qtyOnHand);
     }
 
-    txtUnitPrice2.val(itemObj.getUnitPrice());
+    txtUnitPrice2.val(itemObj.getUnitPrice());*/
+
+    cmbItemCode.val(item.getItemCode());
+    cmbDescription.val(item.getDescription());
+    txtUnitPrice2.val(item.getUnitPrice());
+
+    qtyOnHand = parseInt(item.getQtyOnHand());
+    response = isItemAlreadyAddedToCart(item.getItemCode());
+
+    if (response) { // if item is already added to cart
+        let rowNo = response;
+        let orderedQty = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(4)").text();
+        txtQtyOnHand.val(qtyOnHand - parseInt(orderedQty));
+
+    } else if (response == false) {
+        txtQtyOnHand.val(qtyOnHand);
+    }
 }
 
 $("#cmbItemCode").click(function () {
-    selectedOption = parseInt(cmbItemCode.val());
-    if (selectedOption >= 0) {
-        loadItemDetails(itemDB[selectedOption]);
-        txtOrderQty.removeAttr("disabled");
+    /* selectedOption = parseInt(cmbItemCode.val());
+     if (selectedOption >= 0) {
+         loadItemDetails(itemDB[selectedOption]);
+         txtOrderQty.removeAttr("disabled");
+     }*/
+
+    selectedOption = cmbItemCode.val();
+    if (selectedOption != null) {
+        $.ajax({
+            url: "item?option=SEARCH&itemCode=" + selectedOption + "&description=",
+            method: "GET",
+            success: function (resp) {
+                response = resp;
+                let item = new Item(resp.data.itemCode, resp.data.description, resp.data.unitPrice, resp.data.qtyOnHand);
+                loadItemDetails(item);
+                txtOrderQty.removeAttr("disabled");
+            }
+        });
     }
 });
 
 $("#cmbDescription").click(function () {
-    selectedOption = parseInt(cmbDescription.val());
+    /*selectedOption = parseInt(cmbDescription.val());
     if (selectedOption >= 0) {
         loadItemDetails(itemDB[selectedOption]);
         txtOrderQty.removeAttr("disabled");
+    }*/
+
+    selectedOption = cmbDescription.val();
+    if (selectedOption != null) {
+        $.ajax({
+            url: "item?option=SEARCH&itemCode=&description=" + selectedOption,
+            method: "GET",
+            success: function (resp) {
+                response = resp;
+                let item = new Item(resp.data.itemCode, resp.data.description, resp.data.unitPrice, resp.data.qtyOnHand);
+                loadItemDetails(item);
+                txtOrderQty.removeAttr("disabled");
+            }
+        });
     }
 });
 
@@ -300,8 +338,8 @@ $("#cmbDescription").click(function () {
 
 function clearItemFields() {
     console.log("inside clear item fields...")
-    // loadCmbItemCode();
-    // loadCmbDescription();
+    loadCmbItemCode();
+    loadCmbDescription();
     txtUnitPrice2.val("");
     txtQtyOnHand.val("");
     txtOrderQty.val("").css('border', '1px solid rgb(206, 212, 218)');
@@ -344,6 +382,7 @@ function clearInvoiceTable() {
 
 $("#btnClearAllFields").click(function (e) {
     clearCustomerFields();
+    clearItemFields();
     clearInvoiceFields();
     clearInvoiceTable();
 

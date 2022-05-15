@@ -33,22 +33,48 @@ public class ItemServlet extends HttpServlet {
 
             switch (option) {
                 case "SEARCH":
-                    pstm = connection.prepareStatement("SELECT * FROM Item WHERE itemCode = ?");
-                    pstm.setObject(1, req.getParameter("itemCode"));
-                    rst = pstm.executeQuery();
+                    String itemCode = req.getParameter("itemCode");
+                    String description = req.getParameter("description");
 
-                    while (rst.next()) {
-                        item.add("itemCode", rst.getString(1));
-                        item.add("description", rst.getString(2));
-                        item.add("unitPrice", String.format("%.2f",rst.getDouble(3)));
-                        item.add("qtyOnHand", rst.getString(4));
+                    System.out.println("itemCode : "+itemCode);
+                    System.out.println("description : "+description);
+
+                    if (!itemCode.equals("")) {
+                        pstm = connection.prepareStatement("SELECT * FROM Item WHERE itemCode = ?");
+                        pstm.setObject(1, itemCode);
+                        rst = pstm.executeQuery();
+
+                        while (rst.next()) {
+                            item.add("itemCode", rst.getString(1));
+                            item.add("description", rst.getString(2));
+                            item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
+                            item.add("qtyOnHand", rst.getString(4));
+                        }
+
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Item Search With Code");
+                        responseInfo.add("data", item.build());
+                        resp.getWriter().print(responseInfo.build());
+
+                    } else if (!description.equals("")) {
+                        pstm = connection.prepareStatement("SELECT * FROM Item WHERE description = ?");
+                        pstm.setObject(1, description);
+                        rst = pstm.executeQuery();
+
+                        while (rst.next()) {
+                            item.add("itemCode", rst.getString(1));
+                            item.add("description", rst.getString(2));
+                            item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
+                            item.add("qtyOnHand", rst.getString(4));
+                        }
+
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Item Search With Description");
+                        responseInfo.add("data", item.build());
+                        resp.getWriter().print(responseInfo.build());
                     }
-
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
-                    responseInfo.add("message", "Item Search Done");
-                    responseInfo.add("data", item.build());
-                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_COUNT":
