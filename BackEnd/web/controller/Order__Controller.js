@@ -841,8 +841,28 @@ function reset_Table() {
     noOfRows = 0;
 }
 
+let allCustomers;
+
+function getAllCustomers(){
+    $.ajax({
+        url: "customer?option=GETALL",
+        method: "GET",
+        success: function (resp) {
+            // console.log(resp);
+            allCustomers = resp.data;
+            // return allCustomers;
+            // return resp.data;
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
+    // return response;
+}
+
 function load_TblCustomerOrder() {
-    $("#tblOrders-body").empty();
+    /*$("#tblOrders-body").empty();
 
     for (let ord_obj of ordersDB) {
 
@@ -862,7 +882,47 @@ function load_TblCustomerOrder() {
             }
         }
         $("#tblOrders-body").append(newRow);
-    }
+    }*/
+
+    console.log("inside load All Orders");
+    $("#tblOrders-body").empty();
+
+    getAllCustomers();
+
+    $.ajax({
+        url: "orders?option=GETALL",
+        method: "GET",
+        success: function (res) {
+            console.log(res);
+
+            for (let o of res.data) {
+                let order = new Orders(o.orderId, o.orderDate, o.orderCost, o.discount, o.customerId);
+                console.log(allCustomers);
+
+                for (let c of allCustomers ) {
+                    let customer = new Customer(c.id, c.name, c.address, c.contact);
+
+                    if (order.getCustomerID() === customer.getCustomerID()) {
+
+                        newRow = `<tr>
+                            <td>${order.getOrderId()}</td>
+                            <td>${order.getCustomerID()}</td>
+                            <td>${customer.getCustomerName()}</td>
+                            <td>0${customer.getCustomerContact()}</td>
+                            <td>${parseFloat(order.getOrderCost()).toFixed(2)}</td>
+                            <td>${order.getOrderDate()}</td>
+                        </tr>`;
+
+                    }
+                }
+                $("#tblOrders-body").append(newRow);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
 }
 
 $("#btnPurchase").click(function (e) {
@@ -875,8 +935,6 @@ $("#btnPurchase").click(function (e) {
         display_Alert("", alertText, "warning");
 
     } else {
-
-
         Swal.fire({
             text: "Are you sure you want to Place this Order..?",
             icon: 'question',

@@ -78,9 +78,9 @@ public class PurchaseOrderServlet extends HttpServlet {
 
                         order.add("orderId", rst.getString(1));
                         order.add("orderDate", rst.getString(2));
-                        order.add("orderCost", rst.getString(3));
-                        order.add("discount", rst.getInt(4));
-                        order.add("customerId", rst.getInt(5));
+                        order.add("orderCost", rst.getDouble(3));
+                        order.add("discount", rst.getDouble(4));
+                        order.add("customerId", rst.getString(5));
 
                         allOrders.add(order.build());
                     }
@@ -95,8 +95,8 @@ public class PurchaseOrderServlet extends HttpServlet {
             }
             connection.close();
 
-        } catch (SQLException | ClassNotFoundException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

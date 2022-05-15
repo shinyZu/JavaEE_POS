@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS Orders(
 );
 SHOW TABLES ;
 DESCRIBE Orders;
+
+INSERT INTO Orders VALUES ('OID-001',2022-05-15, 500.00, 10, 'C00-001');
 #-----------------------
 DROP TABLE IF EXISTS OrderDetails;
 CREATE TABLE IF NOT EXISTS OrderDetails(
@@ -51,6 +53,8 @@ CREATE TABLE IF NOT EXISTS OrderDetails(
 );
 SHOW TABLES ;
 DESCRIBE OrderDetails;
+
+INSERT INTO OrderDetails VALUES ('OID-001', 'I00-001', 5);
 
 FROM Student s WHERE s.studentId LIKE '%"+text+"%' OR s.studentName LIKE '%" + text + "%' OR s.address LIKE '%" + text + "%';
 SELECT COUNT(customerId) FROM Customer;

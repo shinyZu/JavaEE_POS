@@ -280,6 +280,7 @@ $("#nav-orders").click(function () {
 
     // setComboBoxes();
     generateNextOrderID();
+    load_TblCustomerOrder();
 
     loadCmbCustomerId();
     loadCmbCustomerName();
