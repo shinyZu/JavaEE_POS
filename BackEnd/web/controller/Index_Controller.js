@@ -111,7 +111,38 @@ function generateNextItemCode() {
 }
 
 function generateNextOrderID() {
-    if (ordersDB.length != 0) {
+    $.ajax({
+        url:"orders?option=LAST_ID",
+        method:"GET",
+        success:function (resp) {
+            let lastOrderId = resp.data;
+            console.log(lastOrderId);
+
+            let nextOrderId = ++lastOrderId.split("-")[1];
+            console.log(nextOrderId);
+
+            if (nextOrderId <= 9) {
+                nextOrderId = "OID-00" + nextOrderId;
+                orderId.val(nextOrderId);
+                return nextOrderId;
+
+            } else if (nextOrderId > 9) {
+                nextOrderId = "OID-0", nextOrderId;
+                orderId.val(nextOrderId);
+                return nextOrderId;
+
+            } else if (nextOrderId < 100) {
+                nextOrderId = "OID-", nextOrderId;
+                orderId.val(nextOrderId);
+                return nextOrderId;
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
+
+    /*if (ordersDB.length != 0) {
 
         let lastOrderId = ordersDB.reverse().slice(0, 1)[0].getOrderId();
         let nextOrderId = ++lastOrderId.split("-")[1];
@@ -135,7 +166,7 @@ function generateNextOrderID() {
 
     } else {
         // console.log("empty ordersDB");
-    }
+    }*/
 }
 
 $("#nav-home").click(function () {

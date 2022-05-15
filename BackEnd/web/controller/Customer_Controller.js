@@ -77,6 +77,7 @@ function updateCustomer() {
                 toastr.success(resp.message);
 
                 loadAllCustomers();
+                reset_CustomerForm();
                 generateNextCustomerID();
 
                 // loadCmbCustomerId();
@@ -132,14 +133,8 @@ function deleteCustomer(row) {
 
                         loadAllCustomers();
                         getCustomerCount();
-
-                        // $("#tblOrders-body").empty();
-                        // load_TblCustomerOrder();
-                        // $("#totalOrders").text("0" + ordersDB.length);
-
-                        generateNextCustomerID();
-                        // generateNextOrderID();
                         reset_CustomerForm();
+                        generateNextCustomerID();
 
                         select_OrderDetailRow();
                         clearInvoiceFields();
@@ -265,7 +260,7 @@ function searchCustomer(searchValue) {
     // console.log("searchValue : " + searchValue);
 
     $.ajax({
-        url: "customer?option=SEARCH&customerID=" + searchValue + "customerName=",
+        url: "customer?option=SEARCH&customerID=" + searchValue + "&customerName=",
         method: "GET",
         success: function (resp) {
             response = resp;

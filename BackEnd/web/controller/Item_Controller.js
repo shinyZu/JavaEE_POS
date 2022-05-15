@@ -25,7 +25,7 @@ $("#itemForm p.errorText").hide();
 
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
 
-function addItem(){
+function addItem() {
     /*itemCode = txtItemCode.val();
     description = txtDescription.val();
     unitPrice = parseFloat(txtUnitPrice.val()).toFixed(2);
@@ -41,10 +41,10 @@ function addItem(){
     txtItemCode.removeAttr("disabled");
 
     $.ajax({
-        url : "item",
-        method : "POST",
+        url: "item",
+        method: "POST",
         data: $("#itemForm").serialize(),
-        success : function (resp) {
+        success: function (resp) {
             if (resp.status == 200) {
                 console.log(resp);
                 toastr.success(resp.message);
@@ -58,13 +58,13 @@ function addItem(){
                 generateNextItemCode();
             }
         },
-        error: function (ob,textStatus,error) {
+        error: function (ob, textStatus, error) {
             console.log(ob);
         }
     });
 }
 
-function updateItem(){
+function updateItem() {
     /*let obj;
 
     itemCode = txtItemCode.val();
@@ -126,7 +126,7 @@ function updateItem(){
     });
 }
 
-function deleteItem(row){
+function deleteItem(row) {
     itemCode = $(row).children(':nth-child(1)').text();
 
 //TODO
@@ -194,24 +194,24 @@ function deleteItem(row){
                 }
             });
 
-           /* swal({
+            /* swal({
 
-                title: 'Deleted!',
-                text: "Item  "+itemCode+ "  Deleted.",
-                icon: 'success',
-                buttons: ["OK"],
-                timer: 2000,
-                closeModal: true,
-            })
-            
-            for (let i in itemDB) {
-                if (itemDB[i].getItemCode() == itemCode) {
-                    itemDB.splice(i,1);
-                }
-            }  
-            $(row).remove();
-            reset_ItemForm();
-            $("#totalItems").text("0"+itemDB.length);*/
+                 title: 'Deleted!',
+                 text: "Item  "+itemCode+ "  Deleted.",
+                 icon: 'success',
+                 buttons: ["OK"],
+                 timer: 2000,
+                 closeModal: true,
+             })
+
+             for (let i in itemDB) {
+                 if (itemDB[i].getItemCode() == itemCode) {
+                     itemDB.splice(i,1);
+                 }
+             }
+             $(row).remove();
+             reset_ItemForm();
+             $("#totalItems").text("0"+itemDB.length);*/
 
             // for (let i in orderDetailDB) {
             //     if (orderDetailDB[i].getItemCode() == itemCode) {
@@ -231,7 +231,7 @@ function deleteItem(row){
             // clearInvoiceTable();
         }
     })
-    
+
     // if (window.confirm("Do you really need to delete this Item..?")) {
 
     //     for (let i in itemDB) {
@@ -248,7 +248,7 @@ function deleteItem(row){
     // clearItemFields();
 }
 
-function loadAllItems(){
+function loadAllItems() {
     /*$("#tblItem-body").empty();
 
     for (let i in itemDB) {
@@ -269,7 +269,7 @@ function loadAllItems(){
 
     console.log("inside loadAllItems");
     $("#tblItem-body").empty();
-    
+
     $.ajax({
         url: "item?option=GETALL",
         method: "GET",
@@ -298,7 +298,7 @@ function loadAllItems(){
     });
 }
 
-function searchItem(searchValue) { 
+function searchItem(searchValue) {
     /*let obj;
     for (let i = 0; i < itemDB.length; i++) {
         if (itemDB[i].getItemCode() == searchValue) {
@@ -331,12 +331,12 @@ function searchItem(searchValue) {
     }*/
 
     $.ajax({
-        url: "item?option=SEARCH&itemCode=" + searchValue,
+        url: "item?option=SEARCH&itemCode=" + searchValue + "&description=",
         method: "GET",
         success: function (resp) {
             response = resp;
             let obj = resp.data;
-            obj = new Item(obj.itemCode, obj.description, obj.unitPrice ,obj.qtyOnHand);
+            obj = new Item(obj.itemCode, obj.description, obj.unitPrice, obj.qtyOnHand);
             console.log(JSON.stringify(resp.data));
             console.log(resp.data)
 
@@ -351,8 +351,8 @@ function searchItem(searchValue) {
 
             } else { // if resp.data = '{}'
                 swal({
-                    title: "Item "+ searchValue + " doesn't exist...",
-                    text:"\n",
+                    title: "Item " + searchValue + " doesn't exist...",
+                    text: "\n",
                     icon: 'warning',
                     buttons: false,
                     timer: 2000,
@@ -449,7 +449,7 @@ function searchItem(searchValue) {
     }
 }*/
 
-$(".btnSaveItem").click(function () { 
+$(".btnSaveItem").click(function () {
     // isItemAlreadyExist();
     // checkDB_BeforeSaveItem();
     // select_ItemRow();
@@ -480,7 +480,7 @@ $(".btnSaveItem").click(function () {
 
 /* ------------------Update Item------------*/
 
-$("#btnEditItem").click(function (e) { 
+$("#btnEditItem").click(function (e) {
     select_ItemRow();
 
     Swal.fire({
@@ -514,30 +514,30 @@ $("#btnEditItem").click(function (e) {
 $("#txtSearchItem").keyup(function (e) {
     searchValue = $(this).val();
 
-    $("#btnSearchItem").off("click"); 
-    $("#btnSearchItem").click(function (e) { 
+    $("#btnSearchItem").off("click");
+    $("#btnSearchItem").click(function (e) {
         searchItem(searchValue);
     });
 
-    if(e.key == "Enter") {
+    if (e.key == "Enter") {
         e.preventDefault();
         searchItem(searchValue);
     }
 
-    $("#tblItem-body>tr").each(function(){  
-        let isFound = false;  
-        $(this).each(function(){  // search td of each tr one by one
-             if($(this).text().toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) { 
-                  isFound = true;  
-             } 
-        });  
-        if(isFound){  
-             $(this).show();  
+    $("#tblItem-body>tr").each(function () {
+        let isFound = false;
+        $(this).each(function () {  // search td of each tr one by one
+            if ($(this).text().toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) {
+                isFound = true;
+            }
+        });
+        if (isFound) {
+            $(this).show();
 
-        } else {  
-             $(this).hide();  
-        }  
-   }); 
+        } else {
+            $(this).hide();
+        }
+    });
 });
 
 /* -------------------------------------------------------------------Validation--------------------------------------------------- */
@@ -549,11 +549,11 @@ var regExDescription = /^[A-Z][a-z ]{3,9}[A-z]{2,10}$|^[A-Z][a-z]{4,20}$/;
 var regExUnitPrice = /^[1-9][0-9]*([.][0-9]{2})?$/;
 var regExQty = /^[0-9]+$/;
 
-function select_ItemRow(){
-    $("#tblItem-body>tr").click(function () { 
+function select_ItemRow() {
+    $("#tblItem-body>tr").click(function () {
         rowSelected = this;
         itemCode = $(this).children(':first-child').text();
-        
+
         // console.log(rowSelected);
         searchItem(itemCode);
 
@@ -562,33 +562,33 @@ function select_ItemRow(){
         enableButton("#btnEditItem");
         enableButton("#btnDeleteItem");
 
-        $("#btnDeleteItem").off("click"); 
+        $("#btnDeleteItem").off("click");
 
         /* ------------------Delete Item------------*/
 
-        $("#btnDeleteItem").click(function () { 
+        $("#btnDeleteItem").click(function () {
             deleteItem(rowSelected);
         });
 
-        $("#tblItem-body>tr").off("dblclick"); 
+        $("#tblItem-body>tr").off("dblclick");
         delete_ItemRowOnDblClick();
     });
 }
 
 function delete_ItemRowOnDblClick() {
-    $("#tblItem-body>tr").dblclick(function () { 
+    $("#tblItem-body>tr").dblclick(function () {
         rowSelected = $(this);
         deleteItem(rowSelected);
     });
 }
 
-function validate_ItemCode (input, txtField) {  
+function validate_ItemCode(input, txtField) {
 
     if (regExItemCode.test(input)) {
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_Description(txtDescription.val(),txtDescription)) {
+        if (!validate_Description(txtDescription.val(), txtDescription)) {
             changeBorderColor("invalid", txtDescription);
             $("#itemForm p.errorText").eq(1).show();
             $("#errorDescription").text("*Required Field* Min 5, Max 20, Spaces Allowed");
@@ -597,7 +597,7 @@ function validate_ItemCode (input, txtField) {
         $("#itemForm p.errorText").eq(0).hide();
         return true;
 
-    } else{
+    } else {
         changeBorderColor("invalid", txtField);
         $("#itemForm p.errorText").eq(0).show();
         $("#errorCode").text("*Required Field* Format : I00-000");
@@ -608,13 +608,13 @@ function validate_ItemCode (input, txtField) {
     }
 }
 
-function validate_Description (input, txtField) {  
+function validate_Description(input, txtField) {
 
     if (regExDescription.test(input)) {
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_UnitPrice(txtUnitPrice.val(),txtUnitPrice)) {
+        if (!validate_UnitPrice(txtUnitPrice.val(), txtUnitPrice)) {
             changeBorderColor("invalid", txtUnitPrice);
             $("#itemForm p.errorText").eq(2).show();
             $("#errorPrice").text("*Required Field* Pattern : 100.00 or 100");
@@ -623,7 +623,7 @@ function validate_Description (input, txtField) {
         $("#itemForm p.errorText").eq(1).hide();
         return true;
 
-    } else{
+    } else {
         changeBorderColor("invalid", txtField);
         $("#itemForm p.errorText").eq(1).show();
         $("#errorDescription").text("*Required Field* Min 5, Max 20, Spaces Allowed");
@@ -634,13 +634,13 @@ function validate_Description (input, txtField) {
     }
 }
 
-function validate_UnitPrice (input, txtField) {  
+function validate_UnitPrice(input, txtField) {
 
     if (regExUnitPrice.test(input)) {
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_Qty(txtQty.val(),txtQty)) {
+        if (!validate_Qty(txtQty.val(), txtQty)) {
             changeBorderColor("invalid", txtQty);
             $("#itemForm p.errorText").eq(3).show();
             $("#errorQty").text("*Required Field*  Only Numbers");
@@ -649,7 +649,7 @@ function validate_UnitPrice (input, txtField) {
         $("#itemForm p.errorText").eq(2).hide();
         return true;
 
-    } else{
+    } else {
         changeBorderColor("invalid", txtField);
         $("#itemForm p.errorText").eq(2).show();
         $("#errorPrice").text("*Required Field* Pattern : 100.00 or 100");
@@ -660,11 +660,11 @@ function validate_UnitPrice (input, txtField) {
     }
 }
 
-function validate_Qty (input, txtField) {  
+function validate_Qty(input, txtField) {
 
     if (regExQty.test(input)) {
         changeBorderColor("valid", txtField);
-        
+
         enableButton(".btnSaveItem");
         enableButton("#btnEditItem");
 
@@ -676,7 +676,7 @@ function validate_Qty (input, txtField) {
         }
         return true;
 
-    } else{
+    } else {
         changeBorderColor("invalid", txtField);
         $("#itemForm p.errorText").eq(3).show();
         $("#errorQty").text("*Required Field*  Only Numbers");
@@ -687,7 +687,7 @@ function validate_Qty (input, txtField) {
     }
 }
 
-function reset_ItemForm(){
+function reset_ItemForm() {
     txtItemCode.val("").css('border', '1px solid rgb(206, 212, 218)');
     txtDescription.val("").css('border', '1px solid rgb(206, 212, 218)');
     txtUnitPrice.val("").css('border', '1px solid rgb(206, 212, 218)');
@@ -709,24 +709,24 @@ function reset_ItemForm(){
     itemCode = null;
 }
 
-function validate_ItemForm(){
+function validate_ItemForm() {
     itemCode = txtItemCode.val();
     description = txtDescription.val();
     unitPrice = txtUnitPrice.val();
     qty = txtQty.val();
 
-    validate_ItemCode(itemCode,txtItemCode);
-    validate_Description(description,txtDescription);
-    validate_UnitPrice(unitPrice,txtUnitPrice);
-    validate_Qty(qty,txtQty);
+    validate_ItemCode(itemCode, txtItemCode);
+    validate_Description(description, txtDescription);
+    validate_UnitPrice(unitPrice, txtUnitPrice);
+    validate_Qty(qty, txtQty);
 }
 
-$("#txtItemCode, #txtDescription, #txtUnitPrice, #txtQty").keydown(function (e) { 
+$("#txtItemCode, #txtDescription, #txtUnitPrice, #txtQty").keydown(function (e) {
     $("#btnSearchItem").off("click");
     if (e.key === "Tab") {
         e.preventDefault();
     }
-    
+
     if (e.code === "Enter") {
         e.preventDefault();
 
@@ -734,52 +734,52 @@ $("#txtItemCode, #txtDescription, #txtUnitPrice, #txtQty").keydown(function (e) 
 
 });
 
-$("#txtItemCode").keyup(function (e) { 
+$("#txtItemCode").keyup(function (e) {
     input = txtItemCode.val();
     validate_ItemCode(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)){
+    if (e.code === "Enter" && isBorderGreen(this)) {
         e.preventDefault();
         $("#txtDescription").focus();
     }
 });
 
-$("#txtDescription").keyup(function (e) { 
+$("#txtDescription").keyup(function (e) {
     input = txtDescription.val();
     validate_Description(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)){
+    if (e.code === "Enter" && isBorderGreen(this)) {
         $("#txtUnitPrice").focus();
     }
 });
 
-$("#txtUnitPrice").keyup(function (e) { 
+$("#txtUnitPrice").keyup(function (e) {
     input = txtUnitPrice.val();
     validate_UnitPrice(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)){
+    if (e.code === "Enter" && isBorderGreen(this)) {
         $("#txtQty").focus();
     }
 });
 
-$("#txtQty").keyup(function (e) { 
+$("#txtQty").keyup(function (e) {
     input = txtQty.val();
     validate_Qty(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)){
+    if (e.code === "Enter" && isBorderGreen(this)) {
         // isItemAlreadyExist();
         // checkDB_BeforeSaveItem();
         select_ItemRow();
-        
+
     }
-    $("#tblItem-body>tr").off("dblclick"); 
+    $("#tblItem-body>tr").off("dblclick");
     delete_ItemRowOnDblClick();
-   
+
 });
 
 /* -----Clear Fields-------*/
 
-$("#btnClearItemFields").click(function () { 
+$("#btnClearItemFields").click(function () {
     reset_ItemForm();
     generateNextItemCode();
     loadAllItems();

@@ -16,7 +16,7 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Item's GET invoked...");
+//        System.out.println("Item's GET invoked...");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -151,7 +151,7 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Item's POST invoked...");
+//        System.out.println("Item's POST invoked...");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -199,7 +199,7 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Item's PUT invoked...");
+//        System.out.println("Item's PUT invoked...");
 
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
@@ -248,7 +248,7 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Item's DELETE invoked...");
+//        System.out.println("Item's DELETE invoked...");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

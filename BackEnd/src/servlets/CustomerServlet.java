@@ -15,7 +15,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("GET method invoked....");
+//        System.out.println("GET method invoked....");
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
@@ -190,7 +190,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("POST method invoked....");
+//        System.out.println("POST method invoked....");
 
         String id = req.getParameter("customerID");
         String name = req.getParameter("customerName");
@@ -287,7 +287,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("DELETE method invoked......");
+//        System.out.println("DELETE method invoked......");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
