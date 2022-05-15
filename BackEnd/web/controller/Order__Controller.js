@@ -52,11 +52,11 @@ $("#purchaseForm p.errorText").hide();
     $("#txtDiscount").attr("disabled", "disabled");
     $("#txtAmountPaid").attr("disabled", "disabled");
 
-    if (ordersDB.length == 0) {
+    /*if (ordersDB.length == 0) {
         orderId.val("OID-001");
     } else {
         generateNextOrderID();
-    }
+    }*/
 })();
 
 function clearCmbCustomerId() {
@@ -777,7 +777,7 @@ function place_Order(orderId) {
         ordersDB.push(newOrder);
     }
 
-    $("#totalOrders").text("0" + ordersDB.length);
+    // $("#totalOrders").text("0" + ordersDB.length);
 
     let rowNo = 1;
     let orderDetail;

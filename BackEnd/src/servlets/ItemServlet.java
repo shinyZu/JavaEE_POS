@@ -97,8 +97,15 @@ public class ItemServlet extends HttpServlet {
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Retrieved Last ItemCode...");
                         responseInfo.add("data", rst.getString(1));
+                        resp.getWriter().print(responseInfo.build());
+
+                    } else {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "No any Items yet");
+                        responseInfo.add("data", "null");
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_CODE_DESCRIP":

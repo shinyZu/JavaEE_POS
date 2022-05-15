@@ -135,8 +135,15 @@ public class CustomerServlet extends HttpServlet {
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Retrieved Last CustomerId...");
                         responseInfo.add("data", rst.getString(1));
+                        resp.getWriter().print(responseInfo.build());
+
+                    } else {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "No any Customers yet");
+                        responseInfo.add("data", "null");
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_ID_NAME":

@@ -44,6 +44,20 @@ function getItemCount() {
     });
 }
 
+function getOrderCount() {
+    $.ajax({
+        url:"orders?option=GET_COUNT",
+        method:"GET",
+        success:function (resp) {
+            console.log(resp.data);
+            $("#totalOrders").text("0" + resp.data);
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
+}
+
 function generateNextCustomerID() {
     $.ajax({
         url:"customer?option=LAST_ID",
@@ -51,6 +65,11 @@ function generateNextCustomerID() {
         success:function (resp) {
             let lastCustId = resp.data;
             console.log(lastCustId);
+
+            if (lastCustId === "null") {
+                txtCustomerId.val("C00-001");
+                return;
+            }
 
             let nextCustId = ++lastCustId.split("-")[1];
             console.log(nextCustId);
@@ -85,6 +104,11 @@ function generateNextItemCode() {
             let lastItemCode = resp.data;
             console.log(lastItemCode);
 
+            if (lastItemCode === "null") {
+                txtItemCode.val("I00-001");
+                return;
+            }
+
             let nextItemCode = ++lastItemCode.split("-")[1];
             console.log(nextItemCode);
 
@@ -118,6 +142,11 @@ function generateNextOrderID() {
             let lastOrderId = resp.data;
             console.log(lastOrderId);
 
+            if (lastOrderId === "null") {
+                orderId.val("OID-001");
+                return;
+            }
+
             let nextOrderId = ++lastOrderId.split("-")[1];
             console.log(nextOrderId);
 
@@ -127,12 +156,12 @@ function generateNextOrderID() {
                 return nextOrderId;
 
             } else if (nextOrderId > 9) {
-                nextOrderId = "OID-0", nextOrderId;
+                nextOrderId = "OID-0" + nextOrderId;
                 orderId.val(nextOrderId);
                 return nextOrderId;
 
             } else if (nextOrderId < 100) {
-                nextOrderId = "OID-", nextOrderId;
+                nextOrderId = "OID-" + nextOrderId;
                 orderId.val(nextOrderId);
                 return nextOrderId;
             }
@@ -186,6 +215,7 @@ $("#nav-home").click(function () {
 
     getCustomerCount();
     getItemCount();
+    getOrderCount();
 });
 
 $("#nav-customer").click(function () {

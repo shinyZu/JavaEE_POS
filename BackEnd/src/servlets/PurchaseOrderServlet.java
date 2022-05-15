@@ -42,27 +42,33 @@ public class PurchaseOrderServlet extends HttpServlet {
                     break;
 
                 case "GET_COUNT":
-                    /*rst = connection.prepareStatement("SELECT COUNT(customerId) FROM Customer").executeQuery();
+                    rst = connection.prepareStatement("SELECT COUNT(orderId) FROM Orders").executeQuery();
 
                     if (rst.next()) {
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
-                        responseInfo.add("message", "Customers Counted");
+                        responseInfo.add("message", "Orders Counted");
                         responseInfo.add("data", rst.getString(1));
                     }
-                    resp.getWriter().print(responseInfo.build());*/
+                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "LAST_ID":
-                    /*rst = connection.prepareStatement("SELECT customerId FROM Customer ORDER BY customerId DESC LIMIT 1").executeQuery();
+                    rst = connection.prepareStatement("SELECT orderId FROM Orders ORDER BY orderId DESC LIMIT 1").executeQuery();
 
                     if (rst.next()) {
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
-                        responseInfo.add("message", "Retrieved Last CustomerId...");
+                        responseInfo.add("message", "Retrieved Last OrderId...");
                         responseInfo.add("data", rst.getString(1));
+                        resp.getWriter().print(responseInfo.build());
+                    } else {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "No any Orders yet");
+                        responseInfo.add("data", "null");
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    resp.getWriter().print(responseInfo.build());*/
                     break;
 
 
