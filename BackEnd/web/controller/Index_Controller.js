@@ -55,7 +55,7 @@ function generateNextCustomerID() {
             let nextCustId = ++lastCustId.split("-")[1];
             console.log(nextCustId);
 
-            if (nextCustId < 9) {
+            if (nextCustId <= 9) {
                 nextCustId = "C00-00" + nextCustId;
                 txtCustomerId.val(nextCustId);
                 return nextCustId;
@@ -88,7 +88,7 @@ function generateNextItemCode() {
             let nextItemCode = ++lastItemCode.split("-")[1];
             console.log(nextItemCode);
 
-            if (nextItemCode < 9) {
+            if (nextItemCode <= 9) {
                 nextItemCode = "I00-00" + nextItemCode;
                 txtItemCode.val(nextItemCode);
                 return nextItemCode;

@@ -638,6 +638,11 @@ function validate_CustomerContact(input, txtField) {
                 }
             });
         }
+
+        if (rowSelected != null) {
+            console.log("row selected not null...")
+            disableButton(".btnSaveCustomer");
+        }
         return true;
 
     } else {
@@ -746,7 +751,7 @@ $("#btnClearCustomerFields").click(function () {
     loadAllCustomers();
 
     txtSearchId.val("");
-    select_CustomerRow();
+    // select_CustomerRow();
 });
 
 

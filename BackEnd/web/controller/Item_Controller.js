@@ -557,7 +557,8 @@ function select_ItemRow(){
         // console.log(rowSelected);
         searchItem(itemCode);
 
-        disableButton(".btnSaveItem");
+        console.log("btn disabled....");
+        // disableButton(".btnSaveItem");
         enableButton("#btnEditItem");
         enableButton("#btnDeleteItem");
 
@@ -668,6 +669,11 @@ function validate_Qty (input, txtField) {
         enableButton("#btnEditItem");
 
         $("#itemForm p.errorText").eq(3).hide();
+
+        if (rowSelected != null) {
+            console.log("row selected not null...")
+            disableButton(".btnSaveItem");
+        }
         return true;
 
     } else{
@@ -694,7 +700,6 @@ function reset_ItemForm(){
     txtDescription.focus();
 
     disableButton(".btnSaveItem");
-    // disableButton("#btnSaveItem");
     disableButton("#btnEditItem");
     disableButton("#btnDeleteItem");
 
@@ -780,6 +785,6 @@ $("#btnClearItemFields").click(function () {
     loadAllItems();
 
     txtSearchItem.val("");
-    select_ItemRow();
+    // select_ItemRow();
 });
 
