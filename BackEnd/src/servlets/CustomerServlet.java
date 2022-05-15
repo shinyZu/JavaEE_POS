@@ -31,21 +31,46 @@ public class CustomerServlet extends HttpServlet {
 
             switch (option) {
                 case "SEARCH":
-                    pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
-                    pstm.setObject(1, req.getParameter("customerID"));
-                    rst = pstm.executeQuery();
+                    String customerID = req.getParameter("customerID");
+                    String customerName = req.getParameter("customerName");
 
-                    while (rst.next()) {
-                        customer.add("id", rst.getString(1));
-                        customer.add("name", rst.getString(2));
-                        customer.add("address", rst.getString(3));
-                        customer.add("contact", rst.getString(4));
+                    System.out.println("customerID : "+customerID);
+                    System.out.println("customerName : "+customerName);
+
+                    if (!customerID.equals("")) {
+                        pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
+                        pstm.setObject(1, customerID);
+                        rst = pstm.executeQuery();
+
+                        while (rst.next()) {
+                            customer.add("id", rst.getString(1));
+                            customer.add("name", rst.getString(2));
+                            customer.add("address", rst.getString(3));
+                            customer.add("contact", rst.getString(4));
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Customer Search With ID");
+                        responseInfo.add("data", customer.build());
+                        resp.getWriter().print(responseInfo.build());
+
+                    } else if (!customerName.equals("")) {
+                        pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerName = ?");
+                        pstm.setObject(1, customerName);
+                        rst = pstm.executeQuery();
+
+                        while (rst.next()) {
+                            customer.add("id", rst.getString(1));
+                            customer.add("name", rst.getString(2));
+                            customer.add("address", rst.getString(3));
+                            customer.add("contact", rst.getString(4));
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Customer Search With Name");
+                        responseInfo.add("data", customer.build());
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
-                    responseInfo.add("message", "Customer Search Done");
-                    responseInfo.add("data", customer.build());
-                    resp.getWriter().print(responseInfo.build());
 
                     break;
 

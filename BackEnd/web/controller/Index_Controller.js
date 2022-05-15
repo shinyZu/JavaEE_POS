@@ -110,6 +110,34 @@ function generateNextItemCode() {
     });
 }
 
+function generateNextOrderID() {
+    if (ordersDB.length != 0) {
+
+        let lastOrderId = ordersDB.reverse().slice(0, 1)[0].getOrderId();
+        let nextOrderId = ++lastOrderId.split("-")[1];
+        ordersDB.reverse();
+
+        if (nextOrderId < 9) {
+            nextOrderId = "OID-00" + nextOrderId;
+            orderId.val(nextOrderId);
+            return nextOrderId;
+
+        } else if (nextOrderId > 9) {
+            nextOrderId = "OID-0", nextOrderId;
+            orderId.val(nextOrderId);
+            return nextOrderId;
+
+        } else if (nextOrderId < 100) {
+            nextOrderId = "OID-", nextOrderId;
+            orderId.val(nextOrderId);
+            return nextOrderId;
+        }
+
+    } else {
+        // console.log("empty ordersDB");
+    }
+}
+
 $("#nav-home").click(function () {
     console.log("inside Home Tab..");
 
@@ -190,6 +218,8 @@ $("#nav-orders").click(function () {
     $("#nav-orders a").addClass("active");
 
     // setComboBoxes();
+    generateNextOrderID();
+
     loadCmbCustomerId();
     loadCmbCustomerName();
 

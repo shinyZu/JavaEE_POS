@@ -265,7 +265,7 @@ function searchCustomer(searchValue) {
     // console.log("searchValue : " + searchValue);
 
     $.ajax({
-        url: "customer?option=SEARCH&customerID=" + searchValue,
+        url: "customer?option=SEARCH&customerID=" + searchValue + "customerName=",
         method: "GET",
         success: function (resp) {
             response = resp;
@@ -666,9 +666,8 @@ function validate_CustomerContact(input, txtField) {
             }
         });
 
-
         if (rowSelected != null) {
-            console.log("row selected not null...")
+            // console.log("row selected not null...")
             disableButton(".btnSaveCustomer");
         }
         return true;

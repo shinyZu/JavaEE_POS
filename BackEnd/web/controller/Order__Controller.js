@@ -59,34 +59,6 @@ $("#purchaseForm p.errorText").hide();
     }
 })();
 
-function generateNextOrderID() {
-    if (ordersDB.length != 0) {
-
-        let lastOrderId = ordersDB.reverse().slice(0, 1)[0].getOrderId();
-        let nextOrderId = ++lastOrderId.split("-")[1];
-        ordersDB.reverse();
-
-        if (nextOrderId < 9) {
-            nextOrderId = "OID-00" + nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-
-        } else if (nextOrderId > 9) {
-            nextOrderId = "OID-0", nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-
-        } else if (nextOrderId < 100) {
-            nextOrderId = "OID-", nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-        }
-
-    } else {
-        // console.log("empty ordersDB");
-    }
-}
-
 function clearCmbCustomerId() {
     $(cmbCustomerId).empty();
     $(cmbCustomerId).append(defaultOption);
@@ -229,25 +201,62 @@ function loadCmbDescription() {
 
 /* ---------------------Load Customer Details-------------*/
 
-function loadCustomerDetails(custObj) {
-    cmbCustomerId.val(customerDB.indexOf(custObj));
+function loadCustomerDetails(customer) {
+    /*cmbCustomerId.val(customerDB.indexOf(custObj));
     cmbCustomerName.val(customerDB.indexOf(custObj));
     txtord_address.val(custObj.getCustomerAddress());
-    txtord_contact.val(custObj.getCustomerContact());
+    txtord_contact.val(custObj.getCustomerContact());*/
+
+    cmbCustomerId.val(customer.getCustomerID());
+    cmbCustomerName.val(customer.getCustomerName());
+    txtord_address.val(customer.getCustomerAddress());
+    txtord_contact.val(0+customer.getCustomerContact());
 }
 
 $("#cmbCustomerId").click(function () {
-    selectedOption = parseInt(cmbCustomerId.val());
+    /*selectedOption = parseInt(cmbCustomerId.val());
     if (selectedOption >= 0) {
         loadCustomerDetails(customerDB[selectedOption]);
+    }*/
+
+    selectedOption = cmbCustomerId.val();
+    if (selectedOption != null) {
+        $.ajax({
+            url: "customer?option=SEARCH&customerID=" + selectedOption + "&customerName=",
+            method: "GET",
+            success: function (resp) {
+                response = resp;
+                let customer = new Customer(resp.data.id, resp.data.name, resp.data.address, resp.data.contact);
+                loadCustomerDetails(customer);
+            }
+        });
     }
+    // else {
+    //     loadCmbCustomerId();
+    // }
 });
 
 $("#cmbCustomerName").click(function () {
-    selectedOption = parseInt(cmbCustomerName.val());
+    /*selectedOption = parseInt(cmbCustomerName.val());
     if (selectedOption >= 0) {
         loadCustomerDetails(customerDB[selectedOption]);
+    }*/
+
+    selectedOption = cmbCustomerName.val();
+    if (selectedOption != null) {
+        $.ajax({
+            url: "customer?option=SEARCH&customerID=&customerName=" + selectedOption,
+            method: "GET",
+            success: function (resp) {
+                response = resp;
+                let customer = new Customer(resp.data.id, resp.data.name, resp.data.address, resp.data.contact);
+                loadCustomerDetails(customer);
+            }
+        });
     }
+    // else {
+    //     loadCmbCustomerName();
+    // }
 });
 
 /* ---------------------Load Item Details-------------*/
@@ -303,8 +312,8 @@ function clearItemFields() {
 
 function clearCustomerFields() {
     console.log("inside clear customer fields...")
-    // loadCmbCustomerId();
-    // loadCmbCustomerName();
+    loadCmbCustomerId();
+    loadCmbCustomerName();
     txtord_address.val("");
     txtord_contact.val("");
 }
