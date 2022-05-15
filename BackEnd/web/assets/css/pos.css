@@ -254,7 +254,7 @@ select:disabled {
   font-weight: 700;
 }
 
-#txtCustomerId{
+#txtCustomerId, #txtItemCode{
   color: #099277;
   font-weight: 700;
 }

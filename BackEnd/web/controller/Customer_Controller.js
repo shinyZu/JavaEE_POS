@@ -49,6 +49,7 @@ function addCustomer() {
 
             } else {
                 toastr.error(resp.data);
+                generateNextCustomerID();
             }
         },
         error: function (ob, textStatus, error) {
@@ -132,17 +133,21 @@ function deleteCustomer(row) {
                         loadAllCustomers();
                         getCustomerCount();
 
-                        $("#tblOrders-body").empty();
-                        load_TblCustomerOrder();
-                        $("#totalOrders").text("0" + ordersDB.length);
+                        // $("#tblOrders-body").empty();
+                        // load_TblCustomerOrder();
+                        // $("#totalOrders").text("0" + ordersDB.length);
 
                         generateNextCustomerID();
-                        generateNextOrderID();
+                        // generateNextOrderID();
                         reset_CustomerForm();
 
                         select_OrderDetailRow();
                         clearInvoiceFields();
                         clearInvoiceTable();
+
+                        // loadCmbCustomerId();
+                        // loadCmbCustomerName();
+                        clearCustomerFields();
 
                     } else if (resp.status == 400) {
                         toastr.error(resp.message);
@@ -215,9 +220,9 @@ function deleteCustomer(row) {
     //     reset_CustomerForm();
     // }
 
-    loadCmbCustomerId();
-    loadCmbCustomerName();
-    clearCustomerFields();
+    // loadCmbCustomerId();
+    // loadCmbCustomerName();
+    // clearCustomerFields();
 
 }
 
@@ -498,6 +503,7 @@ function select_CustomerRow() {
 
         searchCustomer(customerId);
 
+        disableButton("#btnSaveCustomer");
         enableButton("#btnEditCustomer");
         enableButton("#btnDeleteCustomer");
 

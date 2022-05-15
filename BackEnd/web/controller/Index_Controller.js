@@ -77,6 +77,39 @@ function generateNextCustomerID() {
     });
 }
 
+function generateNextItemCode() {
+    $.ajax({
+        url:"item?option=LAST_CODE",
+        method:"GET",
+        success:function (resp) {
+            let lastItemCode = resp.data;
+            console.log(lastItemCode);
+
+            let nextItemCode = ++lastItemCode.split("-")[1];
+            console.log(nextItemCode);
+
+            if (nextItemCode < 9) {
+                nextItemCode = "I00-00" + nextItemCode;
+                txtItemCode.val(nextItemCode);
+                return nextItemCode;
+
+            } else if (nextItemCode > 9) {
+                nextItemCode = "I00-0" + nextItemCode;
+                txtItemCode.val(nextItemCode);
+                return nextItemCode;
+
+            } else if (nextItemCode < 100) {
+                nextItemCode = "I00-" + nextItemCode;
+                txtItemCode.val(nextItemCode);
+                return nextItemCode;
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
+}
+
 $("#nav-home").click(function () {
     console.log("inside Home Tab..");
 
@@ -134,9 +167,12 @@ $("#nav-store").click(function () {
     $("#nav-store a").addClass("active");
     $("#nav-orders a").removeClass("active");
 
-    $("#txtItemCode").focus();
+    txtItemCode.attr("disabled", "disabled");
+    $("#txtDescription").focus();
+    // $("#txtItemCode").focus();
 
     loadAllItems();
+    generateNextItemCode();
 });
 
 $("#nav-orders").click(function () {

@@ -38,6 +38,7 @@ function addItem(){
 
     loadAllItems(itemDB);
     toastr.success("Item Saved Successfully...");*/
+    txtItemCode.removeAttr("disabled");
 
     $.ajax({
         url : "item",
@@ -49,11 +50,12 @@ function addItem(){
                 toastr.success(resp.message);
                 loadAllItems();
                 getItemCount();
-                // generateNextItemCode();
+                generateNextItemCode();
                 reset_ItemForm();
 
             } else {
                 toastr.error(resp.data);
+                generateNextItemCode();
             }
         },
         error: function (ob,textStatus,error) {
@@ -103,7 +105,7 @@ function updateItem(){
                 toastr.success(resp.message);
 
                 loadAllItems();
-                // generateNextItemCode();
+                generateNextItemCode();
 
                 // loadCmbCustomerId();
                 // loadCmbCustomerName();
@@ -169,12 +171,16 @@ function deleteItem(row){
                         getItemCount();
                         reset_ItemForm();
 
-                        // generateNextItemCode();
+                        generateNextItemCode();
                         // generateNextOrderID();
 
                         // select_OrderDetailRow();
                         // clearInvoiceFields();
                         // clearInvoiceTable();
+
+                        // loadCmbItemCode();
+                        // loadCmbDescription();
+                        clearItemFields();
 
                     } else if (resp.status == 400) {
                         toastr.error(resp.message);
@@ -236,9 +242,10 @@ function deleteItem(row){
     //     $(row).remove();
     //     reset_ItemForm();
     // }
-    loadCmbItemCode();
-    loadCmbDescription();
-    clearItemFields();
+
+    // loadCmbItemCode();
+    // loadCmbDescription();
+    // clearItemFields();
 }
 
 function loadAllItems(){
@@ -550,6 +557,7 @@ function select_ItemRow(){
         // console.log(rowSelected);
         searchItem(itemCode);
 
+        disableButton(".btnSaveItem");
         enableButton("#btnEditItem");
         enableButton("#btnDeleteItem");
 
@@ -681,9 +689,12 @@ function reset_ItemForm(){
 
     $("#itemForm p.errorText").hide();
 
-    txtItemCode.focus();
+    // txtItemCode.focus();
+    txtItemCode.attr("disabled", "disabled");
+    txtDescription.focus();
 
     disableButton(".btnSaveItem");
+    // disableButton("#btnSaveItem");
     disableButton("#btnEditItem");
     disableButton("#btnDeleteItem");
 
@@ -765,8 +776,10 @@ $("#txtQty").keyup(function (e) {
 
 $("#btnClearItemFields").click(function () { 
     reset_ItemForm();
-    $(txtSearchItem).val("");
+    generateNextItemCode();
     loadAllItems();
+
+    txtSearchItem.val("");
     select_ItemRow();
 });
 

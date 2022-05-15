@@ -64,6 +64,15 @@ public class ItemServlet extends HttpServlet {
                     break;
 
                 case "LAST_CODE":
+                    rst = connection.prepareStatement("SELECT itemCode FROM Item ORDER BY itemCode DESC LIMIT 1").executeQuery();
+
+                    if (rst.next()) {
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Retrieved Last ItemCode...");
+                        responseInfo.add("data", rst.getString(1));
+                    }
+                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_CODE_DESCRIP":
