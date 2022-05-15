@@ -49,6 +49,47 @@ public class CustomerServlet extends HttpServlet {
 
                     break;
 
+                case "CHECK_FOR_DUPLICATE":
+                    rst = connection.prepareStatement("SELECT customerId, customerContact FROM Customer").executeQuery();
+
+                    String id = req.getParameter("customerId");
+                    String input = req.getParameter("input");
+                    String contact = input.split("0")[1];
+//                    System.out.println("input : "+input);
+//                    System.out.println("contact : "+contact);
+
+                    while (rst.next()) {
+//                        System.out.println(rst.getString(1));
+                        if (rst.getString(2).equals(contact)) {
+
+                            if(rst.getString(1).equals(id)) {
+//                                System.out.println("contact of customer..");
+                                responseInfo = Json.createObjectBuilder();
+                                responseInfo.add("status", 200);
+                                responseInfo.add("message", "Match");
+                                responseInfo.add("data", contact);
+                                resp.getWriter().print(responseInfo.build());
+                                return;
+                            }
+
+//                            System.out.println("is a duplicate contact...");
+                            responseInfo = Json.createObjectBuilder();
+                            responseInfo.add("status", 200);
+                            responseInfo.add("message", "Duplicate");
+                            responseInfo.add("data", contact);
+                            resp.getWriter().print(responseInfo.build());
+                            return;
+                        }
+                    }
+
+//                    System.out.println("is a unique contact...");
+                    responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("status", 200);
+                    responseInfo.add("message", "Unique");
+                    responseInfo.add("data", contact);
+                    resp.getWriter().print(responseInfo.build());
+                    break;
+
                 case "GET_COUNT":
                     rst = connection.prepareStatement("SELECT COUNT(customerId) FROM Customer").executeQuery();
 
@@ -229,7 +270,7 @@ public class CustomerServlet extends HttpServlet {
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId = ?");
-            pstm.setObject(1,req.getParameter("customerID"));
+            pstm.setObject(1, req.getParameter("customerID"));
 
             if (pstm.executeUpdate() > 0) {
                 responseInfo = Json.createObjectBuilder();

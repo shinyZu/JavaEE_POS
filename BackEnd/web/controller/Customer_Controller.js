@@ -270,14 +270,14 @@ function searchCustomer(searchValue) {
         success: function (resp) {
             response = resp;
             let obj = resp.data;
-            obj = new Customer(obj.id, obj.name, obj.address ,obj.contact);
+            obj = new Customer(obj.id, obj.name, obj.address, obj.contact);
             // console.log(JSON.stringify(resp.data));
 
             if (JSON.stringify(resp.data) !== "{}") { // if resp.data = '{"id":"C00-005","name":"Ramal","address":"Jaffna","contact":"716455455"}'
                 txtCustomerId.val(obj.getCustomerID());
                 txtCustomerName.val(obj.getCustomerName());
                 txtAddress.val(obj.getCustomerAddress());
-                txtContact.val("0"+obj.getCustomerContact());
+                txtContact.val("0" + obj.getCustomerContact());
 
                 validate_CustomerForm();
                 return true;
@@ -617,7 +617,7 @@ function validate_CustomerContact(input, txtField) {
         // validate_ContactNo(input,txtField);
         // return true;
 
-        if (customerDB.length >= 0) {
+        /*if (customerDB.length >= 0) {
             customerDB.forEach(obj => {
                 if (obj.getCustomerContact() != input) { // if not a duplicate Contact No
                     return true;
@@ -637,7 +637,35 @@ function validate_CustomerContact(input, txtField) {
 
                 }
             });
-        }
+        }*/
+
+        customerId = txtCustomerId.val();
+        console.log(customerId);
+
+        $.ajax({
+            url: "customer?option=CHECK_FOR_DUPLICATE&customerId=" + customerId + "&input=" + input,
+            method: "GET",
+            success: function (resp) {
+                response = resp;
+                // console.log(resp);
+                if (resp.message === "Duplicate") { // if a duplicate Contact No
+                    changeBorderColor("invalid", txtField);
+                    $("#customerForm p.errorText").eq(3).show();
+                    $("#errorContact").text("*Required Field* A Customer with this Contact already exist..");
+
+                    disableButton(".btnSaveCustomer");
+                    disableButton("#btnEditCustomer");
+                    return false;
+
+                } else if (resp.message === "Match") { // if its the Contact of the selected Customer
+                    return true;
+
+                } else { // if not a duplicate Contact No
+                    return true;
+                }
+            }
+        });
+
 
         if (rowSelected != null) {
             console.log("row selected not null...")
