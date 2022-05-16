@@ -32,11 +32,11 @@ public class PurchaseOrderServlet extends HttpServlet {
 
             switch (option) {
                 case "SEARCH":
-
+                    //TODO
                     break;
 
                 case "CHECK_FOR_DUPLICATE":
-
+                    //TODO
                     break;
 
                 case "GET_COUNT":
@@ -103,13 +103,20 @@ public class PurchaseOrderServlet extends HttpServlet {
         System.out.println("Purchase Order POST method....");
 
         JsonReader reader = Json.createReader(req.getReader());
-        JsonObject jsonObject = reader.readObject();
-        String orderId = jsonObject.getString("orderId");
-        String orderDate = jsonObject.getString("date");
-        String orderCost = jsonObject.getString("subTotal");
-        String discount = jsonObject.getString("discount");
-        String customerId = jsonObject.getString("customerId");
-//        String commit = jsonObject.getString("setAutoCommit");
+        JsonObject jsonObject1 = reader.readObject();
+        String orderId = jsonObject1.getString("orderId");
+        String orderDate = jsonObject1.getString("date");
+        String orderCost = jsonObject1.getString("subTotal");
+        String discount = jsonObject1.getString("discount");
+        String customerId = jsonObject1.getString("customerId");
+
+        /*JsonObject jsonObject2 = jsonObject1.getJsonObject("orderDetail");
+        System.out.println(jsonObject2);
+        String itemCode = jsonObject2.getString("itemCode");
+        String qty = jsonObject2.getString("qty");*/
+
+        JsonArray orderDetails = jsonObject1.getJsonArray("orderDetail");
+        System.out.println("orderDetails : "+orderDetails);
 
         try {
             System.out.println("inside try...");
@@ -118,10 +125,46 @@ public class PurchaseOrderServlet extends HttpServlet {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
             resp.setContentType("application/json");
 
-            /*boolean autoCommit = connection.getAutoCommit();
-            System.out.println("autoCommit : "+autoCommit);
+            connection.setAutoCommit(false);
 
-            if (commit.equals("TRUE")) {
+            PreparedStatement pstm1 = connection.prepareStatement("INSERT INTO Orders VALUES (?,?,?,?,?)");
+
+            pstm1.setObject(1, orderId);
+            pstm1.setObject(2, orderDate);
+            pstm1.setObject(3, String.format("%.2f", new Double(orderCost)));
+            pstm1.setObject(4, Integer.parseInt(discount));
+            pstm1.setObject(5, customerId);
+
+            if (pstm1.executeUpdate() > 0) {
+
+                for (JsonValue value : orderDetails) {
+                    String itemCode = value.asJsonObject().getString("itemCode");
+                    String qty = value.asJsonObject().getString("qty");
+
+                    PreparedStatement pstm2 = connection.prepareStatement("INSERT INTO OrderDetails VALUES (?,?,?)");
+                    pstm2.setObject(1, orderId);
+                    pstm2.setObject(2, itemCode);
+                    pstm2.setObject(3, Integer.parseInt(qty));
+
+                    if (pstm2.executeUpdate() > 0) {
+                        connection.commit();
+                        responseInfo = Json.createObjectBuilder();
+                        resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Order Saved Successfully...");
+                        responseInfo.add("data", "");
+                        resp.getWriter().print(responseInfo.build());
+
+                    } else {
+                        connection.rollback();
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 400);
+                        responseInfo.add("message", "Rollback1");
+                        responseInfo.add("data", "");
+                        resp.getWriter().print(responseInfo.build());
+                        return;
+                    }
+                }
                 connection.commit();
                 responseInfo = Json.createObjectBuilder();
                 resp.setStatus(HttpServletResponse.SC_CREATED); // 201
@@ -129,31 +172,15 @@ public class PurchaseOrderServlet extends HttpServlet {
                 responseInfo.add("message", "Order Saved Successfully...");
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
+            } else {
+                connection.rollback();
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 400);
+                responseInfo.add("message", "Rollback2");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
                 return;
-            }*/
-
-//            if (commit.equals("FALSE")) {
-//                connection.setAutoCommit(false);
-
-                PreparedStatement pstm = connection.prepareStatement("INSERT INTO Orders VALUES (?,?,?,?,?)");
-
-                pstm.setObject(1, orderId);
-                pstm.setObject(2, orderDate);
-                pstm.setObject(3, String.format("%.2f", new Double(orderCost)));
-                pstm.setObject(4, Integer.parseInt(discount));
-                pstm.setObject(5, customerId);
-
-                if (pstm.executeUpdate() > 0) {
-                    responseInfo = Json.createObjectBuilder();
-//                    resp.setStatus(HttpServletResponse.SC_ACCEPTED); // 202
-                    resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-                    responseInfo.add("status", 200);
-//                    responseInfo.add("message", "O_ACCEPTED");
-                    responseInfo.add("message", "Order Saved Successfully...");
-                    responseInfo.add("data", "");
-                    resp.getWriter().print(responseInfo.build());
-                }
-//            }
+            }
 
         } catch (ClassNotFoundException | SQLException e) {
             responseInfo = Json.createObjectBuilder();

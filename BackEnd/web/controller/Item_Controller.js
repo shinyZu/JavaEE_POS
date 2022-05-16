@@ -86,8 +86,6 @@ function updateItem(itemObj) {
     loadCmbDescription();
     clearItemFields();*/
 
-
-
     $.ajax({
         url: "item",
         method: "PUT",
