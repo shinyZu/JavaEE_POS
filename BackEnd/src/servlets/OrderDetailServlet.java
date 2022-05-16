@@ -96,4 +96,42 @@ public class OrderDetailServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Detail's DELETE invoked...");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            resp.setContentType("application/json");
+
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM OrderDetails WHERE orderId = ?");
+            pstm.setObject(1,req.getParameter("orderId"));
+
+            if (pstm.executeUpdate() > 0) {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 200);
+                responseInfo.add("message", "OrderDetails Deleted Successfully...");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
+
+            } else {
+                responseInfo = Json.createObjectBuilder();
+                responseInfo.add("status", 400);
+                responseInfo.add("message", "Couldn't Delete Order Details..");
+                responseInfo.add("data", "");
+                resp.getWriter().print(responseInfo.build());
+            }
+            connection.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            responseInfo = Json.createObjectBuilder();
+            responseInfo.add("status", 500);
+            responseInfo.add("message", "Error Occurred While Deleting...");
+            responseInfo.add("data", e.getLocalizedMessage());
+            resp.getWriter().print(responseInfo.build());
+            e.printStackTrace();
+        }
+    }
 }

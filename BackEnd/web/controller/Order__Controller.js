@@ -447,11 +447,13 @@ function clearInvoiceTable() {
     rowSelected = null;
 }
 
-$("#btnClearAllFields").click(function (e) {
+function clearAll() {
     clearCustomerFields();
     clearItemFields();
     clearInvoiceFields();
     clearInvoiceTable();
+
+    date.val("");
 
     generateNextOrderID();
     disableButton("#btnDeleteOrder");
@@ -460,7 +462,12 @@ $("#btnClearAllFields").click(function (e) {
     enableCmbBoxes();
 
     select_OrderDetailRow();
+}
+
+$("#btnClearAllFields").click(function (e) {
+    clearAll();
 });
+
 
 function disableCmbBoxes() {
     cmbCustomerId.attr("disabled", "disabled");
@@ -1358,7 +1365,7 @@ function select_OrderDetailRow() {
         cmbCustomerId.val(cust_obj.id);
         cmbCustomerName.val(cust_obj.name);
         txtord_address.val(cust_obj.address)
-        txtord_contact.val(cust_obj.contact);
+        txtord_contact.val("0" + cust_obj.contact);
 
         /*for (let i = 0; i < orderDetail_arr.length; i++) {
 
@@ -1416,13 +1423,21 @@ function select_OrderDetailRow() {
 
         enableButton("#btnDeleteOrder");
 
+
+        $("#btnDeleteOrder").off("click");
+        /* ------------------Delete Order------------*/
+        $("#btnDeleteOrder").click(function (e) {
+            // let orderID = orderId.val();
+            deleteOrder(orderId.val());
+        });
+
     });
+
 }
 
 /* -------------------------------Delete Order------------------------*/
 
-$("#btnDeleteOrder").click(function (e) {
-    let orderID = orderId.val();
+function deleteOrder(orderID){
 
     Swal.fire({
         text: "Are you sure you want to Delete this Order..?",
@@ -1438,34 +1453,57 @@ $("#btnDeleteOrder").click(function (e) {
 
     }).then(result => {
         if (result.isConfirmed) {
+            $.ajax({
+                url: "orders?orderId=" + orderID,
+                method: "DELETE",
+                async: false,
+                success: function (resp) {
+                    console.log(resp);
+                    if (resp.status === 200) {
+                        swal({
+                            title: 'Deleted!',
+                            text: "Order  " + orderID + "  Deleted.",
+                            icon: 'success',
+                            buttons: ["OK"],
+                            timer: 2000,
+                            closeModal: true,
+                        });
 
-            for (let i in ordersDB) {
-                if (orderID == ordersDB[i].getOrderId()) {
-                    ordersDB.splice(i, 1);
-                    break;
+                        getOrderCount();
+                        // select_OrderDetailRow();
+
+                    } else if (resp.status === 400) {
+                        toastr.error(resp.message);
+
+                    } else {
+                        toastr.error(resp.message);
+                    }
                 }
-            }
+            });
 
-            $("#totalOrders").text("0" + ordersDB.length);
+            /* $.ajax({
+                 url:"orderDetails?orderId="+orderID,
+                 method:"DELETE",
+                 async:false,
+                 success:function (resp) {
+                     console.log(resp);
+                     if (resp.status === 200) {
+                         toastr.success(resp.message);
 
-            for (let i in orderDetailDB) {
-                if (orderID == orderDetailDB[i].getOrderId()) {
-                    orderDetailDB.splice(i, 1);
-                    i--;
-                }
-            }
+                     } else if (resp.status === 400) {
+                         toastr.error(resp.message);
 
-            clearCustomerFields();
-            clearInvoiceFields();
-            clearInvoiceTable();
+                     }  else {
+                         toastr.error(resp.message);
+                     }
+                 }
+             });*/
 
-            generateNextOrderID();
-            disableButton("#btnDeleteOrder");
-            enableCmbBoxes();
+            clearAll();
             load_TblCustomerOrder();
 
         }
     });
 
-    select_OrderDetailRow();
-});
+}
+

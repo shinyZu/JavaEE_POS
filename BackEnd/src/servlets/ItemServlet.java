@@ -267,16 +267,16 @@ public class ItemServlet extends HttpServlet {
 
             if (pstm.executeUpdate() > 0) {
                 responseInfo = Json.createObjectBuilder();
-                responseInfo.add("data", "");
-                responseInfo.add("message", "Item Deleted Successfully...");
                 responseInfo.add("status", 200);
+                responseInfo.add("message", "Item Deleted Successfully...");
+                responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
 
             } else {
                 responseInfo = Json.createObjectBuilder();
-                responseInfo.add("data", "");
+                responseInfo.add("status", 400);
                 responseInfo.add("message", "Invalid Item Code...");
-                responseInfo.add("status", 200);
+                responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
             connection.close();
