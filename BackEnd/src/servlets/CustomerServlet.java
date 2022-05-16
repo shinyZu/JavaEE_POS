@@ -15,7 +15,6 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("GET method invoked....");
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
@@ -33,9 +32,6 @@ public class CustomerServlet extends HttpServlet {
                 case "SEARCH":
                     String customerID = req.getParameter("customerID");
                     String customerName = req.getParameter("customerName");
-
-                    System.out.println("customerID : "+customerID);
-                    System.out.println("customerName : "+customerName);
 
                     if (!customerID.equals("")) {
                         pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
@@ -71,7 +67,6 @@ public class CustomerServlet extends HttpServlet {
                         responseInfo.add("data", customer.build());
                         resp.getWriter().print(responseInfo.build());
                     }
-
                     break;
 
                 case "CHECK_FOR_DUPLICATE":
@@ -80,15 +75,11 @@ public class CustomerServlet extends HttpServlet {
                     String id = req.getParameter("customerId");
                     String input = req.getParameter("input");
                     String contact = input.split("0")[1];
-//                    System.out.println("input : "+input);
-//                    System.out.println("contact : "+contact);
 
                     while (rst.next()) {
-//                        System.out.println(rst.getString(1));
                         if (rst.getString(2).equals(contact)) {
 
                             if(rst.getString(1).equals(id)) {
-//                                System.out.println("contact of customer..");
                                 responseInfo = Json.createObjectBuilder();
                                 responseInfo.add("status", 200);
                                 responseInfo.add("message", "Match");
@@ -97,7 +88,6 @@ public class CustomerServlet extends HttpServlet {
                                 return;
                             }
 
-//                            System.out.println("is a duplicate contact...");
                             responseInfo = Json.createObjectBuilder();
                             responseInfo.add("status", 200);
                             responseInfo.add("message", "Duplicate");
@@ -107,7 +97,6 @@ public class CustomerServlet extends HttpServlet {
                         }
                     }
 
-//                    System.out.println("is a unique contact...");
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
                     responseInfo.add("message", "Unique");
@@ -166,12 +155,6 @@ public class CustomerServlet extends HttpServlet {
                 case "GETALL":
                     rst = connection.prepareStatement("SELECT * FROM Customer").executeQuery();
                     while (rst.next()) {
-                        // String id = rst.getString(1);
-                        // String name = rst.getString(2);
-                        // String address = rst.getString(3);
-                        // int contact = rst.getInt(4);
-                        // resp.getWriter().write(id+" "+name+" "+address+" "+contact);
-
                         customer.add("id", rst.getString(1));
                         customer.add("name", rst.getString(2));
                         customer.add("address", rst.getString(3));
@@ -197,8 +180,6 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("POST method invoked....");
-
         String id = req.getParameter("customerID");
         String name = req.getParameter("customerName");
         String address = req.getParameter("customerAddress");
@@ -217,16 +198,11 @@ public class CustomerServlet extends HttpServlet {
             pstm.setObject(4, contact);
 
             if (pstm.executeUpdate() > 0) {
-                System.out.println("Customer Added Successfully....");
-                // resp.getWriter().write("Customer Added Successfully....");
-
                 resp.setStatus(HttpServletResponse.SC_CREATED);// 201
-
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("data", "");
                 responseInfo.add("message", "Customer Saved Successfully...");
                 responseInfo.add("status", 200);
-
                 resp.getWriter().print(responseInfo.build());
             }
             connection.close();
@@ -294,8 +270,6 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("DELETE method invoked......");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");

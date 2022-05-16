@@ -15,8 +15,6 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Purchase Order GET method....");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
@@ -112,8 +110,6 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Purchase Order POST method....");
-
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject1 = reader.readObject();
         String orderId = jsonObject1.getString("orderId");
@@ -121,22 +117,12 @@ public class PurchaseOrderServlet extends HttpServlet {
         String orderCost = jsonObject1.getString("subTotal");
         String discount = jsonObject1.getString("discount");
         String customerId = jsonObject1.getString("customerId");
-
-        /*JsonObject jsonObject2 = jsonObject1.getJsonObject("orderDetail");
-        System.out.println(jsonObject2);
-        String itemCode = jsonObject2.getString("itemCode");
-        String qty = jsonObject2.getString("qty");*/
-
         JsonArray orderDetails = jsonObject1.getJsonArray("orderDetail");
-        System.out.println("orderDetails : "+orderDetails);
 
         try {
-            System.out.println("inside try...");
-
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
             resp.setContentType("application/json");
-
             connection.setAutoCommit(false);
 
             PreparedStatement pstm1 = connection.prepareStatement("INSERT INTO Orders VALUES (?,?,?,?,?)");
@@ -199,8 +185,6 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Purchase Order DELETE method....");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");

@@ -214,10 +214,13 @@ p.errorText {
 
 /* ------------------------------------------------------------------------------Manage Invoices-------------------------------------------------- */
 
-#invoice-table-pane,
-#tbl-orders {
-  /* height: 380px; */
-  /* height: 550px; */
+#invoice-table-pane{
+  overflow-y: auto;
+}
+
+#tblOrders {
+   height: 380px;
+   /*height: 550px;*/
   overflow-y: auto;
 }
 

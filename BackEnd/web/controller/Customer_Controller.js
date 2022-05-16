@@ -35,8 +35,8 @@ function addCustomer() {
                 toastr.success(resp.message);
                 loadAllCustomers();
                 getCustomerCount();
-                generateNextCustomerID();
                 reset_CustomerForm();
+                // generateNextCustomerID();
 
             } else {
                 toastr.error(resp.data);
@@ -68,7 +68,7 @@ function updateCustomer() {
 
                 loadAllCustomers();
                 reset_CustomerForm();
-                generateNextCustomerID();
+                // generateNextCustomerID();
 
                 clearCustomerFields();
                 load_TblCustomerOrder();
@@ -76,8 +76,10 @@ function updateCustomer() {
 
             } else if (resp.status === 400) {
                 toastr.error(resp.message);
+                generateNextCustomerID();
             } else {
                 toastr.error(resp.message);
+                generateNextCustomerID();
             }
         },
         error: function (ob, textStatus, error) {
@@ -117,7 +119,7 @@ function deleteCustomer(row) {
                         loadAllCustomers();
                         getCustomerCount();
                         reset_CustomerForm();
-                        generateNextCustomerID();
+                        // generateNextCustomerID();
 
                         select_OrderDetailRow();
                         clearInvoiceFields();
@@ -127,8 +129,10 @@ function deleteCustomer(row) {
 
                     } else if (resp.status === 400) {
                         toastr.error(resp.message);
+                        generateNextCustomerID();
                     } else {
                         toastr.error(resp.message);
+                        generateNextCustomerID();
                     }
                 },
                 error: function (ob, status, t) {
@@ -233,7 +237,7 @@ $(".btnSaveCustomer").click(function (e) {
     }).then(result => {
         if (result.isConfirmed) {
             addCustomer();
-            reset_CustomerForm();
+            // reset_CustomerForm();
 
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
@@ -261,7 +265,7 @@ $("#btnEditCustomer").click(function (e) {
     }).then(result => {
         if (result.isConfirmed) {
             updateCustomer();
-            reset_CustomerForm();
+            // reset_CustomerForm();
 
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
@@ -487,6 +491,8 @@ function reset_CustomerForm() {
 
     rowSelected = null;
     customerId = null;
+
+    generateNextCustomerID();
 }
 
 function validate_CustomerForm() {

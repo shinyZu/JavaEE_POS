@@ -16,8 +16,6 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("Item's GET invoked...");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
@@ -35,9 +33,6 @@ public class ItemServlet extends HttpServlet {
                 case "SEARCH":
                     String itemCode = req.getParameter("itemCode");
                     String description = req.getParameter("description");
-
-                    System.out.println("itemCode : "+itemCode);
-                    System.out.println("description : "+description);
 
                     if (!itemCode.equals("")) {
                         pstm = connection.prepareStatement("SELECT * FROM Item WHERE itemCode = ?");
@@ -138,6 +133,7 @@ public class ItemServlet extends HttpServlet {
 //                        System.out.println("Double Format : "+ String.format("%.2f",rst.getDouble(3))); // 44.00
 //                        System.out.println("String : "+ rst.getString(3)); // 44.0
 //                        System.out.println("Float : "+ rst.getFloat(3)); // 44.0
+
                         allItems.add(item.build());
                     }
 
@@ -158,8 +154,6 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("Item's POST invoked...");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
@@ -206,8 +200,6 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("Item's PUT invoked...");
-
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
         String itemCode = jsonObject.getString("itemCode");
@@ -255,8 +247,6 @@ public class ItemServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("Item's DELETE invoked...");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");

@@ -30,14 +30,14 @@ function addItem() {
         url: "item",
         method: "POST",
         data: $("#itemForm").serialize(),
-        async:false,
+        // async:false,
         success: function (resp) {
             if (resp.status === 200) {
                 toastr.success(resp.message);
                 loadAllItems();
                 getItemCount();
-                generateNextItemCode();
                 reset_ItemForm();
+                // generateNextItemCode();
 
             } else {
                 toastr.error(resp.data);
@@ -56,7 +56,7 @@ function updateItem(itemObj) {
         method: "PUT",
         contentType: "application/json",
         data: JSON.stringify(itemObj),
-        async:false,
+        // async:false,
         success: function (resp) {
             if (resp.status === 200) {
                 response = resp;
@@ -64,13 +64,16 @@ function updateItem(itemObj) {
                 // toastr.success(resp.message);
 
                 loadAllItems();
-                generateNextItemCode();
+                reset_ItemForm();
+                // generateNextItemCode();
                 clearItemFields();
 
             } else if (resp.status == 400) {
                 toastr.error(resp.message);
+                generateNextItemCode();
             } else {
                 toastr.error(resp.message);
+                generateNextItemCode();
             }
         },
         error: function (ob, textStatus, error) {
@@ -128,8 +131,11 @@ function deleteItem(row) {
 
                     } else if (resp.status == 400) {
                         toastr.error(resp.message);
+                        generateNextItemCode();
+
                     } else {
                         toastr.error(resp.message);
+                        generateNextItemCode();
                     }
 
                 },
@@ -230,7 +236,7 @@ $(".btnSaveItem").click(function () {
     }).then(result => {
         if (result.isConfirmed) {
             addItem();
-            reset_ItemForm();
+            // reset_ItemForm();
 
             $("#tblItem-body>tr").off("dblclick");
             delete_ItemRowOnDblClick();
@@ -266,7 +272,8 @@ $("#btnEditItem").click(function (e) {
             }
             updateItem(itemObj);
             toastr.success(response.message);
-            reset_ItemForm();
+            // reset_ItemForm();
+            // generateNextItemCode();
 
             $("#tblItem-body>tr").off("dblclick");
             delete_ItemRowOnDblClick();
@@ -467,6 +474,8 @@ function reset_ItemForm() {
 
     rowSelected = null;
     itemCode = null;
+
+    generateNextItemCode();
 }
 
 function validate_ItemForm() {
