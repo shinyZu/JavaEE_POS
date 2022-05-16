@@ -489,7 +489,6 @@ function enableCmbBoxes() {
 
 /* --------------------Select from Cart------------- */
 
-
 function select_CartRow() {
     getAllItems();
 
@@ -635,7 +634,7 @@ function addToCart() {
         rowToUpdate.children(":nth-child(4)").text(prevQty + orderQty);
         rowToUpdate.children(":nth-child(5)").text(parseFloat((prevQty + orderQty) * unitPrice).toFixed(2));
 
-    } else if (response == false) { // if item is not yet added to the cart
+    } else if (response === false) { // if item is not yet added to the cart
 
         newRow = `<tr>
                     <td>${itemCode}</td>
@@ -1077,6 +1076,7 @@ function place_Order(orderId) {
                 let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
                 if (item.getItemCode() === itemCode) {
                     qtyOnHand = item.getQtyOnHand();
+                    console.log(qtyOnHand);
                 }
             }
 
@@ -1097,10 +1097,20 @@ function place_Order(orderId) {
                 }
             }
 
-            /*let newQtyOnHand = qtyOnHand - parseInt(orderQty);
-            allItems[index].setQtyOnHand(newQtyOnHand);
-            // loadAllItems(itemDB);
-            loadAllItems();*/
+            // allItems[index].setQtyOnHand(newQtyOnHand);
+            let newQtyOnHand = qtyOnHand - parseInt(orderQty);
+
+            let itemObj = {
+                itemCode: itemCode,
+                description: allItems[index].description,
+                unitPrice: allItems[index].unitPrice,
+                // qty: `${newQtyOnHand}`
+                // qty: String{newQtyOnHand}
+                qty: newQtyOnHand.toString()
+            }
+
+            updateItem(itemObj);
+            loadAllItems();
             rowNo++;
 
         } while (rowNo <= noOfRows);
@@ -1109,6 +1119,30 @@ function place_Order(orderId) {
     select_OrderDetailRow();
     console.log(10);
     select_ItemRow();
+}
+
+function updateItemQty(newQtyOnHand) {
+
+    $.ajax({
+        url: "item?option=UPDATE_QTY",
+        method: "PUT",
+        async: false,
+        contentType: "application/json",
+        data: JSON.stringify(
+            {
+                itemCode: itemCode,
+                qty: newQtyOnHand
+            }
+        ),
+        success: function (resp) {
+            console.log(resp);
+            alert(resp.message);
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    })
+
 }
 
 function reset_Forms() {
@@ -1437,7 +1471,7 @@ function select_OrderDetailRow() {
 
 /* -------------------------------Delete Order------------------------*/
 
-function deleteOrder(orderID){
+function deleteOrder(orderID) {
 
     Swal.fire({
         text: "Are you sure you want to Delete this Order..?",

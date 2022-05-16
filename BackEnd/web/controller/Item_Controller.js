@@ -64,7 +64,7 @@ function addItem() {
     });
 }
 
-function updateItem() {
+function updateItem(itemObj) {
     /*let obj;
 
     itemCode = txtItemCode.val();
@@ -86,12 +86,7 @@ function updateItem() {
     loadCmbDescription();
     clearItemFields();*/
 
-    let itemObj = {
-        itemCode: txtItemCode.val(),
-        description: txtDescription.val(),
-        unitPrice: txtUnitPrice.val(),
-        qty: txtQty.val()
-    }
+
 
     $.ajax({
         url: "item",
@@ -99,7 +94,7 @@ function updateItem() {
         contentType: "application/json",
         data: JSON.stringify(itemObj),
         success: function (resp) {
-            if (resp.status == 200) {
+            if (resp.status === 200) {
                 response = resp;
                 console.log(resp.message);
                 toastr.success(resp.message);
@@ -498,7 +493,13 @@ $("#btnEditItem").click(function (e) {
 
     }).then(result => {
         if (result.isConfirmed) {
-            updateItem();
+            let itemObj = {
+                itemCode: txtItemCode.val(),
+                description: txtDescription.val(),
+                unitPrice: txtUnitPrice.val(),
+                qty: txtQty.val()
+            }
+            updateItem(itemObj);
             // loadAllItems(itemDB);
             reset_ItemForm();
 
