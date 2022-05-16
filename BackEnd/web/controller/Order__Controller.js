@@ -31,6 +31,10 @@ let balance;
 let discount;
 let amountPaid;
 
+let allCustomers;
+let allItems;
+let allOrders;
+
 console.log("Inside Order Controller...");
 
 $(cmbCustomerId).append(defaultOption);
@@ -52,11 +56,6 @@ $("#purchaseForm p.errorText").hide();
     $("#txtDiscount").attr("disabled", "disabled");
     $("#txtAmountPaid").attr("disabled", "disabled");
 
-    /*if (ordersDB.length == 0) {
-        orderId.val("OID-001");
-    } else {
-        generateNextOrderID();
-    }*/
 })();
 
 function clearCmbCustomerId() {
@@ -415,7 +414,24 @@ function enableCmbBoxes() {
 
 /* --------------------Select from Cart------------- */
 
+function getAllItems() {
+    $.ajax({
+        url: "item?option=GETALL",
+        method: "GET",
+        async: false,
+        success: function (resp) {
+            allItems = resp.data;
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus);
+            console.log(ob);
+        }
+    });
+}
+
 function select_CartRow() {
+    getAllItems();
+
     $("#tblInvoice-body>tr").click(function (e) {
         enableButton("#btnDeleteFromCart");
 
@@ -423,12 +439,21 @@ function select_CartRow() {
         itemCode = $(this).children(':first-child').text();
         orderQty = $(this).children(':nth-child(4)').text();
 
-        itemDB.forEach(obj => {
+        /*itemDB.forEach(obj => {
             if (itemCode == obj.getItemCode()) {
                 loadItemDetails(obj);
                 txtOrderQty.val(orderQty);
             }
-        });
+        });*/
+
+        for (let i of allItems) {
+            let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+
+            if (itemCode === item.getItemCode()) {
+                loadItemDetails(item);
+                txtOrderQty.val(orderQty);
+            }
+        }
 
         $("#btnDeleteFromCart").off("click");
         $("#btnDeleteFromCart").click(function (e) {
@@ -526,8 +551,15 @@ function isItemAlreadyAddedToCart(code) {
 
 function addToCart() {
 
-    itemCode = itemDB[parseInt(cmbItemCode.val())].getItemCode();
+    /*itemCode = itemDB[parseInt(cmbItemCode.val())].getItemCode();
     description = itemDB[parseInt(cmbItemCode.val())].getDescription();
+    unitPrice = parseFloat(txtUnitPrice2.val());
+    orderQty = parseInt(txtOrderQty.val());
+    total = parseFloat(unitPrice * orderQty);
+    qtyOnHand = txtQtyOnHand.val();*/
+
+    itemCode = cmbItemCode.val();
+    description = cmbDescription.val();
     unitPrice = parseFloat(txtUnitPrice2.val());
     orderQty = parseInt(txtOrderQty.val());
     total = parseFloat(unitPrice * orderQty);
@@ -545,7 +577,7 @@ function addToCart() {
     } else if (response == false) { // if item is not yet added to the cart
 
         newRow = `<tr>
-                     <td>${itemCode}</td>
+                    <td>${itemCode}</td>
                     <td>${description}</td>
                     <td>${txtUnitPrice2.val()}</td>
                     <td>${txtOrderQty.val()}</td>
@@ -755,14 +787,111 @@ $("#txtAmountPaid").keyup(function (e) {
     }
 });
 
+function transaction() {
+
+    let rowNo = 1;
+    let orderDetail;
+
+    $.ajax({
+        url: "orders",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(orderObj),
+        async: false,
+        success: function (resp1) {
+            console.log(4);
+            response = resp1;
+            if (resp1.status === 200) {
+                console.log(5);
+                // toastr.success(resp.message);
+                if (resp1.message === "O_ACCEPTED") {
+                    console.log("order ACCEPTED");
+
+                    if (noOfRows === 0) {
+                        alert("Empty Table..");
+
+                    } else {
+                        getAllItems();
+                        do {
+                            itemCode = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(1)").text();
+                            orderQty = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(4)").text();
+
+                            orderDetail = new OrderDetails(orderId, itemCode, orderQty);
+
+                            $.ajax({
+                                url: "orderDetails",
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify(
+                                    {
+                                        orderId: orderDetail.getOrderId(),
+                                        itemCode: orderDetail.getItemCode(),
+                                        orderQty: orderDetail.getOrderQty()
+                                    }
+                                ),
+                                success: function (resp2) {
+                                    response = resp2;
+                                    if (resp2.status === 200) {
+                                        // toastr.success(resp2.message);
+                                        if (resp2.message === "D_ACCEPTED") {
+                                            //
+                                        }
+                                    } else {
+                                        toastr.error(resp2.message);
+                                    }
+                                },
+                                error: function (ob, textStatus, error) {
+                                    console.log(ob);
+                                }
+                            });
+
+                            for (let i of allItems) {
+                                let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+                                if (item.getItemCode() === itemCode) {
+                                    qtyOnHand = item.getQtyOnHand();
+                                }
+                            }
+
+                            let index = 0;
+
+                            for (let i in allItems) {
+                                // let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+                                if (allItems[i].id === itemCode) {
+                                    qtyOnHand = allItems[i].qtyOnHand;
+                                    index = i;
+                                }
+                            }
+
+                            rowNo++;
+
+                        } while (rowNo <= noOfRows);
+                    }
+                }
+            } else {
+                console.log(6);
+                toastr.error(resp.message);
+            }
+
+        },
+        error: function (ob, textStatus, error) {
+            console.log(7);
+            console.log(ob);
+            alert(textStatus);
+        }
+    });
+}
+
 /* --------------------Place Order------------------------ */
 
 function place_Order(orderId) {
-    customerId = customerDB[cmbCustomerId.val()].getCustomerID();
-    // let newOrder = new Orders(orderId, date.val(), cartTotal, discount, customerId);    
-    let newOrder = new Orders(orderId, date.val(), subTotal, discount, customerId);
+    console.log(1);
+    console.log(orderId);
 
-    if (ordersDB.length == 0) {
+    customerId = cmbCustomerId.val();
+    let newOrder = new Orders(orderId, date.val(), subTotal, discount, customerId);
+    console.log(2);
+
+    /*if (ordersDB.length == 0) {
         ordersDB.push(newOrder);
 
     } else {
@@ -775,23 +904,90 @@ function place_Order(orderId) {
             }
         }
         ordersDB.push(newOrder);
+    }*/
+
+    let orderObj = {
+        orderId: newOrder.getOrderId(),
+        date: newOrder.getOrderDate(),
+        // subTotal: parseFloat(newOrder.getOrderCost()).toFixed(2),
+        // subTotal: subTotal.toFixed(2),
+        subTotal: newOrder.getOrderCost().toFixed(2),
+        discount: newOrder.getOrderDiscount(),
+        customerId: newOrder.getCustomerID()
+        // setAutoCommit: "FALSE"
     }
+
+    console.log(3);
+    console.log(orderObj);
+
+    // transaction();
+
+    $.ajax({
+        url: "orders",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(orderObj),
+        async: false,
+        success: function (resp1) {
+            console.log(4);
+            response = resp1;
+            if (resp1.status === 200) {
+                console.log(5);
+                toastr.success(resp1.message);
+
+            } else {
+                console.log(6);
+                toastr.error(resp1.message);
+            }
+        },
+        error: function (ob, textStatus, error) {
+            console.log(7);
+            console.log(ob);
+            alert(textStatus);
+        }
+    });
 
     // $("#totalOrders").text("0" + ordersDB.length);
 
     let rowNo = 1;
     let orderDetail;
 
-    if (noOfRows == 0) {
-        // alert("Empty Table..");
+    if (noOfRows === 0) {
+        alert("Empty Table..");
 
     } else {
+        getAllItems();
         do {
             itemCode = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(1)").text();
             orderQty = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(4)").text();
 
             orderDetail = new OrderDetails(orderId, itemCode, orderQty);
-            orderDetailDB.push(orderDetail);
+            // orderDetailDB.push(orderDetail);
+            console.log(orderId);
+
+            $.ajax({
+                url: "orderDetails",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(
+                    {
+                        orderId: orderDetail.getOrderId(),
+                        itemCode: orderDetail.getItemCode(),
+                        orderQty: orderDetail.getOrderQty(),
+                    }
+                ),
+                success: function (resp) {
+                    response = resp;
+                    if (resp.status == 200) {
+                        toastr.success(resp.message);
+                    } else {
+                        toastr.error(resp.message);
+                    }
+                },
+                error: function (ob, textStatus, error) {
+                    console.log(ob);
+                }
+            });
 
             // for (let obj of orderDetailDB) {
             //     if (orderId != obj.getOrderId()) {
@@ -802,30 +998,57 @@ function place_Order(orderId) {
             //     }
             // }
 
-            itemDB.forEach(obj => {
+            /*itemDB.forEach(obj => {
                 if (obj.getItemCode() == itemCode) {
                     qtyOnHand = obj.getQtyOnHand();
                 }
-            });
+            });*/
 
-            let index;
+            console.log(allItems);
 
-            for (let i in itemDB) {
+            /*allItems.forEach(obj => {
+                if (obj.getItemCode() === itemCode) {
+                    qtyOnHand = obj.getQtyOnHand();
+                }
+            });*/
+
+            for (let i of allItems) {
+                let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+                if (item.getItemCode() === itemCode) {
+                    qtyOnHand = item.getQtyOnHand();
+                }
+            }
+
+            let index = 0;
+
+            /*for (let i in itemDB) {
                 if (itemDB[i].getItemCode() == itemCode) {
                     qtyOnHand = itemDB[i].getQtyOnHand();
                     index = i;
                 }
+            }*/
+
+            for (let i in allItems) {
+                // let item = new Item(i.itemCode, i.description, i.unitPrice, i.qtyOnHand);
+                if (allItems[i].id === itemCode) {
+                    qtyOnHand = allItems[i].qtyOnHand;
+                    index = i;
+                }
             }
 
-            let newQtyOnHand = qtyOnHand - parseInt(orderQty);
-            itemDB[index].setQtyOnHand(newQtyOnHand);
-            loadAllItems(itemDB);
+            /*let newQtyOnHand = qtyOnHand - parseInt(orderQty);
+            allItems[index].setQtyOnHand(newQtyOnHand);
+            // loadAllItems(itemDB);
+            loadAllItems();*/
             rowNo++;
 
         } while (rowNo <= noOfRows);
     }
-    select_OrderDetailRow();
-    select_ItemRow();
+    console.log(8);
+    // select_OrderDetailRow();
+    console.log(9);
+    // select_ItemRow();
+    console.log(10);
 }
 
 function reset_Forms() {
@@ -841,24 +1064,34 @@ function reset_Table() {
     noOfRows = 0;
 }
 
-let allCustomers;
-
-function getAllCustomers(){
+function getAllCustomers() {
     $.ajax({
         url: "customer?option=GETALL",
         method: "GET",
+        async: false,
         success: function (resp) {
-            // console.log(resp);
+            console.log(resp.data);
             allCustomers = resp.data;
-            // return allCustomers;
-            // return resp.data;
         },
         error: function (ob, textStatus, error) {
             alert(textStatus);
             console.log(ob);
         }
     });
-    // return response;
+}
+
+function getAllOrders() {
+    $.ajax({
+        url: "orders?option=GETALL",
+        method: "GET",
+        success: function (res) {
+            console.log(res);
+            allOrders = res.data;
+        },
+        error: function (ob, textStatus, error) {
+            console.log(ob);
+        }
+    });
 }
 
 function load_TblCustomerOrder() {
@@ -888,6 +1121,30 @@ function load_TblCustomerOrder() {
     $("#tblOrders-body").empty();
 
     getAllCustomers();
+    /*getAllOrders();
+
+    for (let o of allOrders) {
+        let order = new Orders(o.orderId, o.orderDate, o.orderCost, o.discount, o.customerId);
+        console.log(allCustomers);
+
+        for (let c of allCustomers) {
+            let customer = new Customer(c.id, c.name, c.address, c.contact);
+
+            if (order.getCustomerID() === customer.getCustomerID()) {
+
+                newRow = `<tr>
+                            <td>${order.getOrderId()}</td>
+                            <td>${order.getCustomerID()}</td>
+                            <td>${customer.getCustomerName()}</td>
+                            <td>0${customer.getCustomerContact()}</td>
+                            <td>${parseFloat(order.getOrderCost()).toFixed(2)}</td>
+                            <td>${order.getOrderDate()}</td>
+                        </tr>`;
+
+            }
+        }
+        $("#tblOrders-body").append(newRow);
+    }*/
 
     $.ajax({
         url: "orders?option=GETALL",
@@ -899,19 +1156,19 @@ function load_TblCustomerOrder() {
                 let order = new Orders(o.orderId, o.orderDate, o.orderCost, o.discount, o.customerId);
                 console.log(allCustomers);
 
-                for (let c of allCustomers ) {
+                for (let c of allCustomers) {
                     let customer = new Customer(c.id, c.name, c.address, c.contact);
 
                     if (order.getCustomerID() === customer.getCustomerID()) {
 
                         newRow = `<tr>
-                            <td>${order.getOrderId()}</td>
-                            <td>${order.getCustomerID()}</td>
-                            <td>${customer.getCustomerName()}</td>
-                            <td>0${customer.getCustomerContact()}</td>
-                            <td>${parseFloat(order.getOrderCost()).toFixed(2)}</td>
-                            <td>${order.getOrderDate()}</td>
-                        </tr>`;
+                             <td>${order.getOrderId()}</td>
+                             <td>${order.getCustomerID()}</td>
+                             <td>${customer.getCustomerName()}</td>
+                             <td>0${customer.getCustomerContact()}</td>
+                             <td>${parseFloat(order.getOrderCost()).toFixed(2)}</td>
+                             <td>${order.getOrderDate()}</td>
+                         </tr>`;
 
                     }
                 }
@@ -919,7 +1176,6 @@ function load_TblCustomerOrder() {
             }
         },
         error: function (ob, textStatus, error) {
-            alert(textStatus);
             console.log(ob);
         }
     });
@@ -951,8 +1207,8 @@ $("#btnPurchase").click(function (e) {
         }).then(result => {
             if (result.isConfirmed) {
                 place_Order(orderId.val());
-                toastr.success("Order Placed Successfully...");
-
+                // toastr.success("Order Placed Successfully...");
+                console.log(11);
                 load_TblCustomerOrder();
                 generateNextOrderID();
 

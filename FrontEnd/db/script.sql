@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS Orders(
    orderId VARCHAR(15),
    orderDate DATE,
    orderCost  DOUBLE DEFAULT 0.00,
-   discount  DOUBLE DEFAULT 0.00,
+   discount  INT,
    customerId VARCHAR(15),
 
    CONSTRAINT PRIMARY KEY (orderId),
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS Orders(
 SHOW TABLES ;
 DESCRIBE Orders;
 
-INSERT INTO Orders VALUES ('OID-001',2022-05-15, 500.00, 10, 'C00-001');
+INSERT INTO Orders VALUES ('OID-001','2022-05-15', 500.00, 10, 'C00-001');
 #-----------------------
 DROP TABLE IF EXISTS OrderDetails;
 CREATE TABLE IF NOT EXISTS OrderDetails(

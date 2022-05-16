@@ -17,6 +17,7 @@ let alertIcon;
 
 getCustomerCount();
 getItemCount();
+getOrderCount();
 
 function getCustomerCount() {
     $.ajax({
