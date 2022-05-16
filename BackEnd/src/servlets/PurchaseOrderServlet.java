@@ -147,13 +147,14 @@ public class PurchaseOrderServlet extends HttpServlet {
                     pstm2.setObject(3, Integer.parseInt(qty));
 
                     if (pstm2.executeUpdate() > 0) {
-                        connection.commit();
-                        responseInfo = Json.createObjectBuilder();
+                        System.out.println("zzzzzzzzzzzzzzzzz");
+//                        connection.commit();
+                        /*responseInfo = Json.createObjectBuilder();
                         resp.setStatus(HttpServletResponse.SC_CREATED); // 201
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Order Saved Successfully...");
                         responseInfo.add("data", "");
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
 
                     } else {
                         connection.rollback();

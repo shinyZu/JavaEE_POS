@@ -17,8 +17,6 @@ disableButton(".btnSaveCustomer");
 disableButton("#btnEditCustomer");
 disableButton("#btnDeleteCustomer");
 
-console.log("Inside Customer Controller...");
-
 /* ---------------Initially Hide the Error Indicators----------*/
 
 $("#customerForm p.errorText").hide();
@@ -26,12 +24,6 @@ $("#customerForm p.errorText").hide();
 /* -----------------------------------------------------------------CRUD Operation---------------------------------------------------*/
 
 function addCustomer() {
-    // customerId = txtCustomerId.val();
-    // customerName = txtCustomerName.val();
-    // customerAddress = txtAddress.val();
-    // customerContact = txtContact.val();
-    //
-    // console.log(customerId,customerName,customerAddress,customerContact);
     txtCustomerId.removeAttr("disabled");
 
     $.ajax({
@@ -39,8 +31,7 @@ function addCustomer() {
         method: "POST",
         data: $("#customerForm").serialize(),
         success: function (resp) {
-            if (resp.status == 200) {
-                console.log(resp);
+            if (resp.status === 200) {
                 toastr.success(resp.message);
                 loadAllCustomers();
                 getCustomerCount();
@@ -72,22 +63,18 @@ function updateCustomer() {
         contentType: "application/json",
         data: JSON.stringify(custObj),
         success: function (resp) {
-            if (resp.status == 200) {
-                console.log(resp.message);
+            if (resp.status === 200) {
                 toastr.success(resp.message);
 
                 loadAllCustomers();
                 reset_CustomerForm();
                 generateNextCustomerID();
 
-                // loadCmbCustomerId();
-                // loadCmbCustomerName();
-
                 clearCustomerFields();
                 load_TblCustomerOrder();
                 select_OrderDetailRow();
 
-            } else if (resp.status == 400) {
+            } else if (resp.status === 400) {
                 toastr.error(resp.message);
             } else {
                 toastr.error(resp.message);
@@ -112,16 +99,12 @@ function deleteCustomer(row) {
         closeOnClickOutside: false,
 
     }).then(result => {
-
         if (result) {
-
             $.ajax({
                 url: "customer?customerID=" + customerId,
                 method: "DELETE",
                 success: function (resp) {
-                    // console.log(resp);
-                    if (resp.status == 200) {
-                        // alert(resp.message);
+                    if (resp.status === 200) {
                         swal({
                             title: 'Deleted!',
                             text: "Customer  " + customerId + "  Deleted.",
@@ -140,98 +123,29 @@ function deleteCustomer(row) {
                         clearInvoiceFields();
                         clearInvoiceTable();
 
-                        // loadCmbCustomerId();
-                        // loadCmbCustomerName();
                         clearCustomerFields();
 
-                    } else if (resp.status == 400) {
+                    } else if (resp.status === 400) {
                         toastr.error(resp.message);
                     } else {
                         toastr.error(resp.message);
                     }
-
                 },
                 error: function (ob, status, t) {
                     console.log(ob);
                 }
             });
-
-            /*swal({
-                title: 'Deleted!',
-                text: "Customer  " + customerId + "  Deleted.",
-                icon: 'success',
-                buttons: ["OK"],
-                timer: 2000,
-                closeModal: true,
-            });
-
-            for (let i in customerDB) {
-                if (customerDB[i].getCustomerID() == customerId) {
-                    customerDB.splice(i, 1);
-                }
-            }
-
-            $(row).remove();
-
-            $("#totalCustomers").text("0" + customerDB.length);
-
-            for (let i = 0; i < ordersDB.length; i++) {
-                if (customerId == ordersDB[i].getCustomerID()) {
-                    ordersDB.splice(i, 1);
-                    i--;
-                }
-
-            }*/
-
-            // for (let i in ordersDB) {
-            //     if (customerId == ordersDB[i].getCustomerID()) {
-            //         // console.log(i);
-            //         ordersDB.splice(i,1);
-            //         i--;
-            //     }
-            // }  
-
-            /*$("#tblOrders-body").empty();
-            load_TblCustomerOrder();
-            $("#totalOrders").text("0" + ordersDB.length);
-
-            generateNextOrderID();
-            reset_CustomerForm();
-
-            select_OrderDetailRow();
-            clearInvoiceFields();
-            clearInvoiceTable();*/
         }
     })
-
-    // if (window.confirm("Do you really need to delete this Customer..?")) {
-
-    //     for (let i in customerDB) {
-    //         if (customerDB[i].getCustomerID() == customerId) {
-    //             customerDB.splice(i,1);
-    //         }
-    //     }  
-    //     $(row).remove();
-    //     reset_CustomerForm();
-    // }
-
-    // loadCmbCustomerId();
-    // loadCmbCustomerName();
-    // clearCustomerFields();
-
 }
 
 function loadAllCustomers() {
-    console.log("inside loadAllCustomers");
     $("#tblCustomer-body").empty();
 
     $.ajax({
         url: "customer?option=GETALL",
         method: "GET",
         success: function (resp) {
-            console.log(resp);
-            // alert(resp.message);
-
             for (let c of resp.data) {
                 let customer = new Customer(c.id, c.name, c.address, c.contact);
 
@@ -244,7 +158,6 @@ function loadAllCustomers() {
 
                 $("#tblCustomer-body").append(newRow);
             }
-            // clearCustomerFields();
             select_CustomerRow();
         },
 
@@ -256,9 +169,6 @@ function loadAllCustomers() {
 }
 
 function searchCustomer(searchValue) {
-    console.log("inside search Customer");
-    // console.log("searchValue : " + searchValue);
-
     $.ajax({
         url: "customer?option=SEARCH&customerID=" + searchValue + "&customerName=",
         method: "GET",
@@ -266,7 +176,6 @@ function searchCustomer(searchValue) {
             response = resp;
             let obj = resp.data;
             obj = new Customer(obj.id, obj.name, obj.address, obj.contact);
-            // console.log(JSON.stringify(resp.data));
 
             if (JSON.stringify(resp.data) !== "{}") { // if resp.data = '{"id":"C00-005","name":"Ramal","address":"Jaffna","contact":"716455455"}'
                 txtCustomerId.val(obj.getCustomerID());
@@ -286,12 +195,10 @@ function searchCustomer(searchValue) {
                     timer: 2000,
                     closeModal: true,
                 });
-
                 reset_CustomerForm();
                 return false;
             }
         },
-
         error: function (ob, textStatus, error) {
             console.log(ob);
         }
@@ -306,86 +213,7 @@ function searchCustomer(searchValue) {
     3. delete the selected Customer from the table
 */
 
-/*function isCustomerAlreadyExist() {
-    response = customerDB.find(function (obj) {
-        return obj.getCustomerID() == txtCustomerId.val();
-    });
-}*/
-
-/*function checkDB_BeforeSaveCustomer() {
-
-    nextID = txtCustomerId.val().split("-")[1];
-
-    if (customerDB.length == 0) {
-        lastId = "C00-000";
-    } else {
-        lastId = customerDB.slice(customerDB.length - 1, customerDB.length)[0].getCustomerID();
-    }
-
-    lastId = lastId.split("-")[1];
-
-    if (response) { // if Customer already exist
-        alertText = "A Customer already exists with ID : " + txtCustomerId.val() + "...";
-        display_Alert("", alertText, "warning");
-
-    } else if (nextID < lastId) {
-        lastId++;
-
-        if (lastId < 9) {
-            alertText = "ID : " + txtCustomerId.val() + " is not available...\nPlease use ID : C00-00" + lastId;
-            display_Alert("", alertText, "info");
-
-        } else if (lastId >= 10) {
-            alertText = "ID : " + txtCustomerId.val() + " is not available...\nPlease use ID : C00-0" + lastId;
-            display_Alert("", alertText, "info");
-        }
-
-    } else if (nextID > ++lastId) {
-
-        if (lastId < 9) {
-            alertTitle = "C00-00" + lastId;
-            alertText = "is the next Available Customer ID";
-            display_Alert(alertTitle, alertText, "info");
-
-        } else if (lastId >= 10) {
-            alertTitle = "C00-0" + lastId;
-            alertText = "is the next Available Customer ID";
-            display_Alert(alertTitle, alertText, "info");
-        }
-
-
-    } else {
-        Swal.fire({
-            text: "Are you sure you want to Save this Customer..?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Save',
-            confirmButtonColor: '#1abc9c',
-            customClass: {
-                cancelButton: 'order-1 right-gap',
-                confirmButton: 'order-2',
-            },
-            allowOutsideClick: false,
-            // allowEnterKey: false,
-            // keydownListenerCapture: false,
-            // stopKeydownPropagation: false,
-            returnFocus: false,
-
-
-        }).then(result => {
-            if (result.isConfirmed) {
-                addCustomer();
-                reset_CustomerForm();
-            }
-            // return;
-        });
-    }
-}*/
-
 $(".btnSaveCustomer").click(function (e) {
-    // isCustomerAlreadyExist();
-    // checkDB_BeforeSaveCustomer();
-
     Swal.fire({
         text: "Are you sure you want to Save this Customer..?",
         icon: 'question',
@@ -404,14 +232,12 @@ $(".btnSaveCustomer").click(function (e) {
 
     }).then(result => {
         if (result.isConfirmed) {
-            console.log("Save Button clicked....")
             addCustomer();
             reset_CustomerForm();
 
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
         }
-        // return;
     });
 });
 
@@ -419,7 +245,6 @@ $(".btnSaveCustomer").click(function (e) {
 
 $("#btnEditCustomer").click(function (e) {
     select_CustomerRow();
-
     Swal.fire({
         text: "Are you sure you want to Update this Customer..?",
         icon: 'question',
@@ -436,10 +261,8 @@ $("#btnEditCustomer").click(function (e) {
     }).then(result => {
         if (result.isConfirmed) {
             updateCustomer();
-            // loadAllCustomers(customerDB);
             reset_CustomerForm();
 
-            // select_CustomerRow();
             $("#tblCustomer-body>tr").off("dblclick");
             delete_CustomerRowOnDblClick();
         }
@@ -477,8 +300,6 @@ $("#txtSearchCustomer").keyup(function (e) {
             $(this).hide();
         }
     });
-
-
 });
 
 /* -------------------------------------------------------------------Validation--------------------------------------------------- */
@@ -491,7 +312,6 @@ var regExCusAddress = /^[A-z0-9 \.]{5,}$/;
 var regExCusContact = /^[0-9]{10}$/
 
 function select_CustomerRow() {
-    console.log("clicked a row.....");
     $("#tblCustomer-body>tr").click(function () {
         rowSelected = this;
         customerId = $(this).children(':nth-child(1)').text();
@@ -513,7 +333,6 @@ function select_CustomerRow() {
         $("#tblCustomer-body>tr").off("dblclick");
         delete_CustomerRowOnDblClick();
     });
-
 }
 
 function delete_CustomerRowOnDblClick() {
@@ -609,40 +428,12 @@ function validate_CustomerContact(input, txtField) {
 
         $("#customerForm p.errorText").eq(3).hide();
 
-        // validate_ContactNo(input,txtField);
-        // return true;
-
-        /*if (customerDB.length >= 0) {
-            customerDB.forEach(obj => {
-                if (obj.getCustomerContact() != input) { // if not a duplicate Contact No
-                    return true;
-
-                } else if (obj.getCustomerID() == txtCustomerId.val() && txtContact.val() == obj.getCustomerContact()) { // if its the Contact of the selected Customer
-                    return true;
-
-                } else { // if a duplicate Contact No
-
-                    changeBorderColor("invalid", txtField);
-                    $("#customerForm p.errorText").eq(3).show();
-                    $("#errorContact").text("*Required Field* A Customer with this Contact already exist..");
-
-                    disableButton(".btnSaveCustomer");
-                    disableButton("#btnEditCustomer");
-                    return false;
-
-                }
-            });
-        }*/
-
         customerId = txtCustomerId.val();
-        console.log(customerId);
-
         $.ajax({
             url: "customer?option=CHECK_FOR_DUPLICATE&customerId=" + customerId + "&input=" + input,
             method: "GET",
             success: function (resp) {
                 response = resp;
-                // console.log(resp);
                 if (resp.message === "Duplicate") { // if a duplicate Contact No
                     changeBorderColor("invalid", txtField);
                     $("#customerForm p.errorText").eq(3).show();
@@ -662,7 +453,6 @@ function validate_CustomerContact(input, txtField) {
         });
 
         if (rowSelected != null) {
-            // console.log("row selected not null...")
             disableButton(".btnSaveCustomer");
         }
         return true;
@@ -756,13 +546,10 @@ $("#txtContact").keyup(function (e) {
     validate_CustomerContact(input, this);
 
     if (e.code == "Enter" && isBorderGreen(this)) {
-        // isCustomerAlreadyExist();
-        // checkDB_BeforeSaveCustomer();
         select_CustomerRow();
     }
     $("#tblCustomer-body>tr").off("dblclick");
     delete_CustomerRowOnDblClick();
-
 });
 
 /* -----Clear Fields-------*/
@@ -773,7 +560,6 @@ $("#btnClearCustomerFields").click(function () {
     loadAllCustomers();
 
     txtSearchId.val("");
-    // select_CustomerRow();
 });
 
 

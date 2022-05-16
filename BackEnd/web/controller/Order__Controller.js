@@ -1167,14 +1167,12 @@ function select_OrderDetailRow() {
         for (let obj of allOrders) {
             if (obj.orderId === orderID) {
                 order_obj = obj;
-                console.log(order_obj);
             }
         }
 
         for (let obj of allCustomers) {
             if (order_obj.customerId === obj.id) {
                 cust_obj = obj;
-                console.log(cust_obj);
             }
         }
 
@@ -1182,7 +1180,6 @@ function select_OrderDetailRow() {
         for (let i in allOrderDetails) {
             if (orderID === allOrderDetails[i].orderId) {
                 orderDetail_arr[index++] = allOrderDetails[i];
-                console.log(orderDetail_arr);
             }
         }
 

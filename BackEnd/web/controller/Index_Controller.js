@@ -53,7 +53,6 @@ function getOrderCount() {
         method: "GET",
         async: false,
         success: function (resp) {
-            console.log(resp.data);
             $("#totalOrders").text("0" + resp.data);
         },
         error: function (ob, textStatus, error) {
@@ -69,15 +68,12 @@ function generateNextCustomerID() {
         async: false,
         success: function (resp) {
             let lastCustId = resp.data;
-            console.log(lastCustId);
 
             if (lastCustId === "null") {
                 txtCustomerId.val("C00-001");
                 return;
             }
-
             let nextCustId = ++lastCustId.split("-")[1];
-            console.log(nextCustId);
 
             if (nextCustId <= 9) {
                 nextCustId = "C00-00" + nextCustId;
@@ -108,15 +104,12 @@ function generateNextItemCode() {
         async: false,
         success: function (resp) {
             let lastItemCode = resp.data;
-            console.log(lastItemCode);
 
             if (lastItemCode === "null") {
                 txtItemCode.val("I00-001");
                 return;
             }
-
             let nextItemCode = ++lastItemCode.split("-")[1];
-            console.log(nextItemCode);
 
             if (nextItemCode <= 9) {
                 nextItemCode = "I00-00" + nextItemCode;
@@ -147,15 +140,12 @@ function generateNextOrderID() {
         async: false,
         success: function (resp) {
             let lastOrderId = resp.data;
-            console.log(lastOrderId);
 
             if (lastOrderId === "null") {
                 orderId.val("OID-001");
                 return;
             }
-
             let nextOrderId = ++lastOrderId.split("-")[1];
-            console.log(nextOrderId);
 
             if (nextOrderId <= 9) {
                 nextOrderId = "OID-00" + nextOrderId;
@@ -177,37 +167,9 @@ function generateNextOrderID() {
             console.log(ob);
         }
     });
-
-    /*if (ordersDB.length != 0) {
-
-        let lastOrderId = ordersDB.reverse().slice(0, 1)[0].getOrderId();
-        let nextOrderId = ++lastOrderId.split("-")[1];
-        ordersDB.reverse();
-
-        if (nextOrderId < 9) {
-            nextOrderId = "OID-00" + nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-
-        } else if (nextOrderId > 9) {
-            nextOrderId = "OID-0", nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-
-        } else if (nextOrderId < 100) {
-            nextOrderId = "OID-", nextOrderId;
-            orderId.val(nextOrderId);
-            return nextOrderId;
-        }
-
-    } else {
-        // console.log("empty ordersDB");
-    }*/
 }
 
 $("#nav-home").click(function () {
-    console.log("inside Home Tab..");
-
     $("title").text("Home");
 
     $("#home-main").css('display', 'block');
@@ -226,8 +188,6 @@ $("#nav-home").click(function () {
 });
 
 $("#nav-customer").click(function () {
-    console.log("inside Customer Tab..");
-
     $("title").text("Customers");
 
     $("#home-main").css('display', 'none');
@@ -242,7 +202,6 @@ $("#nav-customer").click(function () {
 
     txtCustomerId.attr("disabled", "disabled");
     $("#txtCustomerName").focus();
-    // $("#txtCustomerId").focus();
 
     loadAllCustomers();
     generateNextCustomerID();
@@ -250,7 +209,6 @@ $("#nav-customer").click(function () {
 });
 
 $("#nav-store").click(function () {
-    console.log("inside Store Tab..");
     $("title").text("Store");
 
     $("#home-main").css('display', 'none');
@@ -265,14 +223,12 @@ $("#nav-store").click(function () {
 
     txtItemCode.attr("disabled", "disabled");
     $("#txtDescription").focus();
-    // $("#txtItemCode").focus();
 
     loadAllItems();
     generateNextItemCode();
 });
 
 $("#nav-orders").click(function () {
-    console.log("inside Orders Tab..");
     $("title").text("Orders");
 
     $("#home-main").css('display', 'none');
@@ -285,7 +241,6 @@ $("#nav-orders").click(function () {
     $("#nav-store a").removeClass("active");
     $("#nav-orders a").addClass("active");
 
-    // setComboBoxes();
     generateNextOrderID();
     load_TblCustomerOrder();
 
@@ -296,7 +251,6 @@ $("#nav-orders").click(function () {
     loadCmbDescription();
 
     select_OrderDetailRow();
-
 });
 
 // toastr.options = {
