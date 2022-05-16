@@ -12,6 +12,8 @@ let txtUnitPrice2 = $("#txtUnitPrice2");
 let txtQtyOnHand = $("#txtQtyOnHand");
 let txtOrderQty = $("#txtOrderQty");
 
+let txtSearchOrder = $("#txtSearchOrder");
+
 let newOption;
 let defaultOption = `<option value="-1" selected disabled hidden >Select</option>`;
 let selectedOption;
@@ -35,8 +37,6 @@ let allCustomers;
 let allItems;
 let allOrders;
 let allOrderDetails;
-
-console.log("Inside Order Controller...");
 
 $(cmbCustomerId).append(defaultOption);
 $(cmbCustomerName).append(defaultOption);
@@ -105,7 +105,7 @@ function getAllOrders() {
 
 function getAllOrderDetails() {
     $.ajax({
-        url: "orderDetails",
+        url: "orders?option=GET_DETAILS",
         method: "GET",
         async: false,
         success: function (res) {
@@ -365,6 +365,8 @@ function clearAll() {
     $("#txtDiscount").attr("disabled", "disabled");
     $("#txtAmountPaid").attr("disabled", "disabled");
     enableCmbBoxes();
+
+    txtSearchOrder.val("");
 
     select_OrderDetailRow();
 }
@@ -936,6 +938,7 @@ function place_Order(orderId) {
 
     } else {
         do {
+            qtyOnHand = 0;
             itemCode = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(1)").text();
             orderQty = $(`#tblInvoice-body>tr:nth-child(${rowNo})`).children(":nth-child(4)").text();
 
@@ -951,7 +954,7 @@ function place_Order(orderId) {
 
             let index = 0;
             for (let i in allItems) {
-                if (allItems[i].id === itemCode) {
+                if (allItems[i].itemCode === itemCode) {
                     qtyOnHand = allItems[i].qtyOnHand;
                     index = i;
                 }
@@ -999,22 +1002,24 @@ function place_Order(orderId) {
                     console.log("before update qty");
                     for (let i in array_UpdateQtyDetail) {
                         console.log(1);
-                        if (array_UpdateQtyDetail[i].itemCode === allItems[i].itemCode) {
-                            console.log(2);
-                            let itemObj = {
-                                itemCode: allItems[i].itemCode,
-                                description: allItems[i].description,
-                                unitPrice: allItems[i].unitPrice,
-                                qty: array_UpdateQtyDetail[i].qtyOnHand.toString()
+                        for (let j of allItems) {
+                            if (array_UpdateQtyDetail[i].itemCode === j.itemCode) {
+                                console.log(2);
+                                let itemObj = {
+                                    itemCode: j.itemCode,
+                                    description: j.description,
+                                    unitPrice: j.unitPrice,
+                                    qty: array_UpdateQtyDetail[i].qtyOnHand.toString()
+                                }
+                                console.log(3);
+                                console.log(itemObj)
+                                updateItem(itemObj);
                             }
-                            console.log(3);
-                            console.log(itemObj)
-                            updateItem(itemObj);
                         }
                     }
 
                 } else {
-                    toastr.error(resp1.message);
+                    toastr.error(resp.message);
                 }
             },
             error: function (ob, textStatus, error) {

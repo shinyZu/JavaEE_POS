@@ -39,7 +39,7 @@ public class OrderDetailServlet extends HttpServlet {
             }
 
             responseInfo = Json.createObjectBuilder();
-            resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+            resp.setStatus(HttpServletResponse.SC_OK); // 200
             responseInfo.add("status", 200);
             responseInfo.add("message", "Received All Details");
             responseInfo.add("data", allDetails.build());

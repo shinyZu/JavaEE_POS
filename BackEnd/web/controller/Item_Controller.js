@@ -30,8 +30,9 @@ function addItem() {
         url: "item",
         method: "POST",
         data: $("#itemForm").serialize(),
+        async:false,
         success: function (resp) {
-            if (resp.status == 200) {
+            if (resp.status === 200) {
                 toastr.success(resp.message);
                 loadAllItems();
                 getItemCount();
@@ -55,10 +56,12 @@ function updateItem(itemObj) {
         method: "PUT",
         contentType: "application/json",
         data: JSON.stringify(itemObj),
+        async:false,
         success: function (resp) {
             if (resp.status === 200) {
                 response = resp;
-                toastr.success(resp.message);
+                // return resp;
+                // toastr.success(resp.message);
 
                 loadAllItems();
                 generateNextItemCode();
@@ -104,6 +107,7 @@ function deleteItem(row) {
             $.ajax({
                 url: "item?itemCode=" + itemCode,
                 method: "DELETE",
+                async:false,
                 success: function (resp) {
                     if (resp.status == 200) {
                         // alert(resp.message);
@@ -261,6 +265,7 @@ $("#btnEditItem").click(function (e) {
                 qty: txtQty.val()
             }
             updateItem(itemObj);
+            toastr.success(response.message);
             reset_ItemForm();
 
             $("#tblItem-body>tr").off("dblclick");

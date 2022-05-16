@@ -1,5 +1,3 @@
-console.log("loaded Index Controller...");
-
 let rowSelected;
 let updatedRow;
 

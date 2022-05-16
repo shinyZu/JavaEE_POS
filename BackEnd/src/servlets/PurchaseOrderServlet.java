@@ -31,14 +31,6 @@ public class PurchaseOrderServlet extends HttpServlet {
             PreparedStatement pstm;
 
             switch (option) {
-                case "SEARCH":
-                    //TODO
-                    break;
-
-                case "CHECK_FOR_DUPLICATE":
-                    //TODO
-                    break;
-
                 case "GET_COUNT":
                     rst = connection.prepareStatement("SELECT COUNT(orderId) FROM Orders").executeQuery();
 
@@ -69,7 +61,6 @@ public class PurchaseOrderServlet extends HttpServlet {
                     }
                     break;
 
-
                 case "GETALL":
                     rst = connection.prepareStatement("SELECT * FROM Orders").executeQuery();
                     while (rst.next()) {
@@ -87,6 +78,27 @@ public class PurchaseOrderServlet extends HttpServlet {
                     responseInfo.add("message", "Done");
                     responseInfo.add("status", HttpServletResponse.SC_OK); // 200
 
+                    resp.getWriter().print(responseInfo.build());
+                    break;
+
+                case "GET_DETAILS":
+                    JsonObjectBuilder detail = Json.createObjectBuilder();
+                    JsonArrayBuilder allDetails = Json.createArrayBuilder();
+
+                    rst = connection.prepareStatement("SELECT * FROM OrderDetails").executeQuery();
+
+                    while (rst.next()) {
+                        detail.add("orderId", rst.getString(1));
+                        detail.add("itemCode", rst.getString(2));
+                        detail.add("orderQty", rst.getInt(3));
+                        allDetails.add(detail.build());
+                    }
+
+                    responseInfo = Json.createObjectBuilder();
+                    resp.setStatus(HttpServletResponse.SC_OK); // 200
+                    responseInfo.add("status", 200);
+                    responseInfo.add("message", "Received All Details");
+                    responseInfo.add("data", allDetails.build());
                     resp.getWriter().print(responseInfo.build());
                     break;
 
@@ -146,17 +158,7 @@ public class PurchaseOrderServlet extends HttpServlet {
                     pstm2.setObject(2, itemCode);
                     pstm2.setObject(3, Integer.parseInt(qty));
 
-                    if (pstm2.executeUpdate() > 0) {
-                        System.out.println("zzzzzzzzzzzzzzzzz");
-//                        connection.commit();
-                        /*responseInfo = Json.createObjectBuilder();
-                        resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Order Saved Successfully...");
-                        responseInfo.add("data", "");
-                        resp.getWriter().print(responseInfo.build());*/
-
-                    } else {
+                    if (pstm2.executeUpdate() <= 0) {
                         connection.rollback();
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 400);
@@ -166,6 +168,7 @@ public class PurchaseOrderServlet extends HttpServlet {
                         return;
                     }
                 }
+
                 connection.commit();
                 responseInfo = Json.createObjectBuilder();
                 resp.setStatus(HttpServletResponse.SC_CREATED); // 201
@@ -173,6 +176,7 @@ public class PurchaseOrderServlet extends HttpServlet {
                 responseInfo.add("message", "Order Saved Successfully...");
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
+
             } else {
                 connection.rollback();
                 responseInfo = Json.createObjectBuilder();
