@@ -21,9 +21,10 @@ getOrderCount();
 
 function getCustomerCount() {
     $.ajax({
-        url:"customer?option=GET_COUNT",
-        method:"GET",
-        success:function (resp) {
+        url: "customer?option=GET_COUNT",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             $("#totalCustomers").text("0" + resp.data);
         },
         error: function (ob, textStatus, error) {
@@ -34,9 +35,10 @@ function getCustomerCount() {
 
 function getItemCount() {
     $.ajax({
-        url:"item?option=GET_COUNT",
-        method:"GET",
-        success:function (resp) {
+        url: "item?option=GET_COUNT",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             $("#totalItems").text("0" + resp.data);
         },
         error: function (ob, textStatus, error) {
@@ -47,9 +49,10 @@ function getItemCount() {
 
 function getOrderCount() {
     $.ajax({
-        url:"orders?option=GET_COUNT",
-        method:"GET",
-        success:function (resp) {
+        url: "orders?option=GET_COUNT",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             console.log(resp.data);
             $("#totalOrders").text("0" + resp.data);
         },
@@ -61,9 +64,10 @@ function getOrderCount() {
 
 function generateNextCustomerID() {
     $.ajax({
-        url:"customer?option=LAST_ID",
-        method:"GET",
-        success:function (resp) {
+        url: "customer?option=LAST_ID",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             let lastCustId = resp.data;
             console.log(lastCustId);
 
@@ -99,9 +103,10 @@ function generateNextCustomerID() {
 
 function generateNextItemCode() {
     $.ajax({
-        url:"item?option=LAST_CODE",
-        method:"GET",
-        success:function (resp) {
+        url: "item?option=LAST_CODE",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             let lastItemCode = resp.data;
             console.log(lastItemCode);
 
@@ -137,9 +142,10 @@ function generateNextItemCode() {
 
 function generateNextOrderID() {
     $.ajax({
-        url:"orders?option=LAST_ID",
-        method:"GET",
-        success:function (resp) {
+        url: "orders?option=LAST_ID",
+        method: "GET",
+        async: false,
+        success: function (resp) {
             let lastOrderId = resp.data;
             console.log(lastOrderId);
 
@@ -288,6 +294,8 @@ $("#nav-orders").click(function () {
 
     loadCmbItemCode();
     loadCmbDescription();
+
+    select_OrderDetailRow();
 
 });
 

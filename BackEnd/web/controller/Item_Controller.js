@@ -550,6 +550,8 @@ var regExUnitPrice = /^[1-9][0-9]*([.][0-9]{2})?$/;
 var regExQty = /^[0-9]+$/;
 
 function select_ItemRow() {
+    console.log("inside item row selected");
+    console.log(11);
     $("#tblItem-body>tr").click(function () {
         rowSelected = this;
         itemCode = $(this).children(':first-child').text();

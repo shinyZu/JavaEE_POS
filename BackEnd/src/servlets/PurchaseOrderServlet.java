@@ -111,9 +111,6 @@ public class PurchaseOrderServlet extends HttpServlet {
         String customerId = jsonObject.getString("customerId");
 //        String commit = jsonObject.getString("setAutoCommit");
 
-
-
-
         try {
             System.out.println("inside try...");
 
@@ -161,7 +158,7 @@ public class PurchaseOrderServlet extends HttpServlet {
         } catch (ClassNotFoundException | SQLException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
-            responseInfo.add("message", "Errorrrrrrrrrrrrrrrrrrrrrrrrr...");
+            responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
             e.printStackTrace();
