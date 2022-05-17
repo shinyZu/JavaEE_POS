@@ -1231,7 +1231,20 @@ function select_OrderDetailRow() {
         $("#btnDeleteOrder").click(function (e) {
             deleteOrder(orderId.val());
         });
+
+        $("#tblOrders-body>tr").off("dblclick");
+        delete_OrderRowOnDblClick();
     });
+}
+
+function delete_OrderRowOnDblClick() {
+
+    $("#tblOrders-body>tr").dblclick(function () {
+        rowSelected = $(this);
+        let orderID = $(this).children(":nth-child(1)").text();
+        deleteOrder(orderID);
+    });
+
 }
 
 /* -------------------------------Delete Order------------------------*/

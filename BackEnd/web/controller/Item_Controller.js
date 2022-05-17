@@ -116,7 +116,7 @@ function deleteItem(row) {
                         // alert(resp.message);
                         swal({
                             title: 'Deleted!',
-                            text: "Customer  " + itemCode + "  Deleted.",
+                            text: "Item  " + itemCode + "  Deleted.",
                             icon: 'success',
                             buttons: ["OK"],
                             timer: 2000,
