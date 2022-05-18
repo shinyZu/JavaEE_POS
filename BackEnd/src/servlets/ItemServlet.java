@@ -1,6 +1,9 @@
 package servlets;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import javax.json.*;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +20,9 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            ServletContext servletContext = req.getServletContext();
+            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
+            Connection connection = bds.getConnection();
 
             resp.setContentType("application/json");
 
@@ -147,7 +151,7 @@ public class ItemServlet extends HttpServlet {
             }
             connection.close();
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -155,8 +159,9 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            ServletContext servletContext = req.getServletContext();
+            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
+            Connection connection = bds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
@@ -187,8 +192,9 @@ public class ItemServlet extends HttpServlet {
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
+            connection.close();
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
@@ -208,9 +214,9 @@ public class ItemServlet extends HttpServlet {
         String qtyOnHand = jsonObject.getString("qty");
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root",
-                    "shiny1234");
+            ServletContext servletContext = req.getServletContext();
+            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
+            Connection connection = bds.getConnection();
 
             resp.setContentType("application/json");
 
@@ -234,8 +240,9 @@ public class ItemServlet extends HttpServlet {
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
+            connection.close();
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
@@ -248,8 +255,9 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JavaEE_POS", "root", "shiny1234");
+            ServletContext servletContext = req.getServletContext();
+            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
+            Connection connection = bds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE itemCode = ?");
@@ -271,7 +279,7 @@ public class ItemServlet extends HttpServlet {
             }
             connection.close();
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Deleting...");
