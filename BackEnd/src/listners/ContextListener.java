@@ -19,8 +19,8 @@ public class ContextListener implements ServletContextListener {
         bds.setUrl("jdbc:mysql://localhost:3306/JavaEE_POS");
         bds.setUsername("root");
         bds.setPassword("shiny1234");
-        bds.setMaxTotal(15);
-        bds.setInitialSize(15);
+        bds.setMaxTotal(100);
+        bds.setInitialSize(100);
 
         ServletContext servletContext = servletContextEvent.getServletContext();
         servletContext.setAttribute("bds",bds);

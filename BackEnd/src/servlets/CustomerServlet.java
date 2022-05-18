@@ -1,6 +1,10 @@
 package servlets;
 
+import business.CustomerBOImpl;
+import dto.CustomerDTO;
+import entity.Customer;
 import org.apache.commons.dbcp2.BasicDataSource;
+import util.JsonUtil;
 
 import javax.json.*;
 import javax.servlet.ServletContext;
@@ -10,210 +14,178 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/customer")
 public class CustomerServlet extends HttpServlet {
-    JsonObjectBuilder responseInfo;
+
+    CustomerBOImpl customerBO = new CustomerBOImpl();
+    //    JsonObjectBuilder responseInfo;
+    JsonObjectBuilder responseInfo = JsonUtil.getJsonObjectBuilder();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
-
             resp.setContentType("application/json");
-
+            ServletContext servletContext = req.getServletContext();
             JsonArrayBuilder allCustomers = Json.createArrayBuilder();
             JsonObjectBuilder customer = Json.createObjectBuilder();
-
             String option = req.getParameter("option");
-            ResultSet rst;
-            PreparedStatement pstm;
 
             switch (option) {
                 case "SEARCH":
                     String customerID = req.getParameter("customerID");
                     String customerName = req.getParameter("customerName");
 
-                    if (!customerID.equals("")) {
-                        pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerId = ?");
-                        pstm.setObject(1, customerID);
-                        rst = pstm.executeQuery();
+                    CustomerDTO customerDTO = new CustomerDTO(customerID, customerName);
+                    ArrayList<CustomerDTO> customerDetails = customerBO.search(servletContext, customerDTO);
 
-                        while (rst.next()) {
-                            customer.add("id", rst.getString(1));
-                            customer.add("name", rst.getString(2));
-                            customer.add("address", rst.getString(3));
-                            customer.add("contact", rst.getString(4));
+                    if (customerDetails != null) {
+                        for (CustomerDTO dto : customerDetails) {
+                            customer.add("id", dto.getCustomerId());
+                            customer.add("name", dto.getCustomerName());
+                            customer.add("address", dto.getCustomerAddress());
+                            customer.add("contact", dto.getCustomerContact());
                         }
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Customer Search With ID");
                         responseInfo.add("data", customer.build());
                         resp.getWriter().print(responseInfo.build());
-
-                    } else if (!customerName.equals("")) {
-                        pstm = connection.prepareStatement("SELECT * FROM Customer WHERE customerName = ?");
-                        pstm.setObject(1, customerName);
-                        rst = pstm.executeQuery();
-
-                        while (rst.next()) {
-                            customer.add("id", rst.getString(1));
-                            customer.add("name", rst.getString(2));
-                            customer.add("address", rst.getString(3));
-                            customer.add("contact", rst.getString(4));
-                        }
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Customer Search With Name");
-                        responseInfo.add("data", customer.build());
-                        resp.getWriter().print(responseInfo.build());
                     }
                     break;
 
                 case "CHECK_FOR_DUPLICATE":
-                    rst = connection.prepareStatement("SELECT customerId, customerContact FROM Customer").executeQuery();
-
                     String id = req.getParameter("customerId");
                     String input = req.getParameter("input");
                     String contact = input.split("0")[1];
 
-                    while (rst.next()) {
-                        if (rst.getString(2).equals(contact)) {
+                    String checkStatus = customerBO.isDuplicateContact(servletContext, new CustomerDTO(id, Integer.parseInt(contact)));
 
-                            if(rst.getString(1).equals(id)) {
-                                responseInfo = Json.createObjectBuilder();
-                                responseInfo.add("status", 200);
-                                responseInfo.add("message", "Match");
-                                responseInfo.add("data", contact);
-                                resp.getWriter().print(responseInfo.build());
-                                return;
-                            }
-
-                            responseInfo = Json.createObjectBuilder();
-                            responseInfo.add("status", 200);
-                            responseInfo.add("message", "Duplicate");
-                            responseInfo.add("data", contact);
-                            resp.getWriter().print(responseInfo.build());
-                            return;
-                        }
-                    }
-
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
-                    responseInfo.add("message", "Unique");
-                    responseInfo.add("data", contact);
-                    resp.getWriter().print(responseInfo.build());
-                    break;
-
-                case "GET_COUNT":
-                    rst = connection.prepareStatement("SELECT COUNT(customerId) FROM Customer").executeQuery();
-
-                    if (rst.next()) {
+                    if (checkStatus.equals("Match")) {
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
-                        responseInfo.add("message", "Customers Counted");
-                        responseInfo.add("data", rst.getString(1));
-                    }
-                    resp.getWriter().print(responseInfo.build());
-                    break;
+                        responseInfo.add("message", checkStatus);
+                        responseInfo.add("data", contact);
+                        resp.getWriter().print(responseInfo.build());
 
-                case "LAST_ID":
-                    rst = connection.prepareStatement("SELECT customerId FROM Customer ORDER BY customerId DESC LIMIT 1").executeQuery();
-
-                    if (rst.next()) {
+                    } else if (checkStatus.equals("Duplicate")) {
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
-                        responseInfo.add("message", "Retrieved Last CustomerId...");
-                        responseInfo.add("data", rst.getString(1));
+                        responseInfo.add("message", checkStatus);
+                        responseInfo.add("data", contact);
                         resp.getWriter().print(responseInfo.build());
 
                     } else {
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
-                        responseInfo.add("message", "No any Customers yet");
-                        responseInfo.add("data", "null");
+                        responseInfo.add("message", checkStatus);
+                        responseInfo.add("data", contact);
                         resp.getWriter().print(responseInfo.build());
                     }
                     break;
 
-                case "GET_ID_NAME":
-                    rst = connection.prepareStatement("SELECT customerId, customerName FROM Customer").executeQuery();
-                    while (rst.next()) {
-
-                        customer.add("id", rst.getString(1));
-                        customer.add("name", rst.getString(2));
-
-                        allCustomers.add(customer.build());
-                    }
+                case "GET_COUNT":
+                    String customerCount = customerBO.getCustomerCount(servletContext);
                     responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("data", allCustomers.build());
-                    responseInfo.add("message", "Received all IDs & Names");
+                    responseInfo.add("status", 200);
+                    responseInfo.add("message", "Customers Counted");
+                    responseInfo.add("data", customerCount);
+                    resp.getWriter().print(responseInfo.build());
+                    break;
+
+                case "LAST_ID":
+                    String lastId = customerBO.getLastId(servletContext);
+                    responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
 
+                    if (lastId != null) {
+                        responseInfo.add("message", "Retrieved Last CustomerId...");
+                        responseInfo.add("data", lastId);
+
+                    } else {
+                        responseInfo.add("message", "No any Customers yet");
+                        responseInfo.add("data", "null");
+                    }
                     resp.getWriter().print(responseInfo.build());
+                    break;
+
+                case "GET_ID_NAME":
+                    ArrayList<CustomerDTO> customerIdNames = customerBO.getIdNames(servletContext);
+
+                    if (customerIdNames != null) {
+                        for (CustomerDTO dto : customerIdNames) {
+                            customer.add("id", dto.getCustomerId());
+                            customer.add("name", dto.getCustomerName());
+
+                            allCustomers.add(customer.build());
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("data", allCustomers.build());
+                        responseInfo.add("message", "Received all IDs & Names");
+                        responseInfo.add("status", 200);
+
+                        resp.getWriter().print(responseInfo.build());
+                    }
                     break;
 
                 case "GETALL":
-                    rst = connection.prepareStatement("SELECT * FROM Customer").executeQuery();
-                    while (rst.next()) {
-                        customer.add("id", rst.getString(1));
-                        customer.add("name", rst.getString(2));
-                        customer.add("address", rst.getString(3));
-                        customer.add("contact", rst.getInt(4));
+                    ArrayList<CustomerDTO> customers = customerBO.getAllCustomers(servletContext);
+                    if (customer != null) {
+                        for (CustomerDTO dto : customers) {
+                            customer.add("id", dto.getCustomerId());
+                            customer.add("name", dto.getCustomerName());
+                            customer.add("address", dto.getCustomerAddress());
+                            customer.add("contact", dto.getCustomerContact());
 
-                        allCustomers.add(customer.build());
+                            allCustomers.add(customer.build());
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("data", allCustomers.build());
+                        responseInfo.add("message", "Done");
+                        responseInfo.add("status", HttpServletResponse.SC_OK); // 200
+
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("data", allCustomers.build());
-                    responseInfo.add("message", "Done");
-                    responseInfo.add("status", HttpServletResponse.SC_OK); // 200
-
-                    resp.getWriter().print(responseInfo.build());
                     break;
-
             }
-            connection.close();
 
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String id = req.getParameter("customerID");
-        String name = req.getParameter("customerName");
-        String address = req.getParameter("customerAddress");
-        String contact = req.getParameter("customerContact");
+
+        CustomerDTO customerDTO = new CustomerDTO(
+                req.getParameter("customerID"),
+                req.getParameter("customerName"),
+                req.getParameter("customerAddress"),
+                Integer.parseInt(req.getParameter("customerContact"))
+        );
 
         try {
+            resp.setContentType("application/json");
             ServletContext servletContext = req.getServletContext();
             BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
             Connection connection = bds.getConnection();
 
-            resp.setContentType("application/json");
-
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
-            pstm.setObject(1, id);
-            pstm.setObject(2, name);
-            pstm.setObject(3, address);
-            pstm.setObject(4, contact);
-
-            if (pstm.executeUpdate() > 0) {
+            if (customerBO.addCustomer(servletContext,customerDTO)) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);// 201
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("data", "");
                 responseInfo.add("message", "Customer Saved Successfully...");
                 responseInfo.add("status", 200);
                 resp.getWriter().print(responseInfo.build());
+                System.out.println("Saved Successfully....");
             }
-            connection.close();
 
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException throwables) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
