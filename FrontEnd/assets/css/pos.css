@@ -11,18 +11,17 @@ div.title-bg {
   font-size: 2.25em;
 }
 
-p.title-mng {
+p#title-mng-cust {
   margin: auto;
 }
 
-form>div label {
+form > div label {
   color: rgba(255, 255, 255, 0.55);
 }
 
-.manage-btns>section>button {
+.manage-btns > section > button {
   color: aliceblue;
 }
-
 .btn-save-outline {
   border: 3px solid #1abc9c !important;
   color: #1abc9c !important;
@@ -215,24 +214,27 @@ p.errorText {
 
 /* ------------------------------------------------------------------------------Manage Invoices-------------------------------------------------- */
 
-#invoice-table-pane,
-#tbl-orders {
-  /* height: 380px; */
-  /* height: 550px; */
+#invoice-table-pane{
   overflow-y: auto;
 }
 
-/* .section-1 {
+#tblOrders {
+   /*height: 380px;*/
+   /*height: 550px;*/
+  overflow-y: auto;
+}
+
+#section-1 {
   width: 100%;
   background-image: url("../images/pos/background.jpg");
   background-size: cover;
 }
 
-.section-2 {
+#section-2 {
   width: auto;
   background-image: url("../images/pos/background.jpg");
   background-size: cover;
-} */
+}
 
 #date,
 select,
@@ -252,6 +254,11 @@ select:disabled {
   color: #099277;
   font-size: large;
   font-weight: 700;
+  font-weight: 700;
+}
+
+#txtCustomerId, #txtItemCode{
+  color: #099277;
   font-weight: 700;
 }
 

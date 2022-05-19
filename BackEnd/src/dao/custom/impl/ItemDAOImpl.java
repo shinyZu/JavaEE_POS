@@ -111,7 +111,7 @@ public class ItemDAOImpl implements ItemDAO {
                 item.getUnitPrice(),
                 item.getQtyOnHand(),
                 item.getItemCode()
-                );
+        );
     }
 
     @Override

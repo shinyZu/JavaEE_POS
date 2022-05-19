@@ -31,14 +31,14 @@ $("#customerForm p.errorText").hide();
     3. delete the selected Customer from the table
 */
 
-$(".btnSaveCustomer").click(function (e) {
+$(".btnSaveCustomer").click(function (e) { 
 
     customerId = $(rowSelected).children(':first-child').text();
 
     if (customerId === txtCustomerId.val()) {
-        alert("A Customer already exists with ID " + customerId + "...");
+        alert("A Customer already exists with ID "+ customerId +"...");
 
-    } else {
+    } else{
         if (window.confirm("Do you really need to add this Customer..?")) {
             addCustomer();
             reset_CustomerForm();
@@ -49,8 +49,7 @@ $(".btnSaveCustomer").click(function (e) {
 
     $("#tblCustomer-body>tr").off("dblclick");
     delete_CustomerRowOnDblClick();
-
-
+    
 });
 
 /* --------------------------Validate & Jump to Next Field On Enter---------------------------------*/
@@ -85,7 +84,7 @@ function enableBtnDeleteCustomer(btn) {
     $(btn).removeAttr("disabled");
 }
 
-function addCustomer() {
+function addCustomer(){
     customerId = txtCustomerId.val();
     customerName = txtCustomerName.val();
     customerAddress = txtAddress.val();
@@ -101,7 +100,7 @@ function addCustomer() {
     );
 }
 
-function updateCustomer() {
+function updateCustomer(){
     customerId = txtCustomerId.val();
     customerName = txtCustomerName.val();
     customerAddress = txtAddress.val();
@@ -117,30 +116,30 @@ function updateCustomer() {
     return updatedRow;
 }
 
-function select_CustomerRow() {
-    $("#tblCustomer-body>tr").click(function () {
-
+function select_CustomerRow(){
+    $("#tblCustomer-body>tr").click(function () { 
+    
         rowSelected = this;
-
+        
         customerId = $(this).children(':nth-child(1)').text();
         customerName = $(this).children(':nth-child(2)').text();
         customerAddress = $(this).children(':nth-child(3)').text();
         customerContact = $(this).children(':nth-child(4)').text();
-
+    
         // console.log(customerId,customerName,customerAddress,customerContact);
-
+    
         txtCustomerId.val(customerId);
         txtCustomerName.val(customerName);
         txtAddress.val(customerAddress);
         txtContact.val(customerContact);
-
+    
         validate_CustomerForm();
         enableBtnEditCustomer("#btnEditCustomer");
         enableBtnDeleteCustomer("#btnDeleteCustomer");
 
-        $("#btnDeleteCustomer").off("click");
+        $("#btnDeleteCustomer").off("click"); 
 
-        $("#btnDeleteCustomer").click(function () {
+        $("#btnDeleteCustomer").click(function () { 
             // Clear fields after Customer is deleted
             if (window.confirm("Do you really need to delete this Customer..?")) {
                 $(rowSelected).remove();
@@ -151,7 +150,7 @@ function select_CustomerRow() {
 }
 
 let color;
-function isBorderGreen(inputField) {
+function isBorderGreen (inputField) {
     color = $(inputField).css('border-color');
 
     // if (color === "rgb(38, 222, 129)") {
@@ -167,25 +166,25 @@ function changeBorderColor(inputStatus, inputField) {
             // $(inputField).css('border', '5px solid #26de81');
             $(inputField).css('border', '5px solid #27ae60');
             break;
-
+        
         case inputStatus === "invalid":
             // $(inputField).css('border', '5px solid #ff3f34');
             $(inputField).css('border', '5px solid #e74c3c');
             break;
-
+    
         default:
             $(inputField).css('border', '2px solid rgb(206, 212, 218)');
             break;
     }
 }
 
-function validate_CustomerID(input, txtField) {
+function validate_CustomerID (input, txtField) {  
 
-    if (regExCusID.test(input)) {
+    if (regExCusID.test(input)) {               
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_CustomerName(txtCustomerName.val(), txtCustomerName)) {
+        if (!validate_CustomerName(txtCustomerName.val(),txtCustomerName)) {
             changeBorderColor("invalid", txtCustomerName);
             $("#customerForm p.errorText").eq(1).show();
             $("#errorName").text("*Required Field* Min 5, Max 20, Spaces Allowed");
@@ -194,7 +193,7 @@ function validate_CustomerID(input, txtField) {
         $("#customerForm p.errorText").eq(0).hide();
         return true;
 
-    } else {
+    } else{
         changeBorderColor("invalid", txtField);
         $("#customerForm p.errorText").eq(0).show();
         $("#errorID").text("*Required Field* Format : C00-000");
@@ -205,13 +204,13 @@ function validate_CustomerID(input, txtField) {
     }
 }
 
-function validate_CustomerName(input, txtField) {
+function validate_CustomerName (input, txtField) {  
 
     if (regExCusName.test(input)) {
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_CustomerAddress(txtAddress.val(), txtAddress)) {
+        if (!validate_CustomerAddress(txtAddress.val(),txtAddress)) {
             changeBorderColor("invalid", txtAddress);
             $("#customerForm p.errorText").eq(2).show();
             $("#errorAddress").text("*Required Field* Minimum 5");
@@ -220,7 +219,7 @@ function validate_CustomerName(input, txtField) {
         $("#customerForm p.errorText").eq(1).hide();
         return true;
 
-    } else {
+    } else{
         changeBorderColor("invalid", txtField);
         $("#customerForm p.errorText").eq(1).show();
         $("#errorName").text("*Required Field* Min 5, Max 20, Spaces Allowed");
@@ -231,13 +230,13 @@ function validate_CustomerName(input, txtField) {
     }
 }
 
-function validate_CustomerAddress(input, txtField) {
+function validate_CustomerAddress (input, txtField) {  
 
-    if (regExCusAddress.test(input)) {
+    if (regExCusAddress.test(input)) {               
         changeBorderColor("valid", txtField);
 
         // once the current input field is green change the the border of next input field to red
-        if (!validate_CustomerContact(txtContact.val(), txtContact)) {
+        if (!validate_CustomerContact(txtContact.val(),txtContact)) {
             changeBorderColor("invalid", txtContact);
             $("#customerForm p.errorText").eq(3).show();
             $("#errorContact").text("*Required Field* Min 10, Max 10, Only Numbers");
@@ -246,7 +245,7 @@ function validate_CustomerAddress(input, txtField) {
         $("#customerForm p.errorText").eq(2).hide();
         return true;
 
-    } else {
+    } else{
         changeBorderColor("invalid", txtField);
         $("#customerForm p.errorText").eq(2).show();
         $("#errorAddress").text("*Required Field* Minimum 5");
@@ -257,9 +256,9 @@ function validate_CustomerAddress(input, txtField) {
     }
 }
 
-function validate_CustomerContact(input, txtField) {
+function validate_CustomerContact (input, txtField) {  
 
-    if (regExCusContact.test(input)) {
+    if (regExCusContact.test(input)) {               
         changeBorderColor("valid", txtField);
         enableBtnSaveCustomer(".btnSaveCustomer")
         enableBtnEditCustomer("#btnEditCustomer")
@@ -267,7 +266,7 @@ function validate_CustomerContact(input, txtField) {
         $("#customerForm p.errorText").eq(3).hide();
         return true;
 
-    } else {
+    } else{
         changeBorderColor("invalid", txtField);
         $("#customerForm p.errorText").eq(3).show();
         $("#errorContact").text("*Required Field* Min 10, Max 10, Only Numbers");
@@ -278,7 +277,7 @@ function validate_CustomerContact(input, txtField) {
     }
 }
 
-function reset_CustomerForm() {
+function reset_CustomerForm(){
     txtCustomerId.val("").css('border', '1px solid rgb(206, 212, 218)');
     txtCustomerName.val("").css('border', '1px solid rgb(206, 212, 218)');
     txtAddress.val("").css('border', '1px solid rgb(206, 212, 218)');
@@ -297,21 +296,21 @@ function reset_CustomerForm() {
     customerId = null;
 }
 
-function validate_CustomerForm() {
+function validate_CustomerForm(){
 
     customerId = txtCustomerId.val();
     customerName = txtCustomerName.val();
     customerAddress = txtAddress.val();
     customerContact = txtContact.val();
 
-    validate_CustomerID(customerId, txtCustomerId);
-    validate_CustomerName(customerName, txtCustomerName);
-    validate_CustomerAddress(customerAddress, txtAddress);
-    validate_CustomerContact(customerContact, txtContact);
+    validate_CustomerID(customerId,txtCustomerId);
+    validate_CustomerName(customerName,txtCustomerName);
+    validate_CustomerAddress(customerAddress,txtAddress);
+    validate_CustomerContact(customerContact,txtContact);
 }
 
 function delete_CustomerRowOnDblClick() {
-    $("#tblCustomer-body>tr").dblclick(function () {
+    $("#tblCustomer-body>tr").dblclick(function () { 
         rowSelected = $(this);
 
         if (window.confirm("Do you really need to delete this Customer..?")) {
@@ -321,22 +320,22 @@ function delete_CustomerRowOnDblClick() {
     });
 }
 
-$("#txtCustomerId").keyup(function (e) {
+ $("#txtCustomerId").keyup(function (e) { 
     input = txtCustomerId.val();
 
     validate_CustomerID(input, this);
-
+    
     // console.log($(this).css("border-color"));
-    if (e.code === "Enter" && isBorderGreen(this)) {
+    if (e.code === "Enter" && isBorderGreen(this)){
         $("#txtCustomerName").focus();
     }
 });
 
-$("#txtCustomerName").keyup(function (e) {
+$("#txtCustomerName").keyup(function (e) { 
     input = txtCustomerName.val();
     validate_CustomerName(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)) {
+    if (e.code === "Enter" && isBorderGreen(this)){
         $("#txtAddress").focus();
     }
 });
@@ -345,25 +344,25 @@ $("#txtAddress").keyup(function (e) {
     input = txtAddress.val();
     validate_CustomerAddress(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)) {
+    if (e.code === "Enter" && isBorderGreen(this)){
         $("#txtContact").focus();
     }
 });
 
-$("#txtContact").keyup(function (e) {
+$("#txtContact").keyup(function (e) { 
     input = txtContact.val();
     validate_CustomerContact(input, this);
 
-    if (e.code === "Enter" && isBorderGreen(this)) {
+    if (e.code === "Enter" && isBorderGreen(this)){
 
         customerId = $(rowSelected).children(':first-child').text();
-        console.log("customerId : " + customerId);
-        console.log("txtCustomerId : " + txtCustomerId.val());
+        console.log("customerId : "+customerId);
+        console.log("txtCustomerId : "+txtCustomerId.val());
 
         if (customerId === txtCustomerId.val()) {
-            alert("A Customer already exists with ID " + customerId + "...");
+            alert("A Customer already exists with ID "+ customerId +"...");
 
-        } else {
+        } else{
             if (window.confirm("Do you really need to add this Customer..?")) {
                 addCustomer();
                 reset_CustomerForm();
@@ -372,22 +371,22 @@ $("#txtContact").keyup(function (e) {
         select_CustomerRow();;
     }
 
-    $("#tblCustomer-body>tr").off("dblclick");
+    $("#tblCustomer-body>tr").off("dblclick"); 
     delete_CustomerRowOnDblClick();
-});
+}); 
 
 /* -----When Clear button is clicked-----*/
 
-$("#btnClearCustomerFields").click(function () {
+$("#btnClearCustomerFields").click(function () { 
     reset_CustomerForm();
 });
 
 /* ------------------Update Customer------------*/
-$("#btnEditCustomer").click(function (e) {
+$("#btnEditCustomer").click(function (e) { 
     select_CustomerRow();
     console.log(customerId);
 
-    if (window.confirm("Do you really need to update Customer " + customerId + "..?")) {
+    if (window.confirm("Do you really need to update Customer "+ customerId + "..?")) {
         $("#tblCustomer-body").find(rowSelected).replaceWith(updateCustomer());
         reset_CustomerForm();
     }
