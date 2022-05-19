@@ -17,17 +17,13 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 @WebServlet(urlPatterns = "/customer")
 public class CustomerServlet extends HttpServlet {
 
+    private final CustomerBO customerBO = (CustomerBO) BOFactory.getBOFactoryInstance().getBO(BOFactory.BOTypes.CUSTOMER);
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
-
-    private final CustomerBO customerBO = (CustomerBO) BOFactory.getBOFactoryInstance().getBO(BOFactory.BOTypes.CUSTOMER);
-    private final LinkedHashMap<String, Object> mapResponseInfo = new LinkedHashMap<>();
-    JsonObjectBuilder responseInfo;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -52,11 +48,6 @@ public class CustomerServlet extends HttpServlet {
                             customer.add("address", dto.getCustomerAddress());
                             customer.add("contact", dto.getCustomerContact());
                         }
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Customer Search With ID");
-                        responseInfo.add("data", customer.build());
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Customer Search With ID", customer.build()));
                     }
                     break;
@@ -69,57 +60,30 @@ public class CustomerServlet extends HttpServlet {
                     String checkStatus = customerBO.isDuplicateContact(connection, new CustomerDTO(id, Integer.parseInt(contact)));
 
                     if (checkStatus.equals("Match")) {
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", checkStatus);
-                        responseInfo.add("data", contact);
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, checkStatus, contact));
 
                     } else if (checkStatus.equals("Duplicate")) {
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", checkStatus);
-                        responseInfo.add("data", contact);
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, checkStatus, contact));
 
                     } else {
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", checkStatus);
-                        responseInfo.add("data", contact);
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, checkStatus, contact));
                     }
                     break;
 
                 case "GET_COUNT":
                     String customerCount = customerBO.getCustomerCount(connection);
-                   /* responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
-                    responseInfo.add("message", "Customers Counted");
-                    responseInfo.add("data", customerCount);
-                    resp.getWriter().print(responseInfo.build());*/
                     resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Customers Counted", customerCount));
                     break;
 
                 case "LAST_ID":
                     String lastId = customerBO.getLastId(connection);
-                    /*responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);*/
 
                     if (lastId != null) {
-                        /*responseInfo.add("message", "Retrieved Last CustomerId...");
-                        responseInfo.add("data", lastId);*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Retrieved Last CustomerId...", lastId));
 
                     } else {
-                        /*responseInfo.add("message", "No any Customers yet");
-                        responseInfo.add("data", "null");*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "No any Customers yet.", "null"));
                     }
-//                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_ID_NAME":
@@ -132,11 +96,6 @@ public class CustomerServlet extends HttpServlet {
 
                             allCustomers.add(customer.build());
                         }
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Received all IDs & Names");
-                        responseInfo.add("data", allCustomers.build());
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received all IDs & Names", allCustomers.build()));
                     }
                     break;
@@ -152,11 +111,6 @@ public class CustomerServlet extends HttpServlet {
 
                             allCustomers.add(customer.build());
                         }
-                        /*responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", HttpServletResponse.SC_OK); // 200
-                        responseInfo.add("message", "Received All Customers");
-                        responseInfo.add("data", allCustomers.build());
-                        resp.getWriter().print(responseInfo.build());*/
                         resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received All Customers", allCustomers.build()));
                     }
                     break;
@@ -164,7 +118,6 @@ public class CustomerServlet extends HttpServlet {
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-//            e.printStackTrace();
             resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred", e.getLocalizedMessage()));
         }
     }
@@ -182,26 +135,13 @@ public class CustomerServlet extends HttpServlet {
             Connection connection = ds.getConnection();
 
             if (customerBO.addCustomer(connection, customerDTO)) {
-                resp.setStatus(HttpServletResponse.SC_CREATED);// 201
-                /*responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 200);
-                responseInfo.add("message", "Customer Saved Successfully...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());*/
+                resp.setStatus(HttpServletResponse.SC_CREATED);
                 resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Customer Saved Successfully...", ""));
-
             }
             connection.close();
 
-        } catch (SQLException | ClassNotFoundException throwables) {
-            /*responseInfo = Json.createObjectBuilder();
-            responseInfo.add("status", 400);
-            responseInfo.add("message", "Something Went Wrong...");
-            responseInfo.add("data", throwables.getLocalizedMessage());
-            resp.getWriter().print(responseInfo.build());
-            throwables.printStackTrace();*/
-            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Something Went Wrong...", throwables.getLocalizedMessage()));
-
+        } catch (SQLException | ClassNotFoundException e) {
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Something Went Wrong...", e.getLocalizedMessage()));
         }
     }
 
@@ -219,32 +159,15 @@ public class CustomerServlet extends HttpServlet {
 
         try {
             Connection connection = ds.getConnection();
-
             if (customerBO.updateCustomer(connection, customerDTO)) {
-                /*responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 200);
-                responseInfo.add("message", "Customer Updated Successfully...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());*/
                 resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Customer Updated Successfully...", ""));
 
             } else {
-                /*responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 400);
-                responseInfo.add("message", "Error Occurred While Updating...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());*/
                 resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Error Occurred While Updating...", ""));
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            /*responseInfo = Json.createObjectBuilder();
-            responseInfo.add("status", 500);
-            responseInfo.add("message", "Error Occurred While Updating...");
-            responseInfo.add("data", e.getLocalizedMessage());
-            resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();*/
             resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred While Updating...", e.getLocalizedMessage()));
         }
     }
@@ -253,32 +176,15 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Connection connection = ds.getConnection();
-
             if (customerBO.deleteCustomer(connection, new CustomerDTO(req.getParameter("customerID")))) {
-                /*responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 200);
-                responseInfo.add("message", "Customer Deleted Successfully...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());*/
                 resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Customer Deleted Successfully...", ""));
 
             } else {
-                /*responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 400);
-                responseInfo.add("message", "Invalid Customer ID...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());*/
                 resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid Customer ID...", ""));
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            /*responseInfo = Json.createObjectBuilder();
-            responseInfo.add("status", 500);
-            responseInfo.add("message", "Error Occurred While Deleting...");
-            responseInfo.add("data", e.getLocalizedMessage());
-            resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();*/
             resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred While Deleting...", e.getLocalizedMessage()));
         }
     }
