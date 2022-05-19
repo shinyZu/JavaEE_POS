@@ -1,63 +1,34 @@
 package util;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 
-public class JsonUtil{
+public class JsonUtil {
+    static JsonObjectBuilder responseInfo;
 
-    public static JsonArrayBuilder getJsonArrayBuilder() {
-        return Json.createArrayBuilder();
-    }
-
-    public static JsonObjectBuilder getJsonObjectBuilder() {
-        return Json.createObjectBuilder();
-    }
-
-   /* public static JsonObjectBuilder generateResponse(int status, String message, String data) {
+    public static JsonObject generateResponse(int status, String message, String data) {
         responseInfo = Json.createObjectBuilder();
-        if (status == 200) {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
+        responseInfo.add("status", status);
+        responseInfo.add("message", message);
+        responseInfo.add("data", data);
+        System.out.println(data);
+        return responseInfo.build();
+    }
 
-        } else if (status == 400) {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
+    public static JsonObject generateResponse(int status, String message, JsonObject data) {
+        responseInfo = Json.createObjectBuilder();
+        responseInfo.add("status", status);
+        responseInfo.add("message", message);
+        responseInfo.add("data", data);
+        System.out.println(data);
+        return responseInfo.build();
+    }
 
-        } else {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
-        }
-        return responseInfo;
-    }*/
-
-    public static void generateResponse(int status, String message, Object data) {
-        JsonObjectBuilder responseInfo = Json.createObjectBuilder();
-        if (data instanceof JsonArray) {
-            System.out.println(status+" "+message+" "+ (JsonArray)data);
-            return;
-        }
-        System.out.println(status+" "+message+" "+ (String)data);
-        /*if (status == 200) {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
-
-
-        } else if (status == 400) {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
-
-        } else {
-            responseInfo.add("status", status);
-            responseInfo.add("message", message);
-            responseInfo.add("data", data);
-        }*/
-//        return responseInfo;
+    public static JsonObject generateResponse(int status, String message, JsonArray data) {
+        responseInfo = Json.createObjectBuilder();
+        responseInfo.add("status", status);
+        responseInfo.add("message", message);
+        responseInfo.add("data", data);
+        System.out.println(data);
+        return responseInfo.build();
     }
 }

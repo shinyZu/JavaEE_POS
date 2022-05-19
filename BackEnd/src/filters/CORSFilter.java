@@ -1,21 +1,23 @@
 package filters;
 
+import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*")
 public class CORSFilter implements Filter {
 
     public CORSFilter() {
-        System.out.println("Object created from CORSFilter");
+//        System.out.println("Object created from CORSFilter");
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("CORS Filter initialized");
+//        System.out.println("CORS Filter initialized");
     }
 
     @Override
@@ -25,7 +27,7 @@ public class CORSFilter implements Filter {
         filterChain.doFilter(servletRequest,servletResponse);
 
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
-//        servletResponse.setContentType("application/json");
+        servletResponse.setContentType("application/json");
         resp.addHeader("Access-Control-Allow-Origin","*");
 
         if (req.getMethod().equals("OPTIONS")){
@@ -36,6 +38,6 @@ public class CORSFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("CORS Filter destroyed");
+//        System.out.println("CORS Filter destroyed");
     }
 }

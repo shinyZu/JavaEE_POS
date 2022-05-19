@@ -4,6 +4,7 @@ import business.BOFactory;
 import business.custom.ItemBO;
 import business.custom.impl.ItemBOImpl;
 import dto.ItemDTO;
+import util.JsonUtil;
 
 import javax.annotation.Resource;
 import javax.json.*;
@@ -31,8 +32,6 @@ public class ItemServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
-
             String option = req.getParameter("option");
 
             JsonObjectBuilder item = Json.createObjectBuilder();
@@ -53,37 +52,41 @@ public class ItemServlet extends HttpServlet {
                             item.add("unitPrice", String.format("%.2f", dto.getUnitPrice()));
                             item.add("qtyOnHand", dto.getQtyOnHand());
                         }
-                        responseInfo = Json.createObjectBuilder();
+                        /*responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Item Search With Code");
                         responseInfo.add("data", item.build());
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Item Search With Code", item.build()));
                     }
                     break;
 
                 case "GET_COUNT":
                     String itemCount = itemBO.getItemCount(connection);
-                    responseInfo = Json.createObjectBuilder();
+                    /*responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
                     responseInfo.add("message", "Items Counted");
                     responseInfo.add("data", itemCount);
-                    resp.getWriter().print(responseInfo.build());
+                    resp.getWriter().print(responseInfo.build());*/
+                    resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Items Counted", itemCount));
                     break;
 
                 case "LAST_CODE":
                     String lastCode = itemBO.getLastCode(connection);
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
+                    /*responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("status", 200);*/
 
                     if (lastCode != null) {
-                        responseInfo.add("message", "Retrieved Last ItemCode...");
-                        responseInfo.add("data", lastCode);
+                        /*responseInfo.add("message", "Retrieved Last ItemCode...");
+                        responseInfo.add("data", lastCode)*/;
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Retrieved Last ItemCode...", lastCode));
 
                     } else {
-                        responseInfo.add("message", "No any Items yet");
-                        responseInfo.add("data", "null");
+                        /*responseInfo.add("message", "No any Items yet");
+                        responseInfo.add("data", "null");*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "No any Items yet", "null"));
                     }
-                    resp.getWriter().print(responseInfo.build());
+//                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_CODE_DESCRIP":
@@ -96,11 +99,12 @@ public class ItemServlet extends HttpServlet {
                             item.add("description", dto.getDescription());
                             allItems.add(item.build());
                         }
-                        responseInfo = Json.createObjectBuilder();
+                        /*responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Received Codes & Descriptions");
                         responseInfo.add("data", allItems.build());
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received Codes & Descriptions", allItems.build()));
                     }
                     break;
 
@@ -121,18 +125,20 @@ public class ItemServlet extends HttpServlet {
 
                             allItems.add(item.build());
                         }
-                        responseInfo = Json.createObjectBuilder();
+                        /*responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", HttpServletResponse.SC_OK); // 200
                         responseInfo.add("message", "Received All Items");
                         responseInfo.add("data", allItems.build());
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received All Items", allItems.build()));
                     }
                     break;
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred", e.getLocalizedMessage()));
         }
     }
 
@@ -157,26 +163,26 @@ public class ItemServlet extends HttpServlet {
 //        System.out.println("String Format : " + String.format("%.2f", new Double(req.getParameter("unitPrice")))); // 75 --> 75.00,   75.05 --> 75.05
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             if (itemBO.addItem(connection, itemDTO)) {
-                responseInfo = Json.createObjectBuilder();
                 resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Saved Successfully...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
-
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Item Saved Successfully...", ""));
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            responseInfo = Json.createObjectBuilder();
+            /*responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();
+            e.printStackTrace();*/
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Something Went Wrong...", e.getLocalizedMessage()));
         }
     }
 
@@ -199,31 +205,32 @@ public class ItemServlet extends HttpServlet {
 
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             if (itemBO.updateItem(connection, itemDTO)) {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Updated Successfully...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Item Updated Successfully...", ""));
 
             } else {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 400);
                 responseInfo.add("message", "Error Occurred While Updating...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Error Occurred While Updating...", ""));
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            responseInfo = Json.createObjectBuilder();
+            /*responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
             responseInfo.add("data", e.getLocalizedMessage());
-            resp.getWriter().print(responseInfo.build());
-
+            resp.getWriter().print(responseInfo.build());*/
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred While Updating...", ""));
         }
     }
 
@@ -231,31 +238,33 @@ public class ItemServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             if (itemBO.deleteItem(connection, new ItemDTO(req.getParameter("itemCode")))) {
-                responseInfo = Json.createObjectBuilder();
+               /* responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Deleted Successfully...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Item Deleted Successfully...", ""));
 
             } else {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 400);
                 responseInfo.add("message", "Invalid Item Code...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Invalid Item Code...", ""));
             }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            responseInfo = Json.createObjectBuilder();
+            /*responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Deleting...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();
+            e.printStackTrace();*/
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred While Deleting...", e.getLocalizedMessage()));
         }
     }
 }

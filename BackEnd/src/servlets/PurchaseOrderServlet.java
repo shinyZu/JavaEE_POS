@@ -5,6 +5,7 @@ import business.custom.PurchaseOrderBO;
 import business.custom.impl.PurchaseOrderBOImpl;
 import dto.OrderDTO;
 import dto.OrderDetailDTO;
+import util.JsonUtil;
 
 import javax.annotation.Resource;
 import javax.json.*;
@@ -32,7 +33,6 @@ public class PurchaseOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             JsonArrayBuilder allOrders = Json.createArrayBuilder();
             JsonObjectBuilder order = Json.createObjectBuilder();
@@ -42,27 +42,30 @@ public class PurchaseOrderServlet extends HttpServlet {
             switch (option) {
                 case "GET_COUNT":
                     String orderCount = purchaseOrderBO.getOrderCount(connection);
-                    responseInfo = Json.createObjectBuilder();
+                    /*responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
                     responseInfo.add("message", "Orders Counted");
                     responseInfo.add("data", orderCount);
-                    resp.getWriter().print(responseInfo.build());
+                    resp.getWriter().print(responseInfo.build());*/
+                    resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Orders Counted", orderCount));
                     break;
 
                 case "LAST_ID":
                     String lastId = purchaseOrderBO.getLastId(connection);
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("status", 200);
+                    /*responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("status", 200);*/
 
                     if (lastId != null) {
-                        responseInfo.add("message", "Retrieved Last OrderId...");
-                        responseInfo.add("data", lastId);
+                        /*responseInfo.add("message", "Retrieved Last OrderId...");
+                        responseInfo.add("data", lastId);*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Retrieved Last OrderId...", lastId));
 
                     } else {
-                        responseInfo.add("message", "No any Orders yet");
-                        responseInfo.add("data", "null");
+                        /*responseInfo.add("message", "No any Orders yet");
+                        responseInfo.add("data", "null");*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "No any Orders yet", "null"));
                     }
-                    resp.getWriter().print(responseInfo.build());
+//                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GETALL":
@@ -77,11 +80,12 @@ public class PurchaseOrderServlet extends HttpServlet {
 
                             allOrders.add(order.build());
                         }
-                        responseInfo = Json.createObjectBuilder();
+                        /*responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", HttpServletResponse.SC_OK); // 200
                         responseInfo.add("message", "Received All Orders");
                         responseInfo.add("data", allOrders.build());
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received All Orders", allOrders.build()));
                     }
                     break;
 
@@ -98,12 +102,13 @@ public class PurchaseOrderServlet extends HttpServlet {
                             detail.add("orderQty", dto.getOrderQty());
                             allDetails.add(detail.build());
                         }
-                        responseInfo = Json.createObjectBuilder();
+                        /*responseInfo = Json.createObjectBuilder();
                         resp.setStatus(HttpServletResponse.SC_OK); // 200
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Received All Details");
                         responseInfo.add("data", allDetails.build());
-                        resp.getWriter().print(responseInfo.build());
+                        resp.getWriter().print(responseInfo.build());*/
+                        resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Received All Details", allDetails.build()));
                     }
                     break;
             }
@@ -111,6 +116,7 @@ public class PurchaseOrderServlet extends HttpServlet {
 
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred", e.getLocalizedMessage()));
         }
     }
 
@@ -135,80 +141,34 @@ public class PurchaseOrderServlet extends HttpServlet {
         );
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             if (purchaseOrderBO.purchaseOrder(connection, orderDTO, orderDetails)) {
-//            if (purchaseOrderBO.purchaseOrder(orderDTO, orderDetails)) {
-                responseInfo = Json.createObjectBuilder();
                 resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Order Saved Successfully...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Order Saved Successfully...", ""));
 
             } else {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 400);
                 responseInfo.add("message", "Couldn't Save Order...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Couldn't Save Order...", ""));
             }
-            /*PreparedStatement pstm1 = connection.prepareStatement("INSERT INTO Orders VALUES (?,?,?,?,?)");
-
-            pstm1.setObject(1, orderId);
-            pstm1.setObject(2, orderDate);
-            pstm1.setObject(3, String.format("%.2f", new Double(orderCost)));
-            pstm1.setObject(4, Integer.parseInt(discount));
-            pstm1.setObject(5, customerId);
-
-            if (pstm1.executeUpdate() > 0) {
-
-                for (JsonValue value : orderDetails) {
-                    String itemCode = value.asJsonObject().getString("itemCode");
-                    String qty = value.asJsonObject().getString("qty");
-
-                    PreparedStatement pstm2 = connection.prepareStatement("INSERT INTO OrderDetails VALUES (?,?,?)");
-                    pstm2.setObject(1, orderId);
-                    pstm2.setObject(2, itemCode);
-                    pstm2.setObject(3, Integer.parseInt(qty));
-
-                    if (pstm2.executeUpdate() <= 0) {
-                        connection.rollback();
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 400);
-                        responseInfo.add("message", "Rollback1");
-                        responseInfo.add("data", "");
-                        resp.getWriter().print(responseInfo.build());
-                        return;
-                    }
-                }
-
-                connection.commit();
-                responseInfo = Json.createObjectBuilder();
-                resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-                responseInfo.add("status", 200);
-                responseInfo.add("message", "Order Saved Successfully...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
-
-            } else {
-                connection.rollback();
-                responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 400);
-                responseInfo.add("message", "Rollback2");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
-                return;
-            }*/
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            responseInfo = Json.createObjectBuilder();
+            /*responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();
+            e.printStackTrace();*/
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Something Went Wrong...", e.getLocalizedMessage()));
         }
     }
 
@@ -216,49 +176,33 @@ public class PurchaseOrderServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Connection connection = ds.getConnection();
-            resp.setContentType("application/json");
 
             if (purchaseOrderBO.deleteOrder(connection, new OrderDTO(req.getParameter("orderId")))) {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Order Deleted Successfully...");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_OK, "Order Deleted Successfully...", ""));
 
             } else {
-                responseInfo = Json.createObjectBuilder();
+                /*responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 400);
                 responseInfo.add("message", "Couldn't Delete Order..");
                 responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
+                resp.getWriter().print(responseInfo.build());*/
+                resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_BAD_REQUEST, "Couldn't Delete Order..", ""));
             }
-
-           /* PreparedStatement pstm = connection.prepareStatement("DELETE FROM Orders WHERE orderId = ?");
-            pstm.setObject(1, req.getParameter("orderId"));
-
-            if (pstm.executeUpdate() > 0) {
-                responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 200);
-                responseInfo.add("message", "Order Deleted Successfully...");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
-
-            } else {
-                responseInfo = Json.createObjectBuilder();
-                responseInfo.add("status", 400);
-                responseInfo.add("message", "Couldn't Delete Order..");
-                responseInfo.add("data", "");
-                resp.getWriter().print(responseInfo.build());
-            }*/
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
-            responseInfo = Json.createObjectBuilder();
+            /*responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Deleting...");
             responseInfo.add("data", e.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
-            e.printStackTrace();
+            e.printStackTrace();*/
+            resp.getWriter().print(JsonUtil.generateResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error Occurred While Deleting...", e.getLocalizedMessage()));
         }
     }
 }
