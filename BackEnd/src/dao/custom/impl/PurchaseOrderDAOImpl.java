@@ -62,7 +62,7 @@ public class PurchaseOrderDAOImpl implements PurchaseOrderDAO {
     }
 
     @Override
-    public boolean addOrder(Connection connection, Orders orders) throws SQLException, ClassNotFoundException {
+    public boolean add(Connection connection, Orders orders) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "INSERT INTO Orders VALUES (?,?,?,?,?)",
                 orders.getOrderId(),
                 orders.getOrderDate(),
@@ -79,6 +79,11 @@ public class PurchaseOrderDAOImpl implements PurchaseOrderDAO {
                 detail.getItemCode(),
                 detail.getOrderQty()
         );
+    }
+
+    @Override
+    public boolean update(Connection connection, Orders orders) throws SQLException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Not Supported Yet");
     }
 
     @Override

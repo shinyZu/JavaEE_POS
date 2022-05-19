@@ -69,7 +69,7 @@ public class PurchaseOrderBOImpl implements PurchaseOrderBO {
                 dto.getCustomerId()
         );
 
-        if (purchaseOrderDAO.addOrder(connection, orders)) {
+        if (purchaseOrderDAO.add(connection, orders)) {
 
             for (JsonValue value : orderDetails) {
                 String itemCode = value.asJsonObject().getString("itemCode");
