@@ -1,5 +1,6 @@
 package business.custom.impl;
 
+import business.custom.ItemBO;
 import dao.custom.impl.ItemDAOImpl;
 import dto.ItemDTO;
 import entity.Customer;
@@ -9,9 +10,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ItemBOImpl {
+public class ItemBOImpl implements ItemBO {
     ItemDAOImpl itemDAO = new ItemDAOImpl();
 
+    @Override
     public ArrayList<ItemDTO> searchItem(Connection connection, ItemDTO dto) throws SQLException, ClassNotFoundException {
         ArrayList<ItemDTO> itemDetails = new ArrayList<>();
         for (Item i : itemDAO.search(connection, new Item(dto.getItemCode(), dto.getDescription()))) {
@@ -25,14 +27,17 @@ public class ItemBOImpl {
         return itemDetails;
     }
 
+    @Override
     public String getItemCount(Connection connection) throws SQLException, ClassNotFoundException {
         return itemDAO.getCount(connection);
     }
 
+    @Override
     public String getLastCode(Connection connection) throws SQLException, ClassNotFoundException {
         return itemDAO.getLastCode(connection);
     }
 
+    @Override
     public ArrayList<ItemDTO> getCodeDescriptions(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<ItemDTO> codeDescriptions = new ArrayList<>();
         for (Item i : itemDAO.getCodeDescriptions(connection)) {
@@ -44,6 +49,7 @@ public class ItemBOImpl {
         return codeDescriptions;
     }
 
+    @Override
     public ArrayList<ItemDTO> getAllItems(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<ItemDTO> allItems = new ArrayList<>();
         for (Item i : itemDAO.getAll(connection)) {
@@ -57,6 +63,7 @@ public class ItemBOImpl {
         return allItems;
     }
 
+    @Override
     public boolean addItem(Connection connection, ItemDTO dto) throws SQLException, ClassNotFoundException {
         return itemDAO.add(connection, new Item(
                 dto.getItemCode(),
@@ -66,6 +73,7 @@ public class ItemBOImpl {
         ));
     }
 
+    @Override
     public boolean updateItem(Connection connection, ItemDTO dto) throws SQLException, ClassNotFoundException {
         return itemDAO.update(connection, new Item(
                 dto.getItemCode(),
@@ -75,6 +83,7 @@ public class ItemBOImpl {
         ));
     }
 
+    @Override
     public boolean deleteItem(Connection connection, ItemDTO dto) throws SQLException, ClassNotFoundException {
         return itemDAO.delete(connection, new Item(dto.getItemCode()));
     }

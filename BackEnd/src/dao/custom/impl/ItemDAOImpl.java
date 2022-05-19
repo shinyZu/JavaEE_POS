@@ -1,5 +1,6 @@
 package dao.custom.impl;
 
+import dao.custom.ItemDAO;
 import entity.Item;
 import util.CrudUtil;
 
@@ -8,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ItemDAOImpl {
+public class ItemDAOImpl implements ItemDAO {
+
+    @Override
     public ArrayList<Item> search(Connection connection, Item item) throws SQLException, ClassNotFoundException {
         ArrayList<Item> itemDetails = new ArrayList<>();
         if (!item.getItemCode().equals("")) {
@@ -44,6 +47,7 @@ public class ItemDAOImpl {
         return null;
     }
 
+    @Override
     public String getCount(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT COUNT(itemCode) FROM Item");
         if (rst.next()) {
@@ -52,6 +56,7 @@ public class ItemDAOImpl {
         return "0";
     }
 
+    @Override
     public String getLastCode(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT itemCode FROM Item ORDER BY itemCode DESC LIMIT 1");
         if (rst.next()) {
@@ -60,6 +65,7 @@ public class ItemDAOImpl {
         return null;
     }
 
+    @Override
     public ArrayList<Item> getCodeDescriptions(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<Item> codeDescriptions = new ArrayList<>();
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT itemCode, description FROM Item");
@@ -72,6 +78,7 @@ public class ItemDAOImpl {
         return codeDescriptions;
     }
 
+    @Override
     public ArrayList<Item> getAll(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<Item> allItems = new ArrayList<>();
 
@@ -87,6 +94,7 @@ public class ItemDAOImpl {
         return allItems;
     }
 
+    @Override
     public boolean add(Connection connection, Item item) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "INSERT INTO Item VALUES (?,?,?,?)",
                 item.getItemCode(),
@@ -96,6 +104,7 @@ public class ItemDAOImpl {
         );
     }
 
+    @Override
     public boolean update(Connection connection, Item item) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE itemCode=?",
                 item.getDescription(),
@@ -105,6 +114,7 @@ public class ItemDAOImpl {
                 );
     }
 
+    @Override
     public boolean delete(Connection connection, Item item) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "DELETE FROM Item WHERE itemCode = ?",
                 item.getItemCode()
