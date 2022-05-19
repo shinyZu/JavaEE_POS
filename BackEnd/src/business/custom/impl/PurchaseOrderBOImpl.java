@@ -1,6 +1,7 @@
 package business.custom.impl;
 
 import business.custom.PurchaseOrderBO;
+import dao.DAOFactory;
 import dao.custom.PurchaseOrderDAO;
 import dao.custom.impl.PurchaseOrderDAOImpl;
 import dto.OrderDTO;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 
 public class PurchaseOrderBOImpl implements PurchaseOrderBO {
 
-    PurchaseOrderDAO purchaseOrderDAO = new PurchaseOrderDAOImpl();
+    PurchaseOrderDAO purchaseOrderDAO = (PurchaseOrderDAO) DAOFactory.getDAOFactoryInstance().getDAO(DAOFactory.DAOTypes.PURCHASE_ORDER);
 
     @Override
     public String getOrderCount(Connection connection) throws SQLException, ClassNotFoundException {

@@ -219,7 +219,7 @@ p.errorText {
 }
 
 #tblOrders {
-   height: 380px;
+   /*height: 380px;*/
    /*height: 550px;*/
   overflow-y: auto;
 }

@@ -1,5 +1,6 @@
 package servlets;
 
+import business.BOFactory;
 import business.custom.PurchaseOrderBO;
 import business.custom.impl.PurchaseOrderBOImpl;
 import dto.OrderDTO;
@@ -24,7 +25,7 @@ public class PurchaseOrderServlet extends HttpServlet {
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
-    PurchaseOrderBO purchaseOrderBO = new PurchaseOrderBOImpl();
+    PurchaseOrderBO purchaseOrderBO = (PurchaseOrderBO) BOFactory.getBOFactoryInstance().getBO(BOFactory.BOTypes.PURCHASE_ORDER);
     JsonObjectBuilder responseInfo;
 
     @Override

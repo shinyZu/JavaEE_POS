@@ -1,5 +1,6 @@
 package servlets;
 
+import business.BOFactory;
 import business.custom.ItemBO;
 import business.custom.impl.ItemBOImpl;
 import dto.ItemDTO;
@@ -23,7 +24,7 @@ public class ItemServlet extends HttpServlet {
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
-    ItemBO itemBO = new ItemBOImpl();
+    ItemBO itemBO = (ItemBO) BOFactory.getBOFactoryInstance().getBO(BOFactory.BOTypes.ITEM);
     JsonObjectBuilder responseInfo;
 
     @Override
