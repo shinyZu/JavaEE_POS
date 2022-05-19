@@ -1,5 +1,6 @@
 package servlets;
 
+import business.custom.CustomerBO;
 import business.custom.impl.CustomerBOImpl;
 import dto.CustomerDTO;
 import util.JsonUtil;
@@ -23,7 +24,7 @@ public class CustomerServlet extends HttpServlet {
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
-    CustomerBOImpl customerBO = new CustomerBOImpl();
+    CustomerBO customerBO = new CustomerBOImpl();
     JsonObjectBuilder responseInfo = JsonUtil.getJsonObjectBuilder();
 
     @Override

@@ -1,6 +1,7 @@
 package business.custom.impl;
 
 import business.custom.CustomerBO;
+import dao.custom.CustomerDAO;
 import dao.custom.impl.CustomerDAOImpl;
 import dto.CustomerDTO;
 import entity.Customer;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 public class CustomerBOImpl implements CustomerBO {
 
-    CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+    CustomerDAO customerDAO = new CustomerDAOImpl();
 
     @Override
     public ArrayList<CustomerDTO> search(Connection connection, CustomerDTO dto) throws ClassNotFoundException, SQLException {

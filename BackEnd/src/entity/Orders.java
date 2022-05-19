@@ -12,6 +12,10 @@ public class Orders {
 
     public Orders() {}
 
+    public Orders(String orderId) {
+        this.orderId = orderId;
+    }
+
     public Orders(String orderId, Date orderDate, double orderCost, int discount, String customerId) {
         this.setOrderId(orderId);
         this.setOrderDate(orderDate);

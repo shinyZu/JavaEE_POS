@@ -11,6 +11,10 @@ public class OrderDTO {
 
     public OrderDTO() {}
 
+    public OrderDTO(String orderId) {
+        this.orderId = orderId;
+    }
+
     public OrderDTO(String orderId, Date orderDate, double orderCost, int discount, String customerId) {
         this.setOrderId(orderId);
         this.setOrderDate(orderDate);

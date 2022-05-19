@@ -1,5 +1,6 @@
 package servlets;
 
+import business.custom.ItemBO;
 import business.custom.impl.ItemBOImpl;
 import dto.CustomerDTO;
 import dto.ItemDTO;
@@ -26,7 +27,7 @@ public class ItemServlet extends HttpServlet {
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
-    ItemBOImpl itemBO = new ItemBOImpl();
+    ItemBO itemBO = new ItemBOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
