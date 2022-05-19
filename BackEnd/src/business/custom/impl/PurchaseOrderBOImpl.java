@@ -1,31 +1,34 @@
 package business.custom.impl;
 
+import business.custom.PurchaseOrderBO;
+import dao.custom.PurchaseOrderDAO;
 import dao.custom.impl.PurchaseOrderDAOImpl;
 import dto.OrderDTO;
 import dto.OrderDetailDTO;
 import entity.OrderDetails;
 import entity.Orders;
 
-import javax.annotation.Resource;
 import javax.json.JsonArray;
 import javax.json.JsonValue;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class PurchaseOrderBOImpl {
+public class PurchaseOrderBOImpl implements PurchaseOrderBO {
 
-    PurchaseOrderDAOImpl purchaseOrderDAO = new PurchaseOrderDAOImpl();
+    PurchaseOrderDAO purchaseOrderDAO = new PurchaseOrderDAOImpl();
 
+    @Override
     public String getOrderCount(Connection connection) throws SQLException, ClassNotFoundException {
         return purchaseOrderDAO.getCount(connection);
     }
 
+    @Override
     public String getLastId(Connection connection) throws SQLException, ClassNotFoundException {
         return purchaseOrderDAO.getLastId(connection);
     }
 
+    @Override
     public ArrayList<OrderDTO> getAllOrders(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<OrderDTO> allOrders = new ArrayList<>();
         for (Orders o : purchaseOrderDAO.getAll(connection)) {
@@ -40,6 +43,7 @@ public class PurchaseOrderBOImpl {
         return allOrders;
     }
 
+    @Override
     public ArrayList<OrderDetailDTO> getOrderDetails(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<OrderDetailDTO> allOrderDetails = new ArrayList<>();
         for (OrderDetails od : purchaseOrderDAO.getAllOrderDetails(connection)) {
@@ -52,6 +56,7 @@ public class PurchaseOrderBOImpl {
         return allOrderDetails;
     }
 
+    @Override
     public boolean purchaseOrder(Connection connection, OrderDTO dto, JsonArray orderDetails) throws SQLException, ClassNotFoundException {
         connection.setAutoCommit(false);
 
@@ -90,6 +95,7 @@ public class PurchaseOrderBOImpl {
         }
     }
 
+    @Override
     public boolean deleteOrder(Connection connection, OrderDTO dto) throws SQLException, ClassNotFoundException {
         return purchaseOrderDAO.delete(connection, new Orders(dto.getOrderId()));
     }

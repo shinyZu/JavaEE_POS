@@ -1,5 +1,6 @@
 package servlets;
 
+import business.custom.PurchaseOrderBO;
 import business.custom.impl.PurchaseOrderBOImpl;
 import dto.OrderDTO;
 import dto.OrderDetailDTO;
@@ -14,19 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/orders")
 public class PurchaseOrderServlet extends HttpServlet {
-    JsonObjectBuilder responseInfo;
 
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
-    PurchaseOrderBOImpl purchaseOrderBO = new PurchaseOrderBOImpl();
+    PurchaseOrderBO purchaseOrderBO = new PurchaseOrderBOImpl();
+    JsonObjectBuilder responseInfo;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,8 +37,6 @@ public class PurchaseOrderServlet extends HttpServlet {
             JsonObjectBuilder order = Json.createObjectBuilder();
 
             String option = req.getParameter("option");
-            ResultSet rst;
-            PreparedStatement pstm;
 
             switch (option) {
                 case "GET_COUNT":

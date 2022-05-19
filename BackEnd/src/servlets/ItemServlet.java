@@ -2,7 +2,6 @@ package servlets;
 
 import business.custom.ItemBO;
 import business.custom.impl.ItemBOImpl;
-import dto.CustomerDTO;
 import dto.ItemDTO;
 
 import javax.annotation.Resource;
@@ -15,19 +14,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/item")
 public class ItemServlet extends HttpServlet {
-    JsonObjectBuilder responseInfo;
 
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
 
     ItemBO itemBO = new ItemBOImpl();
+    JsonObjectBuilder responseInfo;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,8 +33,6 @@ public class ItemServlet extends HttpServlet {
             resp.setContentType("application/json");
 
             String option = req.getParameter("option");
-            ResultSet rst;
-            PreparedStatement pstm;
 
             JsonObjectBuilder item = Json.createObjectBuilder();
             JsonArrayBuilder allItems = Json.createArrayBuilder();

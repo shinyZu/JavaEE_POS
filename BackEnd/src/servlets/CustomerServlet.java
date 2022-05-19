@@ -3,7 +3,6 @@ package servlets;
 import business.custom.CustomerBO;
 import business.custom.impl.CustomerBOImpl;
 import dto.CustomerDTO;
-import util.JsonUtil;
 
 import javax.annotation.Resource;
 import javax.json.*;
@@ -25,7 +24,7 @@ public class CustomerServlet extends HttpServlet {
     DataSource ds;
 
     CustomerBO customerBO = new CustomerBOImpl();
-    JsonObjectBuilder responseInfo = JsonUtil.getJsonObjectBuilder();
+    JsonObjectBuilder responseInfo;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
