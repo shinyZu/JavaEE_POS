@@ -1,5 +1,6 @@
 package business.custom;
 
+import business.SuperBO;
 import dto.OrderDTO;
 import dto.OrderDetailDTO;
 
@@ -8,7 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface PurchaseOrderBO {
+public interface PurchaseOrderBO extends SuperBO {
     String getOrderCount(Connection connection) throws SQLException, ClassNotFoundException;
 
     String getLastId(Connection connection) throws SQLException, ClassNotFoundException;

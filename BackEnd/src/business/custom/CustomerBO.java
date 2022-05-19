@@ -1,12 +1,13 @@
 package business.custom;
 
+import business.SuperBO;
 import dto.CustomerDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface CustomerBO {
+public interface CustomerBO extends SuperBO {
     ArrayList<CustomerDTO> search(Connection connection, CustomerDTO dto) throws ClassNotFoundException, SQLException;
 
     String isDuplicateContact(Connection connection, CustomerDTO dto) throws SQLException, ClassNotFoundException;

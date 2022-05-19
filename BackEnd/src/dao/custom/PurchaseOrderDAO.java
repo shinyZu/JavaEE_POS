@@ -1,5 +1,6 @@
 package dao.custom;
 
+import dao.SuperDAO;
 import entity.OrderDetails;
 import entity.Orders;
 
@@ -7,7 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface PurchaseOrderDAO {
+public interface PurchaseOrderDAO extends SuperDAO {
     String getCount(Connection connection) throws SQLException, ClassNotFoundException;
 
     String getLastId(Connection connection) throws SQLException, ClassNotFoundException;

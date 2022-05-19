@@ -15,7 +15,7 @@ public class DAOFactory {
         return (daoFactory == null) ? daoFactory = new DAOFactory() : daoFactory;
     }
 
-    public Object getDAO(DAOTypes type) {
+    public SuperDAO getDAO(DAOTypes type) {
         switch (type) {
             case CUSTOMER:
                 return new CustomerDAOImpl();

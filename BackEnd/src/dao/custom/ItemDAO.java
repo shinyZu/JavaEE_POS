@@ -1,12 +1,13 @@
 package dao.custom;
 
+import dao.SuperDAO;
 import entity.Item;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface ItemDAO {
+public interface ItemDAO extends SuperDAO {
     ArrayList<Item> search(Connection connection, Item item) throws SQLException, ClassNotFoundException;
 
     String getCount(Connection connection) throws SQLException, ClassNotFoundException;

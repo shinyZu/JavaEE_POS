@@ -1,12 +1,13 @@
 package dao.custom;
 
+import dao.SuperDAO;
 import entity.Customer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface CustomerDAO {
+public interface CustomerDAO extends SuperDAO {
     ArrayList<Customer> search(Connection connection, Customer customer) throws ClassNotFoundException, SQLException;
 
     String isDuplicateContact(Connection connection, Customer customer) throws SQLException, ClassNotFoundException;
