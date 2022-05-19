@@ -126,7 +126,7 @@ function deleteItem(row) {
                         loadAllItems();
                         getItemCount();
                         reset_ItemForm();
-                        generateNextItemCode();
+                        // generateNextItemCode();
                         clearItemFields();
 
                     } else if (resp.status == 400) {
@@ -190,7 +190,7 @@ function searchItem(searchValue) {
                 txtQty.val(obj.getQtyOnHand());
 
                 validate_ItemForm();
-                // return true;
+                return true;
 
             } else { // if resp.data = '{}'
                 swal({
@@ -328,6 +328,7 @@ function select_ItemRow() {
 
         searchItem(itemCode);
 
+        disableButton("#btnAddItem");
         enableButton("#btnEditItem");
         enableButton("#btnDeleteItem");
 

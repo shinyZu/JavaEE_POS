@@ -8,6 +8,15 @@ public class ItemDTO {
 
     public ItemDTO() {}
 
+    public ItemDTO(String itemCode) {
+        this.itemCode = itemCode;
+    }
+
+    public ItemDTO(String itemCode, String description) {
+        this.itemCode = itemCode;
+        this.description = description;
+    }
+
     public ItemDTO(String itemCode, String description, double unitPrice, int qtyOnHand) {
         this.setItemCode(itemCode);
         this.setDescription(description);

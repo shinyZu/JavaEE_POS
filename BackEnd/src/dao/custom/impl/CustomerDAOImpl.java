@@ -4,7 +4,6 @@ import dao.custom.CustomerDAO;
 import entity.Customer;
 import util.CrudUtil;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,22 +68,18 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public String getCount(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT COUNT(customerId) FROM Customer");
-
         if (rst.next()) {
             return rst.getString(1);
         }
-//        CrudUtil.getConnection().close();
         return "0";
     }
 
     @Override
     public String getLastId(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT customerId FROM Customer ORDER BY customerId DESC LIMIT 1");
-
         if (rst.next()) {
             return rst.getString(1);
         }
-//        CrudUtil.getConnection().close();
         return null;
     }
 
@@ -100,7 +95,6 @@ public class CustomerDAOImpl implements CustomerDAO {
                     rst.getString(2)
             ));
         }
-//        CrudUtil.getConnection().close();
         return customerIdNames;
     }
 
@@ -117,7 +111,6 @@ public class CustomerDAOImpl implements CustomerDAO {
                     rst.getInt(4)
             ));
         }
-//        CrudUtil.getConnection().close();
         return allCustomers;
     }
 

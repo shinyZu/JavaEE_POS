@@ -34,7 +34,6 @@ public class CustomerServlet extends HttpServlet {
             JsonObjectBuilder customer = Json.createObjectBuilder();
             String option = req.getParameter("option");
             Connection connection = ds.getConnection();
-//            System.out.println(connection);
 
             switch (option) {
                 case "SEARCH":
@@ -125,9 +124,9 @@ public class CustomerServlet extends HttpServlet {
                             allCustomers.add(customer.build());
                         }
                         responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("data", allCustomers.build());
-                        responseInfo.add("message", "Received all IDs & Names");
                         responseInfo.add("status", 200);
+                        responseInfo.add("message", "Received all IDs & Names");
+                        responseInfo.add("data", allCustomers.build());
 
                         resp.getWriter().print(responseInfo.build());
                     }
@@ -135,7 +134,7 @@ public class CustomerServlet extends HttpServlet {
 
                 case "GETALL":
                     ArrayList<CustomerDTO> customers = customerBO.getAllCustomers(connection);
-                    if (customer != null) {
+                    if (customers != null) {
                         for (CustomerDTO dto : customers) {
                             customer.add("id", dto.getCustomerId());
                             customer.add("name", dto.getCustomerName());
@@ -145,9 +144,9 @@ public class CustomerServlet extends HttpServlet {
                             allCustomers.add(customer.build());
                         }
                         responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("data", allCustomers.build());
-                        responseInfo.add("message", "Done");
                         responseInfo.add("status", HttpServletResponse.SC_OK); // 200
+                        responseInfo.add("message", "Received All Customers");
+                        responseInfo.add("data", allCustomers.build());
                         resp.getWriter().print(responseInfo.build());
 
 //                        resp.getWriter().print(JsonUtil.generateResponse(200, "Done", allCustomers. build()));

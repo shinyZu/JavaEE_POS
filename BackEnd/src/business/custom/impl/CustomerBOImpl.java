@@ -30,7 +30,7 @@ public class CustomerBOImpl implements CustomerBO {
 
     @Override
     public String isDuplicateContact(Connection connection, CustomerDTO dto) throws SQLException, ClassNotFoundException {
-        return customerDAO.isDuplicateContact(connection, new Customer(dto.getCustomerId(),dto.getCustomerContact()));
+        return customerDAO.isDuplicateContact(connection, new Customer(dto.getCustomerId(), dto.getCustomerContact()));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class CustomerBOImpl implements CustomerBO {
 
     @Override
     public boolean updateCustomer(Connection connection, CustomerDTO dto) throws SQLException, ClassNotFoundException {
-        return customerDAO.update(connection,new Customer(
+        return customerDAO.update(connection, new Customer(
                 dto.getCustomerId(),
                 dto.getCustomerName(),
                 dto.getCustomerAddress(),

@@ -8,6 +8,15 @@ public class Item {
 
     public Item() {}
 
+    public Item(String itemCode) {
+        this.itemCode = itemCode;
+    }
+
+    public Item(String itemCode, String description) {
+        this.itemCode = itemCode;
+        this.description = description;
+    }
+
     public Item(String itemCode, String description, double unitPrice, int qtyOnHand) {
         this.setItemCode(itemCode);
         this.setDescription(description);

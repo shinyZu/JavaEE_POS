@@ -1,5 +1,9 @@
 package servlets;
 
+import business.custom.impl.ItemBOImpl;
+import dto.CustomerDTO;
+import dto.ItemDTO;
+
 import javax.annotation.Resource;
 import javax.json.*;
 import javax.servlet.ServletException;
@@ -13,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/item")
 public class ItemServlet extends HttpServlet {
@@ -20,6 +25,8 @@ public class ItemServlet extends HttpServlet {
 
     @Resource(name = "java:comp/env/jdbc/pos")
     DataSource ds;
+
+    ItemBOImpl itemBO = new ItemBOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,161 +46,134 @@ public class ItemServlet extends HttpServlet {
                     String itemCode = req.getParameter("itemCode");
                     String description = req.getParameter("description");
 
-                    if (!itemCode.equals("")) {
-                        pstm = connection.prepareStatement("SELECT * FROM Item WHERE itemCode = ?");
-                        pstm.setObject(1, itemCode);
-                        rst = pstm.executeQuery();
+                    ItemDTO itemDTO = new ItemDTO(req.getParameter("itemCode"), req.getParameter("description"));
+                    ArrayList<ItemDTO> itemDetails = itemBO.searchItem(connection, itemDTO);
 
-                        while (rst.next()) {
-                            item.add("itemCode", rst.getString(1));
-                            item.add("description", rst.getString(2));
-                            item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
-                            item.add("qtyOnHand", rst.getString(4));
+                    if (itemDetails != null) {
+                        for (ItemDTO dto : itemDetails) {
+                            item.add("itemCode", dto.getItemCode());
+                            item.add("description", dto.getDescription());
+                            item.add("unitPrice", String.format("%.2f", dto.getUnitPrice()));
+                            item.add("qtyOnHand", dto.getQtyOnHand());
                         }
-
                         responseInfo = Json.createObjectBuilder();
                         responseInfo.add("status", 200);
                         responseInfo.add("message", "Item Search With Code");
-                        responseInfo.add("data", item.build());
-                        resp.getWriter().print(responseInfo.build());
-
-                    } else if (!description.equals("")) {
-                        pstm = connection.prepareStatement("SELECT * FROM Item WHERE description = ?");
-                        pstm.setObject(1, description);
-                        rst = pstm.executeQuery();
-
-                        while (rst.next()) {
-                            item.add("itemCode", rst.getString(1));
-                            item.add("description", rst.getString(2));
-                            item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
-                            item.add("qtyOnHand", rst.getString(4));
-                        }
-
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Item Search With Description");
                         responseInfo.add("data", item.build());
                         resp.getWriter().print(responseInfo.build());
                     }
                     break;
 
                 case "GET_COUNT":
-                    rst = connection.prepareStatement("SELECT COUNT(itemCode) FROM Item").executeQuery();
-
-                    if (rst.next()) {
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
-                        responseInfo.add("message", "Items Counted");
-                        responseInfo.add("data", rst.getString(1));
-                    }
+                    String itemCount = itemBO.getItemCount(connection);
+                    responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("status", 200);
+                    responseInfo.add("message", "Items Counted");
+                    responseInfo.add("data", itemCount);
                     resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "LAST_CODE":
-                    rst = connection.prepareStatement("SELECT itemCode FROM Item ORDER BY itemCode DESC LIMIT 1").executeQuery();
+                    String lastCode = itemBO.getLastCode(connection);
+                    responseInfo = Json.createObjectBuilder();
+                    responseInfo.add("status", 200);
 
-                    if (rst.next()) {
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
+                    if (lastCode != null) {
                         responseInfo.add("message", "Retrieved Last ItemCode...");
-                        responseInfo.add("data", rst.getString(1));
-                        resp.getWriter().print(responseInfo.build());
+                        responseInfo.add("data", lastCode);
 
                     } else {
-                        responseInfo = Json.createObjectBuilder();
-                        responseInfo.add("status", 200);
                         responseInfo.add("message", "No any Items yet");
                         responseInfo.add("data", "null");
-                        resp.getWriter().print(responseInfo.build());
                     }
+                    resp.getWriter().print(responseInfo.build());
                     break;
 
                 case "GET_CODE_DESCRIP":
-                    rst = connection.prepareStatement("SELECT itemCode, description FROM Item").executeQuery();
-                    while (rst.next()) {
 
-                        item.add("itemCode", rst.getString(1));
-                        item.add("description", rst.getString(2));
+                    ArrayList<ItemDTO> customerCodeDescriptions = itemBO.getCodeDescriptions(connection);
 
-                        allItems.add(item.build());
+                    if (customerCodeDescriptions != null) {
+                        for (ItemDTO dto : customerCodeDescriptions) {
+                            item.add("itemCode", dto.getItemCode());
+                            item.add("description", dto.getDescription());
+                            allItems.add(item.build());
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", 200);
+                        responseInfo.add("message", "Received Codes & Descriptions");
+                        responseInfo.add("data", allItems.build());
+                        resp.getWriter().print(responseInfo.build());
                     }
-                    responseInfo = Json.createObjectBuilder();
-                    responseInfo.add("data", allItems.build());
-                    responseInfo.add("message", "Received Codes & Descriptions");
-                    responseInfo.add("status", 200);
-                    resp.getWriter().print(responseInfo.build());
-
                     break;
 
                 case "GETALL":
-                    rst = connection.prepareStatement("SELECT * FROM Item").executeQuery();
-                    while (rst.next()) {
-                        item.add("itemCode", rst.getString(1));
-                        item.add("description", rst.getString(2));
-                        item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
-                        item.add("qtyOnHand", rst.getInt(4));
+                    ArrayList<ItemDTO> items = itemBO.getAllItems(connection);
+                    if (items != null) {
+                        for (ItemDTO dto : items) {
+                            item.add("itemCode", dto.getItemCode());
+                            item.add("description", dto.getDescription());
+                            item.add("unitPrice", String.format("%.2f", dto.getUnitPrice()));
+                            item.add("qtyOnHand", dto.getQtyOnHand());
 
-//                        System.out.println("BigDecimal : "+ rst.getBigDecimal(3)); // 44.0
-//                        System.out.println("Double : "+ rst.getDouble(3)); // 44.0
-//                        System.out.println("Double Format : "+ String.format("%.2f",rst.getDouble(3))); // 44.00
-//                        System.out.println("String : "+ rst.getString(3)); // 44.0
-//                        System.out.println("Float : "+ rst.getFloat(3)); // 44.0
+                            /*System.out.println("BigDecimal : "+ rst.getBigDecimal(3)); // 44.0
+                            System.out.println("Double : "+ rst.getDouble(3)); // 44.0
+                            System.out.println("Double Format : "+ String.format("%.2f",rst.getDouble(3))); // 44.00
+                            System.out.println("String : "+ rst.getString(3)); // 44.0
+                            System.out.println("Float : "+ rst.getFloat(3)); // 44.0*/
 
-                        allItems.add(item.build());
+                            allItems.add(item.build());
+                        }
+                        responseInfo = Json.createObjectBuilder();
+                        responseInfo.add("status", HttpServletResponse.SC_OK); // 200
+                        responseInfo.add("message", "Received All Items");
+                        responseInfo.add("data", allItems.build());
+                        resp.getWriter().print(responseInfo.build());
                     }
-
-                    responseInfo = Json.createObjectBuilder();
-                    resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-                    responseInfo.add("status", 200);
-                    responseInfo.add("message", "Received All Items");
-                    responseInfo.add("data", allItems.build());
-                    resp.getWriter().print(responseInfo.build());
                     break;
             }
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ItemDTO itemDTO = new ItemDTO(
+                req.getParameter("itemCode"),
+                req.getParameter("description"),
+                Double.parseDouble(req.getParameter("unitPrice")),
+                Integer.parseInt(req.getParameter("quantity"))
+        );
+//        String.format("%.2f", new BigDecimal(f) // 0.00
+//        String.format("%.2f", new Double(req.getParameter("unitPrice")) // 0.00
+//
+//        pstm.setDouble(3, Double.parseDouble(req.getParameter("unitPrice")));
+//        pstm.setFloat(3, Float.parseFloat((req.getParameter("unitPrice"))));
+//        pstm.setObject(3, String.format("%.2f", new Double(req.getParameter("unitPrice"))));
+//        pstm.setObject(3, new BigDecimal(req.getParameter("unitPrice")));
+//
+//        System.out.println("parseDouble : " + Double.parseDouble(req.getParameter("unitPrice"))); // 75 --> 75.0,   75.05 --> 75.05
+//        System.out.println("parseFloat : " + Float.parseFloat(req.getParameter("unitPrice"))); // 75 --> 75.0,   75.05 --> 75.05
+//        System.out.println("String Format : " + String.format("%.2f", new Double(req.getParameter("unitPrice")))); // 75 --> 75.00,   75.05 --> 75.05
         try {
             Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
-
-            pstm.setObject(1, req.getParameter("itemCode"));
-            pstm.setObject(2, req.getParameter("description"));
-            pstm.setObject(3, String.format("%.2f", new Double(req.getParameter("unitPrice"))));
-            pstm.setObject(4, req.getParameter("quantity"));
-
-//            String.format("%.2f", new BigDecimal(f) // 0.00
-//            String.format("%.2f", new Double(req.getParameter("unitPrice")) // 0.00
-
-//            pstm.setDouble(3, Double.parseDouble(req.getParameter("unitPrice")));
-//            pstm.setFloat(3, Float.parseFloat((req.getParameter("unitPrice"))));
-//            pstm.setObject(3, String.format("%.2f", new Double(req.getParameter("unitPrice"))));
-//            pstm.setObject(3, new BigDecimal(req.getParameter("unitPrice")));
-
-//            System.out.println("parseDouble : "+Double.parseDouble(req.getParameter("unitPrice"))); // 75 --> 75.0,   75.05 --> 75.05
-//            System.out.println("parseFloat : "+Float.parseFloat(req.getParameter("unitPrice"))); // 75 --> 75.0,   75.05 --> 75.05
-//            System.out.println("String Format : "+String.format("%.2f", new Double(req.getParameter("unitPrice")))); // 75 --> 75.00,   75.05 --> 75.05
-
-
-            if (pstm.executeUpdate() > 0) {
+            if (itemBO.addItem(connection, itemDTO)) {
                 responseInfo = Json.createObjectBuilder();
                 resp.setStatus(HttpServletResponse.SC_CREATED); // 201
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Saved Successfully...");
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
+
             }
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 400);
             responseInfo.add("message", "Something Went Wrong...");
@@ -207,22 +187,24 @@ public class ItemServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
-        String itemCode = jsonObject.getString("itemCode");
+
+        /*String itemCode = jsonObject.getString("itemCode");
         String description = jsonObject.getString("description");
         String unitPrice = jsonObject.getString("unitPrice");
-        String qtyOnHand = jsonObject.getString("qty");
+        String qtyOnHand = jsonObject.getString("qty");*/
+
+        ItemDTO itemDTO = new ItemDTO(
+                jsonObject.getString("itemCode"),
+                jsonObject.getString("description"),
+                Double.parseDouble(jsonObject.getString("unitPrice")),
+                Integer.parseInt(jsonObject.getString("qty"))
+        );
 
         try {
             Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE itemCode=?");
-            pstm.setObject(1, description);
-            pstm.setObject(2, String.format("%.2f", new Double(unitPrice)));
-            pstm.setObject(3, qtyOnHand);
-            pstm.setObject(4, itemCode);
-
-            if (pstm.executeUpdate() > 0) {
+            if (itemBO.updateItem(connection, itemDTO)) {
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Updated Successfully...");
@@ -238,7 +220,7 @@ public class ItemServlet extends HttpServlet {
             }
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
@@ -254,10 +236,7 @@ public class ItemServlet extends HttpServlet {
             Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE itemCode = ?");
-            pstm.setObject(1, req.getParameter("itemCode"));
-
-            if (pstm.executeUpdate() > 0) {
+            if (itemBO.deleteItem(connection, new ItemDTO(req.getParameter("itemCode")))) {
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Item Deleted Successfully...");
@@ -273,7 +252,7 @@ public class ItemServlet extends HttpServlet {
             }
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Deleting...");
