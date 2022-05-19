@@ -1,29 +1,30 @@
 package servlets;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
+import javax.annotation.Resource;
 import javax.json.*;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @WebServlet(urlPatterns = "/item")
 public class ItemServlet extends HttpServlet {
     JsonObjectBuilder responseInfo;
 
+    @Resource(name = "java:comp/env/jdbc/pos")
+    DataSource ds;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
-
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             String option = req.getParameter("option");
@@ -129,7 +130,7 @@ public class ItemServlet extends HttpServlet {
                     while (rst.next()) {
                         item.add("itemCode", rst.getString(1));
                         item.add("description", rst.getString(2));
-                        item.add("unitPrice", String.format("%.2f",rst.getDouble(3)));
+                        item.add("unitPrice", String.format("%.2f", rst.getDouble(3)));
                         item.add("qtyOnHand", rst.getInt(4));
 
 //                        System.out.println("BigDecimal : "+ rst.getBigDecimal(3)); // 44.0
@@ -159,9 +160,7 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
@@ -214,10 +213,7 @@ public class ItemServlet extends HttpServlet {
         String qtyOnHand = jsonObject.getString("qty");
 
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
-
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE itemCode=?");
@@ -255,13 +251,11 @@ public class ItemServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE itemCode = ?");
-            pstm.setObject(1,req.getParameter("itemCode"));
+            pstm.setObject(1, req.getParameter("itemCode"));
 
             if (pstm.executeUpdate() > 0) {
                 responseInfo = Json.createObjectBuilder();

@@ -1,33 +1,21 @@
 package dao;
 
-import dto.CustomerDTO;
 import entity.Customer;
-import org.apache.commons.dbcp2.BasicDataSource;
 import util.CrudUtil;
 
-import javax.annotation.Resource;
-import javax.json.Json;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
-
 public class CustomerDAOImpl {
 
-    public ArrayList<Customer> search(ServletContext servletContext, Customer customer) throws ClassNotFoundException, SQLException {
+    public ArrayList<Customer> search(Connection connection, Customer customer) throws ClassNotFoundException, SQLException {
         ArrayList<Customer> customerDetails = new ArrayList<>();
 
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
-
         if (!customer.getCustomerId().equals("")) {
-            ResultSet rst = CrudUtil.executeQuery(connection,"SELECT * FROM Customer WHERE customerId = ?", customer.getCustomerId());
+            ResultSet rst = CrudUtil.executeQuery(connection, "SELECT * FROM Customer WHERE customerId = ?", customer.getCustomerId());
 
             while (rst.next()) {
                 customerDetails.add(
@@ -39,8 +27,7 @@ public class CustomerDAOImpl {
                         )
                 );
             }
-            connection.close();
-            return  customerDetails;
+            return customerDetails;
 
         } else if (!customer.getCustomerName().equals("")) {
             ResultSet rst = CrudUtil.executeQuery(connection, "SELECT * FROM Customer WHERE customerName = ?", customer.getCustomerName());
@@ -55,64 +42,48 @@ public class CustomerDAOImpl {
                         )
                 );
             }
-            return  customerDetails;
+            return customerDetails;
         }
-        connection.close();
         return null;
     }
 
-    public String isDuplicateContact(ServletContext servletContext, Customer customer) throws SQLException, ClassNotFoundException {
-
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
-
+    public String isDuplicateContact(Connection connection, Customer customer) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT customerId, customerContact FROM Customer");
 
         while (rst.next()) {
             if (rst.getString(2).equals(String.valueOf(customer.getCustomerContact()))) {
-                if(rst.getString(1).equals(customer.getCustomerId())) {
+                if (rst.getString(1).equals(customer.getCustomerId())) {
                     return "Match";
                 } else {
                     return "Duplicate";
                 }
             }
         }
-        connection.close();
+//        CrudUtil.getConnection().close();
         return "Unique";
     }
 
-    public String getCount(ServletContext servletContext) throws SQLException, ClassNotFoundException {
-
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
-
+    public String getCount(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT COUNT(customerId) FROM Customer");
 
         if (rst.next()) {
             return rst.getString(1);
         }
-        connection.close();
+//        CrudUtil.getConnection().close();
         return "0";
     }
 
-    public String getLastId(ServletContext servletContext) throws SQLException, ClassNotFoundException {
-
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
-
+    public String getLastId(Connection connection) throws SQLException, ClassNotFoundException {
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT customerId FROM Customer ORDER BY customerId DESC LIMIT 1");
 
         if (rst.next()) {
             return rst.getString(1);
         }
-        connection.close();
+//        CrudUtil.getConnection().close();
         return null;
     }
 
-    public ArrayList<Customer> getIdNames(ServletContext servletContext) throws SQLException, ClassNotFoundException {
-
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
+    public ArrayList<Customer> getIdNames(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<Customer> customerIdNames = new ArrayList<>();
 
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT customerId, customerName FROM Customer");
@@ -123,13 +94,11 @@ public class CustomerDAOImpl {
                     rst.getString(2)
             ));
         }
-        connection.close();
+//        CrudUtil.getConnection().close();
         return customerIdNames;
     }
 
-    public ArrayList<Customer> getAll(ServletContext servletContext) throws SQLException, ClassNotFoundException {
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
+    public ArrayList<Customer> getAll(Connection connection) throws SQLException, ClassNotFoundException {
         ArrayList<Customer> allCustomers = new ArrayList<>();
 
         ResultSet rst = CrudUtil.executeQuery(connection, "SELECT * FROM Customer");
@@ -141,19 +110,31 @@ public class CustomerDAOImpl {
                     rst.getInt(4)
             ));
         }
-        connection.close();
+//        CrudUtil.getConnection().close();
         return allCustomers;
     }
 
-    public boolean addCustomer(ServletContext servletContext, Customer customer) throws SQLException, ClassNotFoundException {
-        BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-        Connection connection = bds.getConnection();
-
+    public boolean add(Connection connection, Customer customer) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "INSERT INTO Customer VALUES (?,?,?,?)",
                 customer.getCustomerId(),
                 customer.getCustomerName(),
                 customer.getCustomerAddress(),
                 customer.getCustomerContact()
+        );
+    }
+
+    public boolean update(Connection connection, Customer customer) throws SQLException, ClassNotFoundException {
+        return CrudUtil.executeUpdate(connection, "UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? WHERE customerId=?",
+                customer.getCustomerName(),
+                customer.getCustomerAddress(),
+                customer.getCustomerContact(),
+                customer.getCustomerId()
+        );
+    }
+
+    public boolean delete(Connection connection, Customer customer) throws SQLException, ClassNotFoundException {
+        return CrudUtil.executeUpdate(connection, "DELETE FROM Customer WHERE customerId = ?",
+                customer.getCustomerId()
         );
     }
 }

@@ -2,39 +2,40 @@ package servlets;
 
 import business.CustomerBOImpl;
 import dto.CustomerDTO;
-import entity.Customer;
-import org.apache.commons.dbcp2.BasicDataSource;
 import util.JsonUtil;
 
+import javax.annotation.Resource;
 import javax.json.*;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/customer")
 public class CustomerServlet extends HttpServlet {
 
+    @Resource(name = "java:comp/env/jdbc/pos")
+    DataSource ds;
+
     CustomerBOImpl customerBO = new CustomerBOImpl();
-    //    JsonObjectBuilder responseInfo;
     JsonObjectBuilder responseInfo = JsonUtil.getJsonObjectBuilder();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             resp.setContentType("application/json");
-            ServletContext servletContext = req.getServletContext();
             JsonArrayBuilder allCustomers = Json.createArrayBuilder();
             JsonObjectBuilder customer = Json.createObjectBuilder();
             String option = req.getParameter("option");
+            Connection connection = ds.getConnection();
+//            System.out.println(connection);
 
             switch (option) {
                 case "SEARCH":
@@ -42,7 +43,7 @@ public class CustomerServlet extends HttpServlet {
                     String customerName = req.getParameter("customerName");
 
                     CustomerDTO customerDTO = new CustomerDTO(customerID, customerName);
-                    ArrayList<CustomerDTO> customerDetails = customerBO.search(servletContext, customerDTO);
+                    ArrayList<CustomerDTO> customerDetails = customerBO.search(connection, customerDTO);
 
                     if (customerDetails != null) {
                         for (CustomerDTO dto : customerDetails) {
@@ -64,7 +65,7 @@ public class CustomerServlet extends HttpServlet {
                     String input = req.getParameter("input");
                     String contact = input.split("0")[1];
 
-                    String checkStatus = customerBO.isDuplicateContact(servletContext, new CustomerDTO(id, Integer.parseInt(contact)));
+                    String checkStatus = customerBO.isDuplicateContact(connection, new CustomerDTO(id, Integer.parseInt(contact)));
 
                     if (checkStatus.equals("Match")) {
                         responseInfo = Json.createObjectBuilder();
@@ -90,7 +91,7 @@ public class CustomerServlet extends HttpServlet {
                     break;
 
                 case "GET_COUNT":
-                    String customerCount = customerBO.getCustomerCount(servletContext);
+                    String customerCount = customerBO.getCustomerCount(connection);
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
                     responseInfo.add("message", "Customers Counted");
@@ -99,7 +100,7 @@ public class CustomerServlet extends HttpServlet {
                     break;
 
                 case "LAST_ID":
-                    String lastId = customerBO.getLastId(servletContext);
+                    String lastId = customerBO.getLastId(connection);
                     responseInfo = Json.createObjectBuilder();
                     responseInfo.add("status", 200);
 
@@ -115,7 +116,7 @@ public class CustomerServlet extends HttpServlet {
                     break;
 
                 case "GET_ID_NAME":
-                    ArrayList<CustomerDTO> customerIdNames = customerBO.getIdNames(servletContext);
+                    ArrayList<CustomerDTO> customerIdNames = customerBO.getIdNames(connection);
 
                     if (customerIdNames != null) {
                         for (CustomerDTO dto : customerIdNames) {
@@ -134,7 +135,7 @@ public class CustomerServlet extends HttpServlet {
                     break;
 
                 case "GETALL":
-                    ArrayList<CustomerDTO> customers = customerBO.getAllCustomers(servletContext);
+                    ArrayList<CustomerDTO> customers = customerBO.getAllCustomers(connection);
                     if (customer != null) {
                         for (CustomerDTO dto : customers) {
                             customer.add("id", dto.getCustomerId());
@@ -153,6 +154,7 @@ public class CustomerServlet extends HttpServlet {
                     }
                     break;
             }
+            connection.close();
 
         } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
@@ -170,12 +172,10 @@ public class CustomerServlet extends HttpServlet {
         );
 
         try {
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
 
-            if (customerBO.addCustomer(servletContext,customerDTO)) {
+            if (customerBO.addCustomer(connection, customerDTO)) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);// 201
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("data", "");
@@ -184,6 +184,9 @@ public class CustomerServlet extends HttpServlet {
                 resp.getWriter().print(responseInfo.build());
                 System.out.println("Saved Successfully....");
             }
+
+//            System.out.println(CrudUtil.getConnection());
+//            CrudUtil.getConnection().close();
 
         } catch (SQLException | ClassNotFoundException throwables) {
             responseInfo = Json.createObjectBuilder();
@@ -200,26 +203,23 @@ public class CustomerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
-        String customerID = jsonObject.getString("id");
+        /*String customerID = jsonObject.getString("id");
         String customerName = jsonObject.getString("name");
         String customerAddress = jsonObject.getString("address");
-        String customerContact = jsonObject.getString("contact");
+        String customerContact = jsonObject.getString("contact");*/
+
+        CustomerDTO customerDTO = new CustomerDTO(
+                jsonObject.getString("id"),
+                jsonObject.getString("name"),
+                jsonObject.getString("address"),
+                Integer.parseInt(jsonObject.getString("contact"))
+        );
 
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
-
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? WHERE customerId=?");
-            pstm.setObject(1, customerName);
-            pstm.setObject(2, customerAddress);
-            pstm.setObject(3, customerContact);
-            pstm.setObject(4, customerID);
-
-
-            if (pstm.executeUpdate() > 0) {
+            if (customerBO.updateCustomer(connection,customerDTO)){
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Customer Updated Successfully...");
@@ -234,9 +234,30 @@ public class CustomerServlet extends HttpServlet {
                 resp.getWriter().print(responseInfo.build());
             }
 
+//            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? WHERE customerId=?");
+//            pstm.setObject(1, customerName);
+//            pstm.setObject(2, customerAddress);
+//            pstm.setObject(3, customerContact);
+//            pstm.setObject(4, customerID);
+
+//            if (pstm.executeUpdate() > 0) {
+//                responseInfo = Json.createObjectBuilder();
+//                responseInfo.add("status", 200);
+//                responseInfo.add("message", "Customer Updated Successfully...");
+//                responseInfo.add("data", "");
+//                resp.getWriter().print(responseInfo.build());
+//
+//            } else {
+//                responseInfo = Json.createObjectBuilder();
+//                responseInfo.add("status", 400);
+//                responseInfo.add("message", "Error Occurred While Updating...");
+//                responseInfo.add("data", "");
+//                resp.getWriter().print(responseInfo.build());
+//            }
+
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Updating...");
@@ -249,16 +270,10 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
-
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId = ?");
-            pstm.setObject(1, req.getParameter("customerID"));
-
-            if (pstm.executeUpdate() > 0) {
+            if (customerBO.deleteCustomer(connection,new CustomerDTO(req.getParameter("customerID")))){
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Customer Deleted Successfully...");
@@ -272,9 +287,27 @@ public class CustomerServlet extends HttpServlet {
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
+
+//            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId = ?");
+//            pstm.setObject(1, req.getParameter("customerID"));
+//
+//            if (pstm.executeUpdate() > 0) {
+//                responseInfo = Json.createObjectBuilder();
+//                responseInfo.add("status", 200);
+//                responseInfo.add("message", "Customer Deleted Successfully...");
+//                responseInfo.add("data", "");
+//                resp.getWriter().print(responseInfo.build());
+//
+//            } else {
+//                responseInfo = Json.createObjectBuilder();
+//                responseInfo.add("status", 400);
+//                responseInfo.add("message", "Invalid Customer ID...");
+//                responseInfo.add("data", "");
+//                resp.getWriter().print(responseInfo.build());
+//            }
             connection.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             responseInfo = Json.createObjectBuilder();
             responseInfo.add("status", 500);
             responseInfo.add("message", "Error Occurred While Deleting...");

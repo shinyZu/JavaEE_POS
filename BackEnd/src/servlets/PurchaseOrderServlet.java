@@ -1,27 +1,30 @@
 package servlets;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
+import javax.annotation.Resource;
 import javax.json.*;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @WebServlet(urlPatterns = "/orders")
 public class PurchaseOrderServlet extends HttpServlet {
     JsonObjectBuilder responseInfo;
 
+    @Resource(name = "java:comp/env/jdbc/pos")
+    DataSource ds;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             JsonArrayBuilder allOrders = Json.createArrayBuilder();
@@ -123,9 +126,7 @@ public class PurchaseOrderServlet extends HttpServlet {
         JsonArray orderDetails = jsonObject1.getJsonArray("orderDetail");
 
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
             connection.setAutoCommit(false);
 
@@ -192,13 +193,11 @@ public class PurchaseOrderServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            ServletContext servletContext = req.getServletContext();
-            BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            Connection connection = bds.getConnection();
+            Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Orders WHERE orderId = ?");
-            pstm.setObject(1,req.getParameter("orderId"));
+            pstm.setObject(1, req.getParameter("orderId"));
 
             if (pstm.executeUpdate() > 0) {
                 responseInfo = Json.createObjectBuilder();

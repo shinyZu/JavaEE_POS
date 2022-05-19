@@ -1,20 +1,28 @@
 package listners;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
-import javax.servlet.ServletContext;
+import javax.annotation.Resource;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
-@WebListener
+//@WebListener
 public class ContextListener implements ServletContextListener {
+
+    @Resource(name = "jdbc:comp/env/jdbc/pos")
+    public static DataSource ds;
+//    private static Connection connection;
+
+
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         System.out.println("Context Initialized");
+        /*try {
+            getConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }*/
 
-        BasicDataSource bds = new BasicDataSource();
+        /*BasicDataSource bds = new BasicDataSource();
         bds.setDriverClassName("com.mysql.cj.jdbc.Driver");
         bds.setUrl("jdbc:mysql://localhost:3306/JavaEE_POS");
         bds.setUsername("root");
@@ -23,19 +31,37 @@ public class ContextListener implements ServletContextListener {
         bds.setInitialSize(100);
 
         ServletContext servletContext = servletContextEvent.getServletContext();
-        servletContext.setAttribute("bds",bds);
+        servletContext.setAttribute("bds",bds);*/
+
     }
+
+    /*public static Connection getConnection() throws SQLException {
+        System.out.println("Got a Connection");
+        System.out.println("ds : "+ds);
+//        Connection connection = ds.getConnection();
+//        System.out.println("connection : "+connection);
+//        return (connection == null) ? connection = ds.getConnection() : connection;
+//        return connection;
+
+    }*/
+
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         System.out.println("Context Destroyed...");
-        try {
-            ServletContext servletContext = servletContextEvent.getServletContext();
+        /*try {
+         *//*ServletContext servletContext = servletContextEvent.getServletContext();
             BasicDataSource bds = (BasicDataSource) servletContext.getAttribute("bds");
-            bds.close();
+            bds.close();*//*
+
+            ServletContext ctx = servletContextEvent.getServletContext();
+            String name = ctx.getServletContextName();
+            System.out.println(name);
+            connection.close();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }
+        }*/
 
     }
 }
