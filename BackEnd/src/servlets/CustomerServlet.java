@@ -1,6 +1,6 @@
 package servlets;
 
-import business.CustomerBOImpl;
+import business.custom.impl.CustomerBOImpl;
 import dto.CustomerDTO;
 import util.JsonUtil;
 
@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -149,8 +148,9 @@ public class CustomerServlet extends HttpServlet {
                         responseInfo.add("data", allCustomers.build());
                         responseInfo.add("message", "Done");
                         responseInfo.add("status", HttpServletResponse.SC_OK); // 200
-
                         resp.getWriter().print(responseInfo.build());
+
+//                        resp.getWriter().print(JsonUtil.generateResponse(200, "Done", allCustomers. build()));
                     }
                     break;
             }
@@ -177,16 +177,16 @@ public class CustomerServlet extends HttpServlet {
 
             if (customerBO.addCustomer(connection, customerDTO)) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);// 201
+
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("data", "");
                 responseInfo.add("message", "Customer Saved Successfully...");
                 responseInfo.add("status", 200);
                 resp.getWriter().print(responseInfo.build());
-                System.out.println("Saved Successfully....");
-            }
 
-//            System.out.println(CrudUtil.getConnection());
-//            CrudUtil.getConnection().close();
+//                resp.getWriter().print(JsonUtil.generateResponse(200, "Customer Saved Successfully", ""));
+            }
+            connection.close();
 
         } catch (SQLException | ClassNotFoundException throwables) {
             responseInfo = Json.createObjectBuilder();
@@ -194,6 +194,7 @@ public class CustomerServlet extends HttpServlet {
             responseInfo.add("message", "Something Went Wrong...");
             responseInfo.add("data", throwables.getLocalizedMessage());
             resp.getWriter().print(responseInfo.build());
+//            resp.getWriter().print(JsonUtil.generateResponse(400, "Something Went Wrong...", throwables.getLocalizedMessage()));
             throwables.printStackTrace();
 
         }
@@ -203,10 +204,6 @@ public class CustomerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
-        /*String customerID = jsonObject.getString("id");
-        String customerName = jsonObject.getString("name");
-        String customerAddress = jsonObject.getString("address");
-        String customerContact = jsonObject.getString("contact");*/
 
         CustomerDTO customerDTO = new CustomerDTO(
                 jsonObject.getString("id"),
@@ -219,7 +216,7 @@ public class CustomerServlet extends HttpServlet {
             Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            if (customerBO.updateCustomer(connection,customerDTO)){
+            if (customerBO.updateCustomer(connection, customerDTO)) {
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Customer Updated Successfully...");
@@ -233,28 +230,6 @@ public class CustomerServlet extends HttpServlet {
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
-
-//            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?,customerAddress=?,customerContact=? WHERE customerId=?");
-//            pstm.setObject(1, customerName);
-//            pstm.setObject(2, customerAddress);
-//            pstm.setObject(3, customerContact);
-//            pstm.setObject(4, customerID);
-
-//            if (pstm.executeUpdate() > 0) {
-//                responseInfo = Json.createObjectBuilder();
-//                responseInfo.add("status", 200);
-//                responseInfo.add("message", "Customer Updated Successfully...");
-//                responseInfo.add("data", "");
-//                resp.getWriter().print(responseInfo.build());
-//
-//            } else {
-//                responseInfo = Json.createObjectBuilder();
-//                responseInfo.add("status", 400);
-//                responseInfo.add("message", "Error Occurred While Updating...");
-//                responseInfo.add("data", "");
-//                resp.getWriter().print(responseInfo.build());
-//            }
-
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
@@ -273,7 +248,7 @@ public class CustomerServlet extends HttpServlet {
             Connection connection = ds.getConnection();
             resp.setContentType("application/json");
 
-            if (customerBO.deleteCustomer(connection,new CustomerDTO(req.getParameter("customerID")))){
+            if (customerBO.deleteCustomer(connection, new CustomerDTO(req.getParameter("customerID")))) {
                 responseInfo = Json.createObjectBuilder();
                 responseInfo.add("status", 200);
                 responseInfo.add("message", "Customer Deleted Successfully...");
@@ -287,24 +262,6 @@ public class CustomerServlet extends HttpServlet {
                 responseInfo.add("data", "");
                 resp.getWriter().print(responseInfo.build());
             }
-
-//            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId = ?");
-//            pstm.setObject(1, req.getParameter("customerID"));
-//
-//            if (pstm.executeUpdate() > 0) {
-//                responseInfo = Json.createObjectBuilder();
-//                responseInfo.add("status", 200);
-//                responseInfo.add("message", "Customer Deleted Successfully...");
-//                responseInfo.add("data", "");
-//                resp.getWriter().print(responseInfo.build());
-//
-//            } else {
-//                responseInfo = Json.createObjectBuilder();
-//                responseInfo.add("status", 400);
-//                responseInfo.add("message", "Invalid Customer ID...");
-//                responseInfo.add("data", "");
-//                resp.getWriter().print(responseInfo.build());
-//            }
             connection.close();
 
         } catch (SQLException | ClassNotFoundException e) {
