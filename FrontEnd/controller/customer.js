@@ -13,7 +13,6 @@ $("#btnSaveCustomer").click(function (e) {
             alert(textStatus);
             console.log(ob);
         }
-
     })
 })
 

@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserDAOImpl implements UserDAO {
+
     @Override
     public boolean add(Connection connection, UserDetails user) throws SQLException, ClassNotFoundException {
         return CrudUtil.executeUpdate(connection, "INSERT INTO UserDetails VALUES (?,?)",

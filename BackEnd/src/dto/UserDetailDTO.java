@@ -1,12 +1,12 @@
 package dto;
 
-public class UserDetailsDTO {
+public class UserDetailDTO {
     private String email;
     private String password;
 
-    public UserDetailsDTO() {}
+    public UserDetailDTO() {}
 
-    public UserDetailsDTO(String email, String password) {
+    public UserDetailDTO(String email, String password) {
         this.setEmail(email);
         this.setPassword(password);
     }
@@ -29,7 +29,7 @@ public class UserDetailsDTO {
 
     @Override
     public String toString() {
-        return "UserDetailsDTO{" +
+        return "UserDetailDTO{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

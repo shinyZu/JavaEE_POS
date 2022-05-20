@@ -2,11 +2,8 @@ package business.custom.impl;
 
 import business.custom.UserBO;
 import dao.DAOFactory;
-import dao.custom.CustomerDAO;
 import dao.custom.UserDAO;
-import dto.CustomerDTO;
-import dto.UserDetailsDTO;
-import entity.Customer;
+import dto.UserDetailDTO;
 import entity.UserDetails;
 
 import java.sql.Connection;
@@ -17,10 +14,10 @@ public class UserBOImpl implements UserBO {
     UserDAO userDAO = (UserDAO) DAOFactory.getDAOFactoryInstance().getDAO(DAOFactory.DAOTypes.USER);
 
     @Override
-    public ArrayList<UserDetailsDTO> getDetails(Connection connection, UserDetailsDTO dto) throws SQLException, ClassNotFoundException {
-        ArrayList<UserDetailsDTO> userDetails = new ArrayList<>();
+    public ArrayList<UserDetailDTO> getDetails(Connection connection, UserDetailDTO dto) throws SQLException, ClassNotFoundException {
+        ArrayList<UserDetailDTO> userDetails = new ArrayList<>();
         for (UserDetails u : userDAO.getUserDetails(connection, new UserDetails(dto.getEmail(), dto.getPassword()))) {
-            userDetails.add(new UserDetailsDTO(
+            userDetails.add(new UserDetailDTO(
                     u.getEmail(),
                     u.getPassword()
             ));
@@ -29,7 +26,7 @@ public class UserBOImpl implements UserBO {
     }
 
     @Override
-    public boolean addUser(Connection connection, UserDetailsDTO dto) throws SQLException, ClassNotFoundException {
+    public boolean addUser(Connection connection, UserDetailDTO dto) throws SQLException, ClassNotFoundException {
         return userDAO.add(connection, new UserDetails(
                 dto.getEmail(),
                 dto.getPassword()
