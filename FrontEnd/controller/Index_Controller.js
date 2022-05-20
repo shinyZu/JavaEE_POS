@@ -193,42 +193,212 @@ function getUserDetails(email,pwd){
 
 
 (function () {
-
-    // localStorage.setItem("reload","1");
-
-    // alert("page load")
-    if(localStorage.getItem("reload") === "1"){
-        // localStorage.setItem("reload","1");
-        localStorage.removeItem("reload");
-        // window.location.href = window.location.href;
-        console.log(localStorage);
-        // return;
-
-    } else{
+    // localStorage.setItem("reload","0");
+    /*if(localStorage.getItem("reload") === "1"){
         // localStorage.removeItem("reload");
-        localStorage.setItem("reload","1");
-        window.location.href = window.location.href;
+        console.log("1");
         console.log(localStorage);
-        // return;
-    }
+        // window.location.href = window.location.href;
+        // alert("llllllllllllll")
 
-    // (async () => {
+    } else{ // if reload == 0 (if First Page Load)
+        // localStorage.removeItem("reload");
+        console.log("2");
+        console.log(localStorage);
 
-    //     const { value: email } = await Swal.fire({
-    //         title: 'Input email address',
-    //         input: 'email',
-    //         inputLabel: 'Your email address',
-    //         inputPlaceholder: 'Enter your email address'
-    //     })
+        /!*let email;
+        let pwd;
+        (async () => {
+            const { value: formValues } = await Swal.fire({
+                title: 'Login / Sign Up',
+                html:
+                    '<label>Email Address</label>' +
+                    '<input id="swal-input1" class="swal2-input" type="email" size=25>' +
+                    '<label>Password</label>' +
+                    '<input id="swal-input2" class="swal2-input" type="password" size=21>',
 
-    //     if (email) {
-    //         Swal.fire(`Entered email: ${email}`)
-    //     }
+                allowOutsideClick: false,
 
-    // })()
+                confirmButtonText: 'Login',
+                confirmButtonColor: '#1abc9c',
+
+                showCancelButton: true,
+                cancelButtonText: 'Sign Up',
+                cancelButtonColor: '#ff7f50',
+
+                customClass: {
+                    cancelButton: 'order-1 right-gap',
+                    confirmButton: 'order-2',
+                },
+                allowEnterKey: true,
+                preConfirm: () => {
+                    email = $('#swal-input1').val();
+                    pwd = $('#swal-input2').val();
+                    console.log(email);
+                    console.log(pwd);
+                }
+            })
+
+            if (email==="" && pwd === "") { // If login
+                console.log("empty.....");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter Credentials..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+                return ;
+            }
+
+            if (email && pwd) {
+                Swal.fire(`Email : ` + email + '\nPassword : ' + pwd)
+                getUserDetails(email,pwd);
+
+                if (response.data.pwd === pwd && response.data.email === email) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login Successful...',
+                        showConfirmButton: false,
+                        timer:2000,
+
+                    })
+                    // console.log("going to stop...")
+                    window.stop();
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Email or Password..',
+                        showConfirmButton: false,
+                        text: 'Access Denied!',
+                        footer: '<a href="">Try Again</a>'
+                    })
+                }
+
+            } else if (email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter password..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+            } else if (pwd) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter email..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                }).then(function() {
+                    console.log("aaaaaaa");
+                    // window.location = "redirectURL";
+                });
+
+            } else if (Swal.DismissReason.cancel) { // If Sign Up
+                email = $('#swal-input1').val();
+                pwd = $('#swal-input2').val();
+                console.log(email);
+                console.log(pwd);
+
+                if (email==="" && pwd === "") {
+                    console.log("empty.....");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please enter Credentials..',
+                        showConfirmButton: false,
+                        text: 'Access Denied!',
+                        footer: '<a href="">Try Again</a>'
+                    })
+                    return ;
+                }
+
+                if (email && pwd) {
+                    getUserDetails(email,pwd);
+                    if (response.data.pwd === pwd || response.data.email === email) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'A User Already Exist with given Email..',
+                            showConfirmButton: false,
+                            text: 'Please use another email...',
+                            footer: '<a href="">Try Again</a>'
+                        })
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "http://localhost:8080/pos/user?email="+email+"&pwd="+pwd,
+                        method: "POST",
+                        success:function (resp) {
+                            console.log(resp);
+                            console.log(resp.data.pwd);
+                            if (resp.message === "SUCCESS"){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sign Up Successful...',
+                                    showConfirmButton: false,
+                                    timer:2000
+                                })
+
+                            }
+                            /!* else if (resp.message === "FAIL"){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'qqqqqqqqqqqqqqqqqqqqqqqqq',
+                                    showConfirmButton: false,
+                                    text: 'Access Denied!',
+                                    footer: '<a href="">Try Again</a>'
+                                })
+                            } else if (resp.status === 500) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'A User already exist with '+email,
+                                    showConfirmButton: false,
+                                    text: 'Please use another email...',
+                                    footer: '<a href="">Try Again</a>'
+                                })
+                            }*!/
+                        },
+                        error:function (ob, textStatus, error) {
+                            console.log(ob);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'zzzzzzzzzzzzzzzzzzzzzzzz',
+                                showConfirmButton: false,
+                                footer: '<a href="">Try Again</a>'
+                            })
+
+                        }
+                    });
+
+                } else if (email) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please enter password..',
+                        showConfirmButton: false,
+                        text: 'Access Denied!',
+                        footer: '<a href="">Try Again</a>'
+                    })
+
+                } else if (pwd) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please enter email..',
+                        showConfirmButton: false,
+                        text: 'Access Denied!',
+                        footer: '<a href="">Try Again</a>'
+                    })
+                }
+            }
+        })()*!/
+
+        localStorage.setItem("reload","1");
+        console.log(localStorage);
+    }*/
+
     let email;
     let pwd;
-
     (async () => {
         const { value: formValues } = await Swal.fire({
             title: 'Login / Sign Up',
@@ -247,46 +417,27 @@ function getUserDetails(email,pwd){
             cancelButtonText: 'Sign Up',
             cancelButtonColor: '#ff7f50',
 
-            // showDenyButton: true,
-            // denyButtonText: 'Sign Up',
-            // denyButtonColor: '#ff7f50',
-
             customClass: {
                 cancelButton: 'order-1 right-gap',
                 confirmButton: 'order-2',
             },
-            // focusConfirm: false,
             allowEnterKey: true,
-            // returnFocus: false,
-            // closeModal: true,
-            // showCloseButton: true,
+            validationMessage: 'This field is required',
             preConfirm: () => {
-                // return [
-                // document.getElementById('swal-input1').value,
-                // document.getElementById('swal-input2').value
                 email = $('#swal-input1').val();
                 pwd = $('#swal-input2').val();
                 console.log(email);
                 console.log(pwd);
-                // ]
             }
         })
-        // If login
 
-        // Swal.fire({
-        //     icon: 'error',
-        //     title: 'Oops1...',
-        //     showConfirmButton: false,
-        //     text: 'Access Denied!',
-        //     footer: '<a href="">Try Again</a>'
-        // })
-
-        if (email==="" && pwd === "") {
+        if (email==="" && pwd === "") { // If login
             console.log("empty.....");
             Swal.fire({
                 icon: 'error',
                 title: 'Please enter Credentials..',
                 showConfirmButton: false,
+                allowOutsideClick: false,
                 text: 'Access Denied!',
                 footer: '<a href="">Try Again</a>'
             })
@@ -298,12 +449,12 @@ function getUserDetails(email,pwd){
             getUserDetails(email,pwd);
 
             if (response.data.pwd === pwd && response.data.email === email) {
-                // Swal.fire(`Email : ` + email + '\nPassword : ' + pwd);
                 Swal.fire({
                     icon: 'success',
                     title: 'Login Successful...',
                     showConfirmButton: false,
-                    timer:2000
+                    timer:2000,
+
                 })
 
             } else {
@@ -311,6 +462,7 @@ function getUserDetails(email,pwd){
                     icon: 'error',
                     title: 'Invalid Email or Password..',
                     showConfirmButton: false,
+                    allowOutsideClick: false,
                     text: 'Access Denied!',
                     footer: '<a href="">Try Again</a>'
                 })
@@ -321,23 +473,25 @@ function getUserDetails(email,pwd){
                 icon: 'error',
                 title: 'Please enter password..',
                 showConfirmButton: false,
+                allowOutsideClick: false,
                 text: 'Access Denied!',
-                // html: $('#swal-input1').val(email),
-                footer: '<a href="">Try Again</a>'
+                footer: '<a href="">Try Again</a>',
+
             })
+
+
 
         } else if (pwd) {
             Swal.fire({
                 icon: 'error',
                 title: 'Please enter email..',
                 showConfirmButton: false,
+                allowOutsideClick: false,
                 text: 'Access Denied!',
-                // html: $('#swal-input2').val(pwd),
                 footer: '<a href="">Try Again</a>'
             })
 
         } else if (Swal.DismissReason.cancel) { // If Sign Up
-
             email = $('#swal-input1').val();
             pwd = $('#swal-input2').val();
             console.log(email);
@@ -349,6 +503,7 @@ function getUserDetails(email,pwd){
                     icon: 'error',
                     title: 'Please enter Credentials..',
                     showConfirmButton: false,
+                    allowOutsideClick: false,
                     text: 'Access Denied!',
                     footer: '<a href="">Try Again</a>'
                 })
@@ -356,14 +511,13 @@ function getUserDetails(email,pwd){
             }
 
             if (email && pwd) {
-                // Swal.fire(`S Email : ` + email + '\n S Password : ' + pwd);
                 getUserDetails(email,pwd);
-
                 if (response.data.pwd === pwd || response.data.email === email) {
                     Swal.fire({
                         icon: 'error',
                         title: 'A User Already Exist with given Email..',
                         showConfirmButton: false,
+                        allowOutsideClick: false,
                         text: 'Please use another email...',
                         footer: '<a href="">Try Again</a>'
                     })
@@ -409,7 +563,7 @@ function getUserDetails(email,pwd){
                             icon: 'error',
                             title: 'zzzzzzzzzzzzzzzzzzzzzzzz',
                             showConfirmButton: false,
-                            // text: 'Please use another email...',
+                            allowOutsideClick: false,
                             footer: '<a href="">Try Again</a>'
                         })
 
@@ -421,55 +575,25 @@ function getUserDetails(email,pwd){
                     icon: 'error',
                     title: 'Please enter password..',
                     showConfirmButton: false,
+                    allowOutsideClick: false,
                     text: 'Access Denied!',
                     footer: '<a href="">Try Again</a>'
                 })
-                // Swal.fire(JSON.stringify(email))
 
             } else if (pwd) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Please enter email..',
                     showConfirmButton: false,
+                    allowOutsideClick: false,
                     text: 'Access Denied!',
                     footer: '<a href="">Try Again</a>'
                 })
             }
         }
-
-
-
-
-        // ).then((result) => {
-        //     if (result.isConfirmed) { // Login
-        //         // Swal.fire(
-        //         //     'Login'
-        //         // )
-
-
-        //         // if (email) {
-        //         //     Swal.fire(`Entered email: ${email}`)
-
-        //         // } else if (pwd) {
-        //         //     Swal.fire(`Entered password: ${pwd}`)
-
-        //         // }
-
-        //         // Swal.fire({
-        //         //     icon: 'error',
-        //         //     title: 'Oops...',
-        //         //     text: 'Something went wrong!',
-        //         //     footer: '<a href="">Try Again</a>'
-        //         // })
-
-        //     } else { // Sign Up
-        //         // Swal.fire(
-        //         //     'Sign Up'
-        //         // )
-        //         Swal.fire('Something went wrong!', '<a href="">Try Again</a>', 'question')
-        //     }
-        // })
     })()
+
+
 })();
 
 $("#nav-home").click(function () {
