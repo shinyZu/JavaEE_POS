@@ -61,7 +61,7 @@ function updateItem(itemObj) {
             if (resp.status === 200) {
                 response = resp;
                 // return resp;
-                // toastr.success(resp.message);
+                toastr.success(resp.message);
 
                 loadAllItems();
                 reset_ItemForm();
@@ -271,7 +271,7 @@ $("#btnEditItem").click(function (e) {
                 qty: txtQty.val()
             }
             updateItem(itemObj);
-            toastr.success(response.message);
+            // toastr.success(response.message);
             // reset_ItemForm();
             // generateNextItemCode();
 

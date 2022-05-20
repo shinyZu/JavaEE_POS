@@ -8,7 +8,12 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 @WebFilter(urlPatterns = "/user")
+//@WebFilter(urlPatterns = {"/user", "/customer"})
 public class UserFilter implements Filter {
+
+    /*private String currentLoggedEmail;
+    private String currentLoggedPwd;*/
+
     public UserFilter() {
 //        System.out.println("Object created from UserFilter");
     }
@@ -26,6 +31,11 @@ public class UserFilter implements Filter {
         servletResponse.setContentType("application/json");
         resp.addHeader("Access-Control-Allow-Origin", "*");
 
+        if (req.getMethod().equals("OPTIONS")) {
+            resp.addHeader("Access-Control-Allow-Methods", "DELETE,PUT");
+            resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
+        }
+
         /*String servletPath = req.getServletPath();
         System.out.println(servletPath);
         if (servletPath.equals("/user")) {
@@ -42,6 +52,10 @@ public class UserFilter implements Filter {
         boolean isValidPwd = Pattern.compile(userPwdRegEx).matcher(pwd).matches();
 
         if (isValidEmail && isValidPwd) {
+            /*currentLoggedEmail = email;
+            currentLoggedPwd = pwd;
+            System.out.println("currentLoggedEmail :"+currentLoggedEmail);
+            System.out.println("currentLoggedPwd :"+currentLoggedPwd);*/
             filterChain.doFilter(servletRequest, servletResponse);
 
         } else {

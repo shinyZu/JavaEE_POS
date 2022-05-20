@@ -102,8 +102,10 @@ function deleteCustomer(row) {
 
     }).then(result => {
         if (result) {
+            email = localStorage.getItem("email");
+            pwd = localStorage.getItem("pwd");
             $.ajax({
-                url: "http://localhost:8080/pos/customer?customerID=" + customerId,
+                url: "http://localhost:8080/pos/customer?customerID=" + customerId + "&email=" + email + "&pwd=" + pwd,
                 method: "DELETE",
                 success: function (resp) {
                     if (resp.status === 200) {
