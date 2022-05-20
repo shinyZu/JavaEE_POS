@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
 @WebFilter(urlPatterns = "/user")
 public class UserFilter implements Filter {
     public UserFilter() {
-        System.out.println("Object created from UserFilter");
+//        System.out.println("Object created from UserFilter");
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("UserFilter initialized");
+//        System.out.println("UserFilter initialized");
     }
 
     @Override
@@ -27,53 +27,37 @@ public class UserFilter implements Filter {
         resp.addHeader("Access-Control-Allow-Origin", "*");
 
         String servletPath = req.getServletPath();
-        System.out.println(servletPath);
+//        System.out.println(servletPath);
 
         if (servletPath.equals("/user")) {
-            System.out.println("Context Path is User...");
+//            System.out.println("Context Path is User...");
 
             String userEmailRegEx = "^[a-z|0-9]{2,}@(gmail)(.com|.lk)$"; //admin@gmail.com, cashier1@gmail.lk
             String userPwdRegEx = "^[a-z]*[0-9]{3,}$"; // admin123, cashier123
 
-            String option = servletRequest.getParameter("SIGNUP");
+//            String option = servletRequest.getParameter("SIGNUP");
             String email = servletRequest.getParameter("email");
             String pwd = servletRequest.getParameter("pwd");
 
-            System.out.println("inside Filter : " + email);
-            System.out.println("inside Filter : " + pwd);
+//            System.out.println("inside Filter : " + email);
+//            System.out.println("inside Filter : " + pwd);
 
             boolean isValidEmail = Pattern.compile(userEmailRegEx).matcher(email).matches();
             boolean isValidPwd = Pattern.compile(userPwdRegEx).matcher(pwd).matches();
 
             if (isValidEmail && isValidPwd) {
-                System.out.println("Valid Email & Pwd...");
-                filterChain.doFilter(servletRequest,servletResponse);
+//                System.out.println("Valid Email & Pwd...");
+                filterChain.doFilter(servletRequest, servletResponse);
 
             } else {
-                System.out.println("Invalid Email OR Pwd...");
+//                System.out.println("Invalid Email OR Pwd...");
                 resp.sendRedirect(req.getRequestURI());
-                return;
             }
-
-            /*switch (option) {
-                case "SIGNUP" :
-
-                    break;
-                case "LOGIN" :
-                    System.out.println("Can POST...");
-                    break;
-            }*/
-
-        } else {
-            System.out.println("Context Path is NOT User...");
         }
-
-        System.out.println("Awe naaaaa");
-//        filterChain.doFilter(servletRequest,servletResponse);
     }
 
     @Override
     public void destroy() {
-        System.out.println("UserFilter destroyed");
+//        System.out.println("UserFilter destroyed");
     }
 }

@@ -3,6 +3,7 @@ package business;
 import business.custom.impl.CustomerBOImpl;
 import business.custom.impl.ItemBOImpl;
 import business.custom.impl.PurchaseOrderBOImpl;
+import business.custom.impl.UserBOImpl;
 
 public class BOFactory {
 
@@ -26,12 +27,15 @@ public class BOFactory {
             case PURCHASE_ORDER:
                 return new PurchaseOrderBOImpl();
 
+            case USER:
+                return new UserBOImpl();
+
             default:
                 return null;
         }
     }
 
     public enum BOTypes {
-        CUSTOMER, ITEM, PURCHASE_ORDER
+        CUSTOMER, ITEM, PURCHASE_ORDER, USER
     }
 }
