@@ -10,7 +10,6 @@ public class JsonUtil {
         responseInfo.add("status", status);
         responseInfo.add("message", message);
         responseInfo.add("data", data);
-        System.out.println(data);
         return responseInfo.build();
     }
 
@@ -19,7 +18,6 @@ public class JsonUtil {
         responseInfo.add("status", status);
         responseInfo.add("message", message);
         responseInfo.add("data", data);
-        System.out.println(data);
         return responseInfo.build();
     }
 
@@ -28,7 +26,6 @@ public class JsonUtil {
         responseInfo.add("status", status);
         responseInfo.add("message", message);
         responseInfo.add("data", data);
-        System.out.println(data);
         return responseInfo.build();
     }
 }

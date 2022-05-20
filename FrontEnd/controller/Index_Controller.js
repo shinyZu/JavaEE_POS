@@ -167,7 +167,51 @@ function generateNextOrderID() {
     });
 }
 
+function getUserDetails(email,pwd){
+    $.ajax({
+        url: "http://localhost:8080/pos/user?email="+email+"&pwd="+pwd,
+        method: "GET",
+        async: false,
+        success:function (resp) {
+            response = resp;
+            console.log(resp);
+            console.log(resp.data.pwd);
+            return true;
+        },
+        error:function (ob, textStatus, error) {
+            console.log(ob);
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email or Password..',
+                showConfirmButton: false,
+                footer: '<a href="">Try Again</a>'
+            })
+        }
+    });
+}
+
+
+
 (function () {
+
+    // localStorage.setItem("reload","1");
+
+    // alert("page load")
+    if(localStorage.getItem("reload") === "1"){
+        // localStorage.setItem("reload","1");
+        localStorage.removeItem("reload");
+        // window.location.href = window.location.href;
+        console.log(localStorage);
+        // return;
+
+    } else{
+        // localStorage.removeItem("reload");
+        localStorage.setItem("reload","1");
+        window.location.href = window.location.href;
+        console.log(localStorage);
+        // return;
+    }
+
     // (async () => {
 
     //     const { value: email } = await Swal.fire({
@@ -214,7 +258,7 @@ function generateNextOrderID() {
             // focusConfirm: false,
             allowEnterKey: true,
             // returnFocus: false,
-            closeModal: true,
+            // closeModal: true,
             // showCloseButton: true,
             preConfirm: () => {
                 // return [
@@ -237,8 +281,40 @@ function generateNextOrderID() {
         //     footer: '<a href="">Try Again</a>'
         // })
 
+        if (email==="" && pwd === "") {
+            console.log("empty.....");
+            Swal.fire({
+                icon: 'error',
+                title: 'Please enter Credentials..',
+                showConfirmButton: false,
+                text: 'Access Denied!',
+                footer: '<a href="">Try Again</a>'
+            })
+            return ;
+        }
+
         if (email && pwd) {
             Swal.fire(`Email : ` + email + '\nPassword : ' + pwd)
+            getUserDetails(email,pwd);
+
+            if (response.data.pwd === pwd && response.data.email === email) {
+                // Swal.fire(`Email : ` + email + '\nPassword : ' + pwd);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful...',
+                    showConfirmButton: false,
+                    timer:2000
+                })
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Email or Password..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+            }
 
         } else if (email) {
             Swal.fire({
@@ -246,6 +322,7 @@ function generateNextOrderID() {
                 title: 'Please enter password..',
                 showConfirmButton: false,
                 text: 'Access Denied!',
+                // html: $('#swal-input1').val(email),
                 footer: '<a href="">Try Again</a>'
             })
 
@@ -255,6 +332,7 @@ function generateNextOrderID() {
                 title: 'Please enter email..',
                 showConfirmButton: false,
                 text: 'Access Denied!',
+                // html: $('#swal-input2').val(pwd),
                 footer: '<a href="">Try Again</a>'
             })
 
@@ -265,8 +343,78 @@ function generateNextOrderID() {
             console.log(email);
             console.log(pwd);
 
+            if (email==="" && pwd === "") {
+                console.log("empty.....");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter Credentials..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+                return ;
+            }
+
             if (email && pwd) {
-                Swal.fire(`S Email : ` + email + '\n S Password : ' + pwd)
+                // Swal.fire(`S Email : ` + email + '\n S Password : ' + pwd);
+                getUserDetails(email,pwd);
+
+                if (response.data.pwd === pwd || response.data.email === email) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'A User Already Exist with given Email..',
+                        showConfirmButton: false,
+                        text: 'Please use another email...',
+                        footer: '<a href="">Try Again</a>'
+                    })
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:8080/pos/user?email="+email+"&pwd="+pwd,
+                    method: "POST",
+                    success:function (resp) {
+                        console.log(resp);
+                        console.log(resp.data.pwd);
+                        if (resp.message === "SUCCESS"){
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sign Up Successful...',
+                                showConfirmButton: false,
+                                timer:2000
+                            })
+
+                        }
+                        /* else if (resp.message === "FAIL"){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'qqqqqqqqqqqqqqqqqqqqqqqqq',
+                                showConfirmButton: false,
+                                text: 'Access Denied!',
+                                footer: '<a href="">Try Again</a>'
+                            })
+                        } else if (resp.status === 500) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'A User already exist with '+email,
+                                showConfirmButton: false,
+                                text: 'Please use another email...',
+                                footer: '<a href="">Try Again</a>'
+                            })
+                        }*/
+                    },
+                    error:function (ob, textStatus, error) {
+                        console.log(ob);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'zzzzzzzzzzzzzzzzzzzzzzzz',
+                            showConfirmButton: false,
+                            // text: 'Please use another email...',
+                            footer: '<a href="">Try Again</a>'
+                        })
+
+                    }
+                });
 
             } else if (email) {
                 Swal.fire({
