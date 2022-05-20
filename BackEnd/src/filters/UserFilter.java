@@ -26,33 +26,26 @@ public class UserFilter implements Filter {
         servletResponse.setContentType("application/json");
         resp.addHeader("Access-Control-Allow-Origin", "*");
 
-        String servletPath = req.getServletPath();
-//        System.out.println(servletPath);
-
+        /*String servletPath = req.getServletPath();
+        System.out.println(servletPath);
         if (servletPath.equals("/user")) {
-//            System.out.println("Context Path is User...");
+            System.out.println("Context Path is User...");
+        }*/
 
-            String userEmailRegEx = "^[a-z|0-9]{2,}@(gmail)(.com|.lk)$"; //admin@gmail.com, cashier1@gmail.lk
-            String userPwdRegEx = "^[a-z]*[0-9]{3,}$"; // admin123, cashier123
+        String userEmailRegEx = "^[a-z|0-9]{2,}@(gmail)(.com|.lk)$"; //admin@gmail.com, cashier1@gmail.lk
+        String userPwdRegEx = "^[a-z]*[0-9]{3,}$"; // admin123, cashier123
 
-//            String option = servletRequest.getParameter("SIGNUP");
-            String email = servletRequest.getParameter("email");
-            String pwd = servletRequest.getParameter("pwd");
+        String email = servletRequest.getParameter("email");
+        String pwd = servletRequest.getParameter("pwd");
 
-//            System.out.println("inside Filter : " + email);
-//            System.out.println("inside Filter : " + pwd);
+        boolean isValidEmail = Pattern.compile(userEmailRegEx).matcher(email).matches();
+        boolean isValidPwd = Pattern.compile(userPwdRegEx).matcher(pwd).matches();
 
-            boolean isValidEmail = Pattern.compile(userEmailRegEx).matcher(email).matches();
-            boolean isValidPwd = Pattern.compile(userPwdRegEx).matcher(pwd).matches();
+        if (isValidEmail && isValidPwd) {
+            filterChain.doFilter(servletRequest, servletResponse);
 
-            if (isValidEmail && isValidPwd) {
-//                System.out.println("Valid Email & Pwd...");
-                filterChain.doFilter(servletRequest, servletResponse);
-
-            } else {
-//                System.out.println("Invalid Email OR Pwd...");
-                resp.sendRedirect(req.getRequestURI());
-            }
+        } else {
+            resp.sendRedirect(req.getRequestURI());
         }
     }
 
