@@ -6,7 +6,8 @@ public class CustomerDTO {
     private String customerAddress;
     private int customerContact;
 
-    public CustomerDTO() {}
+    public CustomerDTO() {
+    }
 
     public CustomerDTO(String customerId) {
         this.customerId = customerId;

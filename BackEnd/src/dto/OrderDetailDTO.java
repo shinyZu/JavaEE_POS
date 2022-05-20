@@ -5,7 +5,8 @@ public class OrderDetailDTO {
     private String itemCode;
     private int orderQty;
 
-    public OrderDetailDTO() {}
+    public OrderDetailDTO() {
+    }
 
     public OrderDetailDTO(String orderId, String itemCode, int orderQty) {
         this.setOrderId(orderId);

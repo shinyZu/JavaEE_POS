@@ -12,7 +12,8 @@ public class CustomDTO {
     private String customerId;
     private ArrayList<OrderDetailDTO> orderDetail;
 
-    public CustomDTO() {}
+    public CustomDTO() {
+    }
 
     public CustomDTO(String orderId, Date orderDate, double subTotal, int discount, String customerId, ArrayList<OrderDetailDTO> orderDetail) {
         this.setOrderId(orderId);

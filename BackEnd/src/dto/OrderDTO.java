@@ -9,7 +9,8 @@ public class OrderDTO {
     private int discount;
     private String customerId;
 
-    public OrderDTO() {}
+    public OrderDTO() {
+    }
 
     public OrderDTO(String orderId) {
         this.orderId = orderId;

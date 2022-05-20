@@ -5,7 +5,8 @@ public class OrderDetails {
     private String itemCode;
     private int orderQty;
 
-    public OrderDetails() {}
+    public OrderDetails() {
+    }
 
     public OrderDetails(String orderId, String itemCode, int orderQty) {
         this.setOrderId(orderId);

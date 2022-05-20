@@ -4,7 +4,8 @@ public class UserDetails {
     private String email;
     private String password;
 
-    public UserDetails() {}
+    public UserDetails() {
+    }
 
     public UserDetails(String email, String password) {
         this.setEmail(email);

@@ -6,7 +6,8 @@ public class Customer {
     private String customerAddress;
     private int customerContact;
 
-    public Customer() {}
+    public Customer() {
+    }
 
     public Customer(String customerId) {
         this.customerId = customerId;

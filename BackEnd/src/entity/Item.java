@@ -6,7 +6,8 @@ public class Item {
     private double unitPrice;
     private int qtyOnHand;
 
-    public Item() {}
+    public Item() {
+    }
 
     public Item(String itemCode) {
         this.itemCode = itemCode;

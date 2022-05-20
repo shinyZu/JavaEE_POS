@@ -4,7 +4,8 @@ public class UserDetailDTO {
     private String email;
     private String password;
 
-    public UserDetailDTO() {}
+    public UserDetailDTO() {
+    }
 
     public UserDetailDTO(String email, String password) {
         this.setEmail(email);

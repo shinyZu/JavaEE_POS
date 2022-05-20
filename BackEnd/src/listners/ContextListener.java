@@ -35,17 +35,6 @@ public class ContextListener implements ServletContextListener {
 
     }
 
-    /*public static Connection getConnection() throws SQLException {
-        System.out.println("Got a Connection");
-        System.out.println("ds : "+ds);
-//        Connection connection = ds.getConnection();
-//        System.out.println("connection : "+connection);
-//        return (connection == null) ? connection = ds.getConnection() : connection;
-//        return connection;
-
-    }*/
-
-
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         System.out.println("Context Destroyed...");

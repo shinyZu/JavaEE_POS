@@ -1,7 +1,6 @@
 package dao.custom.impl;
 
 import dao.custom.UserDAO;
-import entity.Customer;
 import entity.UserDetails;
 import util.CrudUtil;
 

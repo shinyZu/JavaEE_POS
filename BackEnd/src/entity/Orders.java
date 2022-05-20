@@ -10,7 +10,8 @@ public class Orders {
     private int discount;
     private String customerId;
 
-    public Orders() {}
+    public Orders() {
+    }
 
     public Orders(String orderId) {
         this.orderId = orderId;

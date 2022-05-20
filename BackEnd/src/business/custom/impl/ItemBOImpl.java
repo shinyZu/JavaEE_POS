@@ -3,9 +3,7 @@ package business.custom.impl;
 import business.custom.ItemBO;
 import dao.DAOFactory;
 import dao.custom.ItemDAO;
-import dao.custom.impl.ItemDAOImpl;
 import dto.ItemDTO;
-import entity.Customer;
 import entity.Item;
 
 import java.sql.Connection;

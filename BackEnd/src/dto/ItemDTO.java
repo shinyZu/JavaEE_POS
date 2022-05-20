@@ -6,7 +6,8 @@ public class ItemDTO {
     private double unitPrice;
     private int qtyOnHand;
 
-    public ItemDTO() {}
+    public ItemDTO() {
+    }
 
     public ItemDTO(String itemCode) {
         this.itemCode = itemCode;
