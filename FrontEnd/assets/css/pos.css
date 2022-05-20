@@ -15,13 +15,14 @@ p#title-mng-cust {
   margin: auto;
 }
 
-form > div label {
+form>div label {
   color: rgba(255, 255, 255, 0.55);
 }
 
-.manage-btns > section > button {
+.manage-btns>section>button {
   color: aliceblue;
 }
+
 .btn-save-outline {
   border: 3px solid #1abc9c !important;
   color: #1abc9c !important;
@@ -214,13 +215,13 @@ p.errorText {
 
 /* ------------------------------------------------------------------------------Manage Invoices-------------------------------------------------- */
 
-#invoice-table-pane{
+#invoice-table-pane {
   overflow-y: auto;
 }
 
 #tblOrders {
-   /*height: 380px;*/
-   /*height: 550px;*/
+  /*height: 380px;*/
+  /*height: 550px;*/
   overflow-y: auto;
 }
 
@@ -257,7 +258,8 @@ select:disabled {
   font-weight: 700;
 }
 
-#txtCustomerId, #txtItemCode{
+#txtCustomerId,
+#txtItemCode {
   color: #099277;
   font-weight: 700;
 }
@@ -282,4 +284,21 @@ label[for="txtSubTotal"] {
 #txtAmountPaid,
 #txtBalance {
   text-align: right;
+}
+
+
+/* ------------------------------------------------------------------------------Login/SignUp-------------------------------------------------- */
+#login-signup {
+  border: 2px solid red;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin: auto;
+  width: 500px;
+  height: 500px;
+  background-color: #112d32;
+  padding: 50px;
+  z-index: 1;
 }

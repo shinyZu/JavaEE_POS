@@ -167,6 +167,163 @@ function generateNextOrderID() {
     });
 }
 
+(function () {
+    // (async () => {
+
+    //     const { value: email } = await Swal.fire({
+    //         title: 'Input email address',
+    //         input: 'email',
+    //         inputLabel: 'Your email address',
+    //         inputPlaceholder: 'Enter your email address'
+    //     })
+
+    //     if (email) {
+    //         Swal.fire(`Entered email: ${email}`)
+    //     }
+
+    // })()
+    let email;
+    let pwd;
+
+    (async () => {
+        const { value: formValues } = await Swal.fire({
+            title: 'Login / Sign Up',
+            html:
+                '<label>Email Address</label>' +
+                '<input id="swal-input1" class="swal2-input" type="email" size=25>' +
+                '<label>Password</label>' +
+                '<input id="swal-input2" class="swal2-input" type="password" size=21>',
+
+            allowOutsideClick: false,
+
+            confirmButtonText: 'Login',
+            confirmButtonColor: '#1abc9c',
+
+            showCancelButton: true,
+            cancelButtonText: 'Sign Up',
+            cancelButtonColor: '#ff7f50',
+
+            // showDenyButton: true,
+            // denyButtonText: 'Sign Up',
+            // denyButtonColor: '#ff7f50',
+
+            customClass: {
+                cancelButton: 'order-1 right-gap',
+                confirmButton: 'order-2',
+            },
+            // focusConfirm: false,
+            allowEnterKey: true,
+            // returnFocus: false,
+            closeModal: true,
+            // showCloseButton: true,
+            preConfirm: () => {
+                // return [
+                // document.getElementById('swal-input1').value,
+                // document.getElementById('swal-input2').value
+                email = $('#swal-input1').val();
+                pwd = $('#swal-input2').val();
+                console.log(email);
+                console.log(pwd);
+                // ]
+            }
+        })
+        // If login
+
+        // Swal.fire({
+        //     icon: 'error',
+        //     title: 'Oops1...',
+        //     showConfirmButton: false,
+        //     text: 'Access Denied!',
+        //     footer: '<a href="">Try Again</a>'
+        // })
+
+        if (email && pwd) {
+            Swal.fire(`Email : ` + email + '\nPassword : ' + pwd)
+
+        } else if (email) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Please enter password..',
+                showConfirmButton: false,
+                text: 'Access Denied!',
+                footer: '<a href="">Try Again</a>'
+            })
+
+        } else if (pwd) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Please enter email..',
+                showConfirmButton: false,
+                text: 'Access Denied!',
+                footer: '<a href="">Try Again</a>'
+            })
+
+        } else if (Swal.DismissReason.cancel) { // If Sign Up
+
+            email = $('#swal-input1').val();
+            pwd = $('#swal-input2').val();
+            console.log(email);
+            console.log(pwd);
+
+            if (email && pwd) {
+                Swal.fire(`S Email : ` + email + '\n S Password : ' + pwd)
+
+            } else if (email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter password..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+                // Swal.fire(JSON.stringify(email))
+
+            } else if (pwd) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please enter email..',
+                    showConfirmButton: false,
+                    text: 'Access Denied!',
+                    footer: '<a href="">Try Again</a>'
+                })
+            }
+        }
+
+
+
+
+        // ).then((result) => {
+        //     if (result.isConfirmed) { // Login
+        //         // Swal.fire(
+        //         //     'Login'
+        //         // )
+
+
+        //         // if (email) {
+        //         //     Swal.fire(`Entered email: ${email}`)
+
+        //         // } else if (pwd) {
+        //         //     Swal.fire(`Entered password: ${pwd}`)
+
+        //         // }
+
+        //         // Swal.fire({
+        //         //     icon: 'error',
+        //         //     title: 'Oops...',
+        //         //     text: 'Something went wrong!',
+        //         //     footer: '<a href="">Try Again</a>'
+        //         // })
+
+        //     } else { // Sign Up
+        //         // Swal.fire(
+        //         //     'Sign Up'
+        //         // )
+        //         Swal.fire('Something went wrong!', '<a href="">Try Again</a>', 'question')
+        //     }
+        // })
+    })()
+})();
+
 $("#nav-home").click(function () {
     $("title").text("Home");
 
